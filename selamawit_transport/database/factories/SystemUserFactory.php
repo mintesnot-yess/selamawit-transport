@@ -16,8 +16,17 @@ class SystemUserFactory extends Factory
      */
     public function definition(): array
     {
+
+        $num = $this->faker->numberBetween(1, 10);
         return [
-            //
+            'id' => $num,
+            'user_name' => $this->faker->userName,
+            'email' => $this->faker->unique()->safeEmail,
+            'password' => bcrypt('password'), // or Hash::make('password')
+            'created_by' => $num,
+            'updated_by' => $num,
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

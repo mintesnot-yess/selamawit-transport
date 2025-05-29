@@ -8,18 +8,17 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('income', function (Blueprint $table) {
-            $table->unsignedInteger('id')->autoIncrement();
-            $table->unsignedInteger('order_id');
+            $table->id();
+            $table->foreignId('order_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->decimal('amount', 12, 2);
             $table->string('attachment', 255);
             $table->date('received_date');
             $table->text('description')->nullable();
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->foreignId('created_by')->constrained('system_users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('system_users')->cascadeOnDelete();
             $table->timestamps();
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
-            $table->foreign('created_by')->references('id')->on('system_users')->onDelete('cascade');
-            $table->foreign('updated_by')->references('id')->on('system_users')->onDelete('cascade');
+
+
         });
     }
 

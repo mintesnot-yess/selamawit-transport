@@ -9,14 +9,17 @@ return new class extends Migration {
     {
         Schema::create('logs', function (Blueprint $table) {
             $table->unsignedInteger('id')->autoIncrement();
-            $table->unsignedInteger('user_id');
+
+            $table->foreignId('user_id')->constrained('system_users')->cascadeOnDelete();
+
             $table->string('action', 255);
             $table->timestamp('timestamp')->useCurrent();
             $table->string('ip_address', 45)->nullable();
             $table->date('created_at');
             $table->date('updated_at');
 
-            $table->foreign('user_id')->references('id')->on('system_users')->onDelete('cascade');
+
+
         });
     }
 

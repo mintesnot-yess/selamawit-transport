@@ -8,14 +8,14 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('banks', function (Blueprint $table) {
-            $table->unsignedInteger('id')->autoIncrement();
-        
+            $table->id();
+
             $table->string('name', 255);
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->foreignId('created_by')->constrained('system_users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('system_users')->cascadeOnDelete();
             $table->timestamps();
-            $table->foreign('created_by')->references('id')->on('system_users')->onDelete('cascade');
-            $table->foreign('updated_by')->references('id')->on('system_users')->onDelete('cascade');
+
+
 
         });
     }

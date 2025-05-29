@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('employees', function (Blueprint $table) {
-            $table->unsignedInteger('id')->autoIncrement();
+            $table->id();
             $table->string('first_name', 100);
             $table->string('last_name', 100);
             $table->string('email', 255);
@@ -16,12 +16,11 @@ return new class extends Migration {
             $table->bigInteger('id_file')->nullable();
             $table->enum('type', ['STUFF', 'DRIVER', 'MECHANIC'])->nullable();
             $table->date('hire_date')->nullable();
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->foreignId('created_by')->constrained('system_users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('system_users')->cascadeOnDelete();
             $table->timestamps();
 
-            $table->foreign('created_by')->references('id')->on('system_users')->onDelete('cascade');
-            $table->foreign('updated_by')->references('id')->on('system_users')->onDelete('cascade');
+
         });
     }
 

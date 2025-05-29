@@ -10,12 +10,11 @@ return new class extends Migration {
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
             $table->string('location_name', 255);
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->foreignId('created_by')->constrained('system_users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('system_users')->cascadeOnDelete();
             $table->timestamps();
 
-            $table->foreign('created_by')->references('id')->on('system_users')->onDelete('cascade');
-            $table->foreign('updated_by')->references('id')->on('system_users')->onDelete('cascade');
+
         });
     }
 

@@ -8,16 +8,15 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('expense_types', function (Blueprint $table) {
-            $table->unsignedInteger('id')->autoIncrement();
+            $table->id();
             $table->string('name', 244);
             $table->enum('category', ['Private', 'Own', 'General', 'Vehicle', 'Employee']);
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->foreignId('created_by')->constrained('system_users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('system_users')->cascadeOnDelete();
             $table->date('created_at');
             $table->date('updated_at');
 
-            $table->foreign('created_by')->references('id')->on('system_users')->onDelete('cascade');
-            $table->foreign('updated_by')->references('id')->on('system_users')->onDelete('cascade');
+
         });
     }
 

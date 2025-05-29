@@ -8,19 +8,18 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('vehicles', function (Blueprint $table) {
-            $table->unsignedInteger('id')->autoIncrement();
+            $table->id();
             $table->string('plate_number', 50);
             $table->string('owner_name', 255);
             $table->string('owner_phone', 50)->nullable();
             $table->enum('owner_type', ['OWNED', 'PRIVATE']);
             $table->string('libre', 100)->nullable();
             $table->string('photo', 255)->nullable();
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+
+            $table->foreignId('created_by')->constrained('system_users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('system_users')->cascadeOnDelete();
             $table->timestamps();
 
-            $table->foreign('created_by')->references('id')->on('system_users')->onDelete('cascade');
-            $table->foreign('updated_by')->references('id')->on('system_users')->onDelete('cascade');
         });
     }
 

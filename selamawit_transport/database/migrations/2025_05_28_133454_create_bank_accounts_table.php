@@ -8,16 +8,15 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('bank_accounts', function (Blueprint $table) {
-            $table->unsignedInteger('id')->autoIncrement();
-            $table->unsignedInteger('bank_id');
+            $table->id();
             $table->string('account_number', 100);
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->foreignId('bank_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            // $table->unsignedInteger('created_by');
+            // $table->unsignedInteger('updated_by');
+            $table->foreignId('created_by')->constrained('system_users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('system_users')->cascadeOnDelete();
             $table->timestamps();
 
-            $table->foreign('bank_id')->references('id')->on('banks')->onDelete('cascade');
-            $table->foreign('created_by')->references('id')->on('system_users')->onDelete('cascade');
-            $table->foreign('updated_by')->references('id')->on('system_users')->onDelete('cascade');
         });
     }
 
