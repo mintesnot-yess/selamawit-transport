@@ -33,21 +33,25 @@
                 </div>
 
 
-
-
                 <button type="submit" :disabled="loading"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors">
-                    {{ loading ? "Logging in..." : "Log In" }}
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center">
+                    <div v-if="loading">
+                        <LoadingCard />
+                    </div>
+                    <div class=" h-12 flex items-center content-center " v-else>
+                        <span>Sign In</span>
+
+                    </div>
                 </button>
             </form>
-
-
         </div>
     </div>
 </template>
 
 <script>
 import authService from "@/services/auth";
+import LoadingCard from "../components/LoadingCard.vue";
+
 
 export default {
     data() {
@@ -83,5 +87,9 @@ export default {
             }
         },
     },
+    components: {
+        LoadingCard,
+    },
 };
+
 </script>

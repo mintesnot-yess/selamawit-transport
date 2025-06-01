@@ -13,7 +13,7 @@ use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\IncomeController;
 
-use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
