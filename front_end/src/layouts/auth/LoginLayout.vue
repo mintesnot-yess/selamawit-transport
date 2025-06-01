@@ -1,37 +1,48 @@
 <template>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form @submit.prevent="handleSubmit">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    required
-                    placeholder="Enter your email"
-                />
-            </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    required
-                    placeholder="Enter your password"
-                />
-            </div>
 
-            <button type="submit" :disabled="loading">
-                {{ loading ? "Logging in..." : "Login" }}
-            </button>
 
-            <div v-if="error" class="error-message">
-                {{ error }}
-            </div>
-        </form>
+
+    <!-- component -->
+    <div class="min-h-screen w-full bg-gray-100 flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Sign In</h2>
+
+            <form @submit.prevent="handleSubmit" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input id="email" v-model="form.email" type="email" required placeholder="Enter your email"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+                </div>
+
+                <div>
+                    <label for="password" class=" block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input id="password" v-model="form.password" type="password"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                        placeholder="••••••••" />
+                </div>
+
+                <div class="flex items-center justify-between">
+
+
+                    <span v-if="error" class="text-sm text-red-600 ">{{ error }}</span>
+                    <span></span>
+                    <router-link to="forgot-password" class="text-sm text-indigo-600 hover:text-indigo-500">Forgot
+                        password?</router-link>
+
+                </div>
+
+
+
+
+                <button type="submit" :disabled="loading"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors">
+                    {{ loading ? "Logging in..." : "Log In" }}
+                </button>
+            </form>
+
+
+        </div>
     </div>
 </template>
 
@@ -58,7 +69,6 @@ export default {
                 // Call login API
                 const { access_token } = await authService.login(this.form);
 
-                // Store token and set axios headers
                 authService.setAuthToken(access_token);
 
                 // Fetch user data
@@ -75,53 +85,3 @@ export default {
     },
 };
 </script>
-
-<style scoped>
-.login-container {
-    max-width: 400px;
-    margin: 2rem auto;
-    padding: 2rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-top: 1rem;
-}
-
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
-.error-message {
-    color: #f44336;
-    margin-top: 1rem;
-}
-</style>

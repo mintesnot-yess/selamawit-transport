@@ -8,8 +8,8 @@ export default {
     } catch (error) {
       throw new Error(
         error.response?.data?.message ||
-          error.response?.data?.errors ||
-          "Registration failed",
+        error.response?.data?.errors ||
+        "Registration failed",
       );
     }
   },
@@ -36,9 +36,9 @@ export default {
 
       // Remove axios authorization header
       delete api.defaults.headers.common["Authorization"];
-
       // Redirect to login page
-      window.location.href = "/login";
+      window.location.href = "/";
+
     }
   },
 

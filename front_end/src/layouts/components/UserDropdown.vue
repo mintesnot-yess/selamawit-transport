@@ -37,15 +37,18 @@
             </ul>
             <div class="py-2">
                 <LogoutButton />
+
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from "vue";
-import authService from "@/services/auth";
 import LogoutButton from "./LogoutButton.vue";
+
+import authService from "@/services/auth";
+import { ref, onMounted, onUnmounted } from "vue";
+
 
 export default {
     setup() {
@@ -64,9 +67,7 @@ export default {
                 isOpen.value = false;
             }
         };
-        const SignOut = () => {
-            console.log("Sign Out");
-        };
+
 
         onMounted(() => {
             document.addEventListener("click", handleClickOutside);
@@ -80,7 +81,15 @@ export default {
             isOpen,
             dropdownRef,
             toggleDropdown,
+
         };
     },
+
+    components: {
+        LogoutButton,
+    },
+
+
+
 };
 </script>

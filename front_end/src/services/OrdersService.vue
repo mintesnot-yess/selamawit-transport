@@ -36,10 +36,7 @@
             </span>
           </td>
           <td>
-            <router-link
-              :to="{ name: 'OrderDetail', params: { id: order.id } }"
-              class="btn btn-view"
-            >
+            <router-link :to="{ name: 'OrderDetail', params: { id: order.id } }" class="btn btn-view">
               View
             </router-link>
           </td>
@@ -49,17 +46,11 @@
 
     <!-- Pagination -->
     <div v-if="meta && meta.total > meta.per_page" class="pagination">
-      <button
-        @click="fetchOrders(meta.current_page - 1)"
-        :disabled="meta.current_page === 1"
-      >
+      <button @click="fetchOrders(meta.current_page - 1)" :disabled="meta.current_page === 1">
         Previous
       </button>
       <span>Page {{ meta.current_page }} of {{ meta.last_page }}</span>
-      <button
-        @click="fetchOrders(meta.current_page + 1)"
-        :disabled="meta.current_page === meta.last_page"
-      >
+      <button @click="fetchOrders(meta.current_page + 1)" :disabled="meta.current_page === meta.last_page">
         Next
       </button>
     </div>
@@ -115,7 +106,8 @@ export default {
   margin-top: 20px;
 }
 
-.orders-table th, .orders-table td {
+.orders-table th,
+.orders-table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;

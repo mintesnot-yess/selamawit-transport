@@ -4,48 +4,24 @@
         <form @submit.prevent="handleSubmit">
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input
-                    id="name"
-                    v-model="form.name"
-                    type="text"
-                    required
-                    placeholder="Enter your full name"
-                />
+                <input id="name" v-model="form.name" type="text" required placeholder="Enter your full name" />
             </div>
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    required
-                    placeholder="Enter your email"
-                />
+                <input id="email" v-model="form.email" type="email" required placeholder="Enter your email" />
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    required
-                    placeholder="Create a password"
-                    minlength="8"
-                />
+                <input id="password" v-model="form.password" type="password" required placeholder="Create a password"
+                    minlength="8" />
             </div>
 
             <div class="form-group">
                 <label for="password_confirmation">Confirm Password</label>
-                <input
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    required
-                    placeholder="Confirm your password"
-                    minlength="8"
-                />
+                <input id="password_confirmation" v-model="form.password_confirmation" type="password" required
+                    placeholder="Confirm your password" minlength="8" />
             </div>
 
             <button type="submit" :disabled="loading">

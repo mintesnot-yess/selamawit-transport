@@ -13,24 +13,18 @@ use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\IncomeController;
 
+use App\Http\Controllers\ForgotPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/user", function (Request $request) {
     return $request->user();
 })->middleware("auth:sanctum");
-
-Route::post("/register", [AuthController::class, "register"]);
+Route::post("/register", action: [AuthController::class, "register"]);
 Route::post("/login", [AuthController::class, "login"]);
-
-Route::middleware("auth:sanctum")->post("/logout", function (Request $request) {
-    // Revoke current user's token
-    $request->user()->currentAccessToken()->delete();
-
-    return response()->json([
-        "message" => "Successfully logged out",
-    ]);
-});
+Route::middleware("auth:sanctum")->post("/logout", [AuthController::class, "logout"]);
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [ForgotPasswordController::class, 'reset']);
 
 Route::middleware("auth:sanctum")->group(function () {
     Route::post("/banks", [BankController::class, "store"]);
