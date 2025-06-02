@@ -6,6 +6,7 @@ import LogIn from "@/pages/Login.vue";
 import Register from "@/pages/Register.vue";
 import ForgotPassword from "@/pages/ForgotPassword.vue";
 import ResetPassword from "@/pages/ResetPassword.vue";
+import Banks from "@/pages/Banks.vue";
 
 
 const routes = [
@@ -15,19 +16,6 @@ const routes = [
     component: Dashboard,
     meta: { requiresAuth: true } // Requires authentication
   },
-  {
-    path: "/orders",
-    name: "Orders",
-    component: Orders,
-    meta: { requiresAuth: true } // Requires authentication
-  },
-  {
-    path: "/orders-service",
-    name: "OrdersService",
-    component: OrdersService,
-    meta: { requiresAuth: true } // Requires authentication
-  },
-  // Authentication routes
   {
     path: "/login",
     name: "Login",
@@ -52,7 +40,27 @@ const routes = [
     name: 'ResetPassword',
     component: ResetPassword,
     meta: { requiresAuth: false }
-  }
+  },
+  {
+    path: "/orders",
+    name: "Orders",
+    component: Orders,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/orders-service",
+    name: "OrdersService",
+    component: OrdersService,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/banks",
+    name: "Banks",
+    component: Banks,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  // Authentication routes
+
 ];
 
 const router = createRouter({

@@ -6,9 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class BankController extends Controller
 {
+
+    public function index()
+    {
+        $banks = Bank::all();
+        return response()->json($banks);
+    }
     public function store(Request $request)
     {
         $request->validate([
@@ -30,5 +37,71 @@ class BankController extends Controller
         );
     }
 
+    public function search(Request $request)
+    {
+        try {
+            $query = Bank::query();
+
+            // Basic search
+            if ($request->has('q')) {
+                $searchTerm = $request->input('q');
+                $query->where('name', 'like', '%' . $searchTerm . '%');
+            }
+            // Pagination
+            $perPage = $request->input('per_page', 15);
+            $banks = $query->paginate($perPage);
+
+            return response()->json([
+                'success' => true,
+                'data' => $banks->items(),
+                'meta' => [
+                    'current_page' => $banks->currentPage(),
+                    'per_page' => $banks->perPage(),
+                    'total' => $banks->total(),
+                    'last_page' => $banks->lastPage(),
+                    'from' => $banks->firstItem(),
+                    'to' => $banks->lastItem()
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function destroy($id)
+    {
+        try {
+            $bank = Bank::find($id);
+
+            if (!$bank) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bank not found'
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $bank->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bank deleted successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete bank',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
     // Add other CRUD methods as needed
 }
+
+
+
+

@@ -2,16 +2,20 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Bank;
 use Illuminate\Database\Seeder;
 
 class BankSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        //
+        Bank::create([
+            'name' => 'Commercial Bank of Ethiopia',
+            'created_by' => 10,
+            'updated_by' => 10
+        ]);
+
+        // Add more banks if needed
+        Bank::factory()->count(5)->create();
     }
 }

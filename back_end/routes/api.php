@@ -12,98 +12,63 @@ use App\Http\Controllers\API\LoadTypeController;
 use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\IncomeController;
-
+use App\Http\Controllers\API\LogController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get("/user", function (Request $request) {
-    return $request->user();
-})->middleware("auth:sanctum");
-Route::post("/register", action: [AuthController::class, "register"]);
+// Public routes
+Route::post("/register", [AuthController::class, "register"]);
 Route::post("/login", [AuthController::class, "login"]);
-Route::middleware("auth:sanctum")->post("/logout", [AuthController::class, "logout"]);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [ForgotPasswordController::class, 'reset']);
 
+// Authenticated routes
 Route::middleware("auth:sanctum")->group(function () {
-    Route::post("/banks", [BankController::class, "store"]);
-    // Add other bank routes as needed
-});
-Route::middleware("auth:sanctum")->group(function () {
-    Route::post("/bank-accounts", [BankAccountController::class, "store"]);
-    // Add other bank account routes as needed
-});
+    // User routes
+    Route::get("/user", function (Request $request) {
+        return $request->user();
+    });
+    Route::post("/logout", [AuthController::class, "logout"]);
 
-Route::middleware("auth:sanctum")->group(function () {
-    Route::post("/vehicles", [VehicleController::class, "store"]);
-    // Add other vehicle routes as needed
-    // Route::get('/vehicles', [VehicleController::class, 'index']);
-    // Route::get('/vehicles/{id}', [VehicleController::class, 'show']);
-    // Route::put('/vehicles/{id}', [VehicleController::class, 'update']);
-    // Route::delete('/vehicles/{id}', [VehicleController::class, 'destroy']);
-});
+    // Bank routes
+    Route::prefix('banks')->group(function () {
+        Route::get('/', [BankController::class, 'index']);
+        Route::post('/', [BankController::class, 'store']);
+        Route::get('/search', [BankController::class, 'search']);
+        Route::delete('/{id}', [BankController::class, 'destroy']);
+        // Add other bank routes as needed
+    });
+    // Bank Account routes
+    Route::apiResource('bank-accounts', BankAccountController::class)->except(['index', 'show']);
+    // Vehicle routes
+    Route::apiResource('vehicles', VehicleController::class);
 
-Route::middleware("auth:sanctum")->group(function () {
-    Route::post("/customers", [CustomerController::class, "store"]);
-    // Route::get('/customers', [CustomerController::class, 'index']);
-    // Route::get('/customers/{id}', [CustomerController::class, 'show']);
-    // Route::put('/customers/{id}', [CustomerController::class, 'update']);
-    // Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
-});
+    // Customer routes
+    Route::apiResource('customers', CustomerController::class);
 
-Route::middleware("auth:sanctum")->group(function () {
-    Route::apiResource("employees", EmployeeController::class);
-    Route::apiResource("expense-types", ExpenseTypeController::class);
-    Route::apiResource("expense", ExpenseController::class);
-});
+    // Employee routes
+    Route::apiResource('employees', EmployeeController::class);
 
-Route::middleware("auth:sanctum")->group(function () {
-    // Load Types API Routes
-    Route::get("/load-types", [LoadTypeController::class, "index"]);
-    Route::post("/load-types", [LoadTypeController::class, "store"]);
-    Route::get("/load-types/{id}", [LoadTypeController::class, "show"]);
-    Route::put("/load-types/{id}", [LoadTypeController::class, "update"]);
-    Route::delete("/load-types/{id}", [LoadTypeController::class, "destroy"]);
-});
+    // Expense Type routes
+    Route::apiResource('expense-types', ExpenseTypeController::class);
 
-Route::middleware("auth:sanctum")->group(function () {
-    // Locations API Routes
-    Route::get("/locations", [LocationController::class, "index"]);
-    Route::post("/locations", [LocationController::class, "store"]);
-    Route::get("/locations/{id}", [LocationController::class, "show"]);
-    Route::put("/locations/{id}", [LocationController::class, "update"]);
-    Route::delete("/locations/{id}", [LocationController::class, "destroy"]);
-});
+    // Expense routes
+    Route::apiResource('expenses', ExpenseController::class);
 
-Route::middleware("auth:sanctum")->group(function () {
-    // Orders API Routes
-    Route::get("/orders", [OrderController::class, "index"]);
-    Route::post("/orders", [OrderController::class, "store"]);
-    Route::get("/orders/{id}", [OrderController::class, "show"]);
-    Route::put("/orders/{id}", [OrderController::class, "update"]);
-    Route::delete("/orders/{id}", [OrderController::class, "destroy"]);
-});
+    // Load Type routes
+    Route::apiResource('load-types', LoadTypeController::class);
 
-Route::middleware("auth:sanctum")->group(function () {
-    // Incomes API Routes
-    Route::get("/incomes", [IncomeController::class, "index"]);
-    Route::post("/incomes", [IncomeController::class, "store"]);
-    Route::get("/incomes/{id}", [IncomeController::class, "show"]);
-    Route::put("/incomes/{id}", [IncomeController::class, "update"]);
-    Route::delete("/incomes/{id}", [IncomeController::class, "destroy"]);
-});
+    // Location routes
+    Route::apiResource('locations', LocationController::class);
 
-Route::middleware("auth:sanctum")->group(function () {
-    // Logs routes
-    Route::get("/logs", [
-        \App\Http\Controllers\API\LogController::class,
-        "index",
-    ]);
-    Route::get("/logs/{log}", [
-        \App\Http\Controllers\API\LogController::class,
-        "show",
-    ]);
+    // Order routes
+    Route::apiResource('orders', OrderController::class);
 
-    // Your other API routes...
+    // Income routes
+    Route::apiResource('incomes', IncomeController::class);
+
+    // Log routes
+    Route::get("/logs", [LogController::class, "index"]);
+    Route::get("/logs/{log}", [LogController::class, "show"]);
 });

@@ -41,12 +41,15 @@
 
                 <!-- Email Input -->
                 <div class="rounded-md shadow-sm -space-y-px">
+
+
                     <div>
-                        <label for="email" class="sr-only">Email address</label>
-                        <input id="email" v-model="form.email" name="email" type="email" autocomplete="email" required
-                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                            placeholder="Email address" :disabled="loading">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input id="email" v-model="form.email" type="email" required placeholder="Enter your email"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                            :disabled="loading" />
                     </div>
+
                 </div>
 
                 <!-- Submit Button -->

@@ -113,12 +113,12 @@
                     </button>
                 </li>
                 <li>
-                    <button
+                    <router-link to="banks" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100"
                         class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors">
                         <img class="w-5  invert" src="../../assets/bank.png" alt="">
                         Bank
                         <!-- <i class="fas fa-chevron-down ml-auto text-surface-400 text-xs"></i> -->
-                    </button>
+                    </router-link>
                 </li>
             </ul>
         </div>
