@@ -62,7 +62,8 @@ const bankService = {
             const response = await axios.put(`${API_BASE_URL}/banks/${id}`, bankData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+
                 }
             });
             return response.data;

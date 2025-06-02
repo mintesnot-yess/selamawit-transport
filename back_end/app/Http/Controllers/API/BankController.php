@@ -100,6 +100,36 @@ class BankController extends Controller
         }
     }
     // Add other CRUD methods as needed
+    // For example, update method can be added here
+    public function update(Request $request, $id)
+    {
+        $bank = Bank::find($id);
+
+        if (!$bank) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bank not found'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+
+        $request->validate([
+            'name' => 'required|string|max:255|unique:banks,name,' . $id,
+        ], [
+            'name.unique' => 'The bank name has already been taken.',
+        ]);
+
+        $bank->name = $request->name;
+        $bank->updated_by = Auth::id();
+        $bank->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bank updated successfully',
+            'bank' => $bank
+        ]);
+    }
+
 }
 
 

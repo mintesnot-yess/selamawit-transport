@@ -82,7 +82,6 @@
                                     Bank Name
                                 </th>
                                 <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">Actions</span>
                                 </th>
                             </tr>
                         </thead>
@@ -126,6 +125,7 @@
                                             </div>
                                         </div>
                                     </td>
+
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <ToggleMenu @edit="editBank(bank)"
                                             @delete="confirmDelete(bank.id, bank.name)" />
@@ -183,10 +183,7 @@
                     class="fixed z-50 top-0 left-0 bg-zinc-900 bg-opacity-50 h-full w-full shadow-2xl border border-gray-10 flex overflow-y-auto">
                     <button aria-label="Close" @click="toggleAddBankForm"
                         class="toggle_side_form_btn absolute top-0 right-2 text-gey-500 m-5 hover:text-gray-700 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <i class="fa fa-xmark"></i>
                     </button>
                     <div @click="toggleAddBankForm" id="side_form"
                         class="w-0 md:w-full sticky top-0 bg-transparent cursor-pointer">
@@ -200,29 +197,53 @@
                         <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
                             Fill Banks Information
                         </p>
-                        <form @submit.prevent="handleSubmitAdd" class="flex flex-col  space-y-6 js font-['Inter']">
-                            <div>
-                                <label for="siteName"
-                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                    Bank Name</label>
-                                <input v-model="form.name" id="siteName" type="text"
-                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                    placeholder="Enter Bank name" />
-                            </div>
-                            <!-- Error Message -->
-                            <div v-if="error" class=" text-sm">
-                                {{ error }}
-                            </div>
-                            <div v-els="error" class=" text-sm">
-                                {{ error }}
-                            </div>
 
-                            <!-- Submit Button -->
-                            <button :disabled="loading" type="submit"
-                                class="mt-6 w-full place-self-end-end bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg">
-                                <span v-if="!loading">SAVE</span>
-                                <span v-else>Processing...</span> </button>
-                        </form>
+                        <template v-if="isUpdating">
+                            <form @submit.prevent="handleSubmitUpdate"
+                                class="flex flex-col  space-y-6 js font-['Inter']">
+                                <div>
+                                    <label for="siteName"
+                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
+                                        Bank Name</label>
+                                    <input v-model="form.name" id="siteName" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter Bank name" />
+                                    <input type="number" v-model="form.id" hidden>
+                                </div>
+                                <!-- Error Message -->
+                                <div v-if="error" class="text-red-500 text-sm ">
+                                    {{ error }}
+                                </div>
+                                <!-- Submit Button -->
+                                <button :disabled="loading" type="submit"
+                                    class="mt-6 w-full place-self-end-end bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg">
+                                    <span v-if="!loading">Update </span>
+                                    <span v-else>Processing...</span> </button>
+                            </form>
+                        </template>
+                        <template v-else>
+
+                            <form @submit.prevent="handleSubmitAdd" class="flex flex-col  space-y-6 js font-['Inter']">
+                                <div>
+                                    <label for="siteName"
+                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
+                                        Bank Name</label>
+                                    <input v-model="form.name" id="siteName" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter Bank name" />
+                                </div>
+                                <!-- Error Message -->
+                                <div v-if="error" class="text-red-500 text-sm ">
+                                    {{ error }}
+                                </div>
+                                <!-- Submit Button -->
+                                <button :disabled="loading" type="submit"
+                                    class="mt-6 w-full place-self-end-end bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg">
+                                    <span v-if="!loading">SAVE</span>
+                                    <span v-else>Processing...</span> </button>
+                            </form>
+                        </template>
+
                     </div>
                 </div>
             </div>
@@ -261,6 +282,8 @@ export default {
             editingBank: null,
             searchQuery: '',
             isSearching: false,
+            isUpdating: false,
+
             searchTimeout: null,
 
             searchError: null,
@@ -288,21 +311,32 @@ export default {
             // If editingBank is set, update the bank, else create new
 
             try {
-                // Call bank service to store the data
                 const response = await bankService.store(this.form);
                 await this.fetchBanks();
-
                 this.$router.push('banks');
 
-                // Optionally show success message
 
-                // Reset form
                 this.form.name = "";
-                // return to the show tables
+                this.isSideFormVisible = false;
 
 
-                // Optionally fetch updated bank list
-                // await this.$store.dispatch('fetchBanks');
+            } catch (error) {
+                this.error = error.response?.data?.message || error.message || "Failed to save bank information";
+                console.error("Bank save error:", error);
+            } finally {
+                this.loading = false;
+            }
+        }, async handleSubmitUpdate() {
+
+            this.loading = true;
+            this.error = null;
+            // If editingBank is set, update the bank, else create new
+
+            try {
+                const response = await bankService.update(this.form.id, this.form);
+                await this.fetchBanks();
+                this.error = "Bank updated successfully"
+
 
 
             } catch (error) {
@@ -464,6 +498,8 @@ export default {
 
 
         openAddBankForm() {
+            this.isUpdating = false;
+
             this.resetForm();
             this.isSideFormVisible = true;
         },
@@ -497,12 +533,12 @@ export default {
                 this.loading = false;
             }
         },
-
+        // bank edit function
         editBank(bank) {
-            this.editingBank = bank;
+            this.isUpdating = true;
             this.form = {
                 name: bank.name,
-                updated_by: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).id : null
+                id: bank.id,
             };
             this.isSideFormVisible = true;
 

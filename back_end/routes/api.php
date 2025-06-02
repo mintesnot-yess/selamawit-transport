@@ -37,6 +37,7 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::post('/', [BankController::class, 'store']);
         Route::get('/search', [BankController::class, 'search']);
         Route::delete('/{id}', [BankController::class, 'destroy']);
+        Route::put('/{id}', [BankController::class, 'update']);
         // Add other bank routes as needed
     });
     // Bank Account routes
