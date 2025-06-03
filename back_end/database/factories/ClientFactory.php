@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Customer>
  */
-class CustomerFactory extends Factory
+class ClientFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,13 @@ class CustomerFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+
+            "name" => $this->faker->company,
+            "contact_person" => $this->faker->name,
+            "phone" => $this->faker->phoneNumber,
+            "address" => $this->faker->address,
+            "created_by" => 1, // Assuming user with ID 1 exists
+            "updated_by" => 1, // Assuming user with ID 1 exists
         ];
     }
 }

@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('client_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('loading_place')->constrained(table: 'locations')->cascadeOnDelete()->cascadeOnUpdate();

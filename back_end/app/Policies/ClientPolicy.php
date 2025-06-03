@@ -6,7 +6,7 @@ use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class CustomerPolicy
+class ClientPolicy
 {
     /**
      * Determine whether the user can view any models.

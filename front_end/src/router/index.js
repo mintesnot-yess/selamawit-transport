@@ -10,6 +10,7 @@ import Banks from "@/pages/Banks.vue";
 import BankAccounts from "@/pages/BankAccounts.vue";
 import Vehicles from "@/pages/Vehicles.vue";
 import VehiclesDetail from "@/pages/VehiclesDetail.vue";
+import ClientsLayout from "@/layouts/clients/ClientsLayout.vue";
 
 
 const routes = [
@@ -79,6 +80,11 @@ const routes = [
     path: "/vehicle/:id",
     name: "VehicleDetails",
     component: VehiclesDetail,
+    meta: { requiresAuth: true } // Requires authentication
+  }, {
+    path: "/clients",
+    name: "ClientsLayout",
+    component: ClientsLayout,
     meta: { requiresAuth: true } // Requires authentication
   },
 

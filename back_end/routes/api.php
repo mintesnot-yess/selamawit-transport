@@ -3,7 +3,7 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BankController;
 use App\Http\Controllers\API\BankAccountController;
-use App\Http\Controllers\API\CustomerController;
+use App\Http\Controllers\API\ClientsController;
 use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\ExpenseTypeController;
@@ -62,7 +62,14 @@ Route::middleware("auth:sanctum")->group(function () {
     });
 
     // Customer routes
-    Route::apiResource('customers', CustomerController::class);
+    Route::prefix('clients')->group(function () {
+        Route::get('/', [ClientsController::class, 'index']);
+        Route::post('/', [ClientsController::class, 'store']);
+        Route::get('/search', [ClientsController::class, 'search']);
+        Route::delete('/{id}', [ClientsController::class, 'destroy']);
+        Route::put('/{id}', [ClientsController::class, 'update']);
+        // Add other vehicle routes as needed
+    });
 
     // Employee routes
     Route::apiResource('employees', EmployeeController::class);
