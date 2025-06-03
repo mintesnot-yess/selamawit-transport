@@ -16,7 +16,21 @@ class BankController extends Controller
     public function index()
     {
         $banks = Bank::all();
-        return response()->json($banks);
+        $perPage = request()->input('per_page', 15);
+        $banks = Bank::paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $banks->items(),
+            'meta' => [
+                'current_page' => $banks->currentPage(),
+                'per_page' => $banks->perPage(),
+                'total' => $banks->total(),
+                'last_page' => $banks->lastPage(),
+                'from' => $banks->firstItem(),
+                'to' => $banks->lastItem()
+            ]
+        ]);
     }
     public function store(Request $request)
     {

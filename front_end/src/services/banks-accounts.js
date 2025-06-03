@@ -25,7 +25,7 @@ const bankService = {
     },
 
     // Fetch a single bank account by ID
-    async getById(id) {
+    async getBankAccounts(id) {
         try {
             const response = await axios.get(`${API_BASE_URL}/bank-accounts/${id}`, {
                 headers: {

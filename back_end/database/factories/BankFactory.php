@@ -18,8 +18,8 @@ class BankFactory extends Factory
     {
         return [
             "name" => fake()->company(),
-            "created_by" => 1,
-            "updated_by" => 1,
+            "created_by" => 10,
+            "updated_by" => 10,
         ];
     }
 }

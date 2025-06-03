@@ -64,7 +64,7 @@
                         <button @click="openAddBankForm"
                             class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
                             <i class="fas fa-plus"></i>
-                            <span>Add Bank Accounts</span>
+                            <span>Add Bank</span>
                         </button>
                     </div>
                 </div>
@@ -142,26 +142,18 @@
                                 </tr>
                             </template>
 
-                            <div v-if="pagination.last_page > 1" class="pagination-controls">
-                                <button @click="prevPage" :disabled="pagination.current_page === 1"
-                                    class="pagination-button">
-                                    Previous
-                                </button>
 
-                                <span class="pagination-info">
-                                    Page {{ pagination.current_page }} of {{ pagination.last_page }}
-                                </span>
 
-                                <button @click="nextPage" :disabled="pagination.current_page === pagination.last_page"
-                                    class="pagination-button">
-                                    Next
-                                </button>
-                            </div>
 
                         </tbody>
+
+                        <!-- With this version -->
+
                     </table>
 
                     <!-- Pagination -->
+                    <!-- <div v-if="pagination.last_page > 1" -->
+
                     <div v-if="pagination.last_page > 1"
                         class="px-6 py-4 border-t border-surface-200 flex items-center justify-between">
                         <div class="text-sm text-surface-500">
@@ -309,6 +301,41 @@ export default {
         await this.fetchBanks();
     },
     methods: {
+        async fetchBanks(page = 1) {
+            this.loadingBanks = true;
+            try {
+                const response = await bankService.getAll({
+                    page: page,
+                    perPage: this.pagination.per_page,
+                    search: this.searchQuery
+                });
+
+
+                // Standardized response handling
+                this.banks = response.data;
+
+                // Ensure meta exists
+                if (!response.meta) {
+                    console.warn('API response missing meta, generating fallback');
+                    response.meta = {
+                        current_page: 1,
+                        per_page: this.pagination.per_page,
+                        total: response.data.length,
+                        last_page: 1,
+                        from: 1,
+                        to: response.data.length
+                    };
+                }
+
+                this.updatePagination(response.meta);
+
+            } catch (error) {
+                console.error('Error fetching banks:', error);
+                this.$toast.error("Failed to load banks: " + error.message);
+            } finally {
+                this.loadingBanks = false;
+            }
+        },
 
         async handleSubmitAdd() {
 
@@ -354,69 +381,25 @@ export default {
                 this.loading = false;
             }
         },
-        async fetchBanks(page = 1) {
-            this.loadingBanks = true;
-            try {
-                const response = await bankService.getAll({
-                    page: page,
-                    perPage: this.pagination.per_page,
-                    search: this.searchQuery
-                });
-
-                // Debug the response structure
-
-                // Handle different response structures
-                if (response.data && response.meta) {
-                    // Standard Laravel API Resource response
-                    this.banks = response.data;
-                    this.updatePagination(response.meta);
-                } else if (Array.isArray(response)) {
-                    // Simple array response
-                    this.banks = response;
-                    this.updatePagination({
-                        current_page: 1,
-                        per_page: this.pagination.per_page,
-                        total: response.length,
-                        last_page: 1,
-                        from: 1,
-                        to: response.length
-                    });
-                } else {
-                    // Fallback for other structures
-                    this.banks = response.items || response.results || [];
-                    this.updatePagination(response.meta || response.pagination || {
-                        current_page: page,
-                        per_page: this.pagination.per_page,
-                        total: this.banks.length,
-                        last_page: Math.ceil(this.banks.length / this.pagination.per_page),
-                        from: 1,
-                        to: this.banks.length
-                    });
-                }
-            } catch (error) {
-                console.error('Error fetching banks:', error);
-                this.error = error.message;
-                this.banks = [];
-                this.$toast.error("Failed to load banks: " + error.message);
-            } finally {
-                this.loadingBanks = false;
-            }
-        },
 
         updatePagination(meta) {
-            this.pagination = {
-                current_page: meta.current_page || 1,
-                per_page: meta.per_page || this.pagination.per_page,
-                total: meta.total || 0,
-                last_page: meta.last_page || 1,
-                from: meta.from || ((meta.current_page || 1) - 1) * (meta.per_page || this.pagination.per_page) + 1,
-                to: meta.to || Math.min(
-                    (meta.current_page || 1) * (meta.per_page || this.pagination.per_page),
-                    meta.total || 0
-                )
-            };
-        },
+            // Debugging: Log the incoming meta data
 
+            const currentPage = meta.current_page || 1;
+            const perPage = meta.per_page || this.pagination.per_page;
+            const totalItems = meta.total || 0;
+            const lastPage = meta.last_page || Math.ceil(totalItems / perPage) || 1;
+
+            this.pagination = {
+                current_page: currentPage,
+                per_page: perPage,
+                total: totalItems,
+                last_page: lastPage,
+                from: meta.from || ((currentPage - 1) * perPage) + 1,
+                to: meta.to || Math.min(currentPage * perPage, totalItems)
+            };
+
+        },
         async searchBanks() {
             if (!this.searchQuery.trim()) {
                 this.clearSearch();

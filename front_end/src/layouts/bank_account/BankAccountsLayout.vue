@@ -63,7 +63,7 @@
                         <button @click="openAddBankForm"
                             class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
                             <i class="fas fa-plus"></i>
-                            <span>Add Bank</span>
+                            <span>Add Account</span>
                         </button>
                     </div>
                 </div>
@@ -135,7 +135,7 @@
 
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-surface-900">{{ bank.account_number
-                                                }}</div>
+                                                    }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -152,28 +152,15 @@
                                 </tr>
                             </template>
 
-                            <div v-if="pagination.last_page > 1" class="pagination-controls">
-                                <button @click="prevPage" :disabled="pagination.current_page === 1"
-                                    class="pagination-button">
-                                    Previous
-                                </button>
 
-                                <span class="pagination-info">
-                                    Page {{ pagination.current_page }} of {{ pagination.last_page }}
-                                </span>
-
-                                <button @click="nextPage" :disabled="pagination.current_page === pagination.last_page"
-                                    class="pagination-button">
-                                    Next
-                                </button>
-                            </div>
 
                         </tbody>
                     </table>
 
+
                     <!-- Pagination -->
-                    <div v-if="pagination.last_page > 1"
-                        class="px-6 py-4 border-t border-surface-200 flex items-center justify-between">
+                    <!-- <div v-if="pagination.last_page > 1" -->
+                    <div class="px-6 py-4 border-t border-surface-200 flex items-center justify-between">
                         <div class="text-sm text-surface-500">
                             Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} results
                         </div>
@@ -323,6 +310,51 @@ export default {
         await this.fetchBanks();
     },
     methods: {
+        async fetchBanks(page = 1) {
+            this.loadingBanks = true;
+            try {
+                const bankId = this.$route.params.id;
+
+                // Fetch paginated bank accounts for the specific bank
+                const response = await bankService.getBankAccounts(bankId, {
+                    page: page,
+                    per_page: this.pagination.per_page
+                });
+
+                // Standardize the response handling
+                if (response.data && response.meta) {
+                    // Laravel-style paginated response
+                    this.banks = response.data;
+                    this.updatePagination(response.meta);
+                } else if (response.accounts && response.pagination) {
+                    // Alternative paginated response format
+                    this.banks = response.accounts;
+                    this.updatePagination(response.pagination);
+                } else if (Array.isArray(response)) {
+                    // Non-paginated array response
+                    this.banks = response;
+                    this.updatePagination({
+                        current_page: 1,
+                        per_page: this.pagination.per_page,
+                        total: response.length,
+                        last_page: 1,
+                        from: 1,
+                        to: response.length
+                    });
+                } else {
+                    console.error('Unexpected response format:', response);
+                    throw new Error('Unexpected API response format');
+                }
+
+            } catch (error) {
+                console.error('Error fetching bank accounts:', error);
+                this.error = error.message;
+                this.banks = [];
+                this.$toast.error("Failed to load bank accounts: " + error.message);
+            } finally {
+                this.loadingBanks = false;
+            }
+        },
 
         async handleSubmitAdd() {
 
@@ -352,7 +384,8 @@ export default {
             } finally {
                 this.loading = false;
             }
-        }, async handleSubmitUpdate() {
+        },
+        async handleSubmitUpdate() {
 
             this.loading = true;
             this.error = null;
@@ -372,54 +405,8 @@ export default {
 
             }
         },
-        async fetchBanks(page = 1) {
-            this.loadingBanks = true;
-            try {
-
-                const bankId = this.$route.params.id;
-                // If bankId is provided, fetch a specific bank
-
-                const response = await bankService.getById(bankId);
-
-                if (response.data && response.meta) {
-                    this.banks = response.data;
-                    this.updatePagination(response.meta);
-                    this.fetchBanks();
-
-                } else if (Array.isArray(response)) {
-                    // Simple array response
-                    this.banks = response;
-                    this.updatePagination({
-                        current_page: 1,
-                        per_page: this.pagination.per_page,
-                        total: response.length,
-                        last_page: 1,
-                        from: 1,
-                        to: response.length
-                    });
-                } else {
-                    // Fallback for other structures
-                    this.banks = response.items || response.results || [];
-                    this.updatePagination(response.meta || response.pagination || {
-                        current_page: page,
-                        per_page: this.pagination.per_page,
-                        total: this.banks.length,
-                        last_page: Math.ceil(this.banks.length / this.pagination.per_page),
-                        from: 1,
-                        to: this.banks.length
-                    });
-                }
 
 
-            } catch (error) {
-                console.error('Error fetching banks:', error);
-                this.error = error.message;
-                this.banks = [];
-                this.$toast.error("Failed to load banks: " + error.message);
-            } finally {
-                this.loadingBanks = false;
-            }
-        },
 
 
         updatePagination(meta) {
