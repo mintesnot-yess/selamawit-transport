@@ -10,11 +10,11 @@ return new class extends Migration {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
             $table->string('plate_number', 50);
+            $table->string('vehicle_name', 255);
             $table->string('owner_name', 255);
             $table->string('owner_phone', 50)->nullable();
             $table->enum('owner_type', ['OWNED', 'PRIVATE']);
             $table->string('libre', 100)->nullable();
-            $table->string('photo', 255)->nullable();
 
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();

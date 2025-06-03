@@ -11,11 +11,11 @@ class Vehicle extends Model
 
     protected $fillable = [
         "plate_number",
+        'vehicle_name',
         "owner_name",
         "owner_phone",
         "owner_type",
         "libre",
-        "photo",
         "created_by",
         "updated_by",
     ];

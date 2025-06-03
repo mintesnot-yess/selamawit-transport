@@ -7,7 +7,7 @@
 
     <!-- Sidebar -->
     <aside :class="[
-        'fixed md:sticky top-0 w-64 bg-white border-r border-surface-200 h-screen flex flex-col z-50 transition-transform duration-300',
+        'fixed md:sticky top-0 w-fit bg-white border-r border-surface-200 h-screen flex flex-col z-50 transition-transform duration-300',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
     ]">
         <AppAside />
@@ -309,6 +309,7 @@ export default {
     async created() {
         await this.fetchBanks();
     },
+
     methods: {
         async fetchBanks(page = 1) {
             this.loadingBanks = true;

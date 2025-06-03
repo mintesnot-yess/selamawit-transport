@@ -8,6 +8,8 @@ import ForgotPassword from "@/pages/ForgotPassword.vue";
 import ResetPassword from "@/pages/ResetPassword.vue";
 import Banks from "@/pages/Banks.vue";
 import BankAccounts from "@/pages/BankAccounts.vue";
+import Vehicles from "@/pages/Vehicles.vue";
+import VehiclesDetail from "@/pages/VehiclesDetail.vue";
 
 
 const routes = [
@@ -27,7 +29,7 @@ const routes = [
     path: "/register",
     name: "Register",
     component: Register,
-    meta: { requiresAuth: true } // Prevent if authenticated
+    meta: { requiresAuth: false } // Prevent if authenticated
   },
   {
     path: '/forgot-password',
@@ -66,7 +68,20 @@ const routes = [
     name: "Bank Accounts",
     component: BankAccounts,
     meta: { requiresAuth: true } // Requires authentication
-  }
+  },
+  {
+    path: "/vehicles",
+    name: "Vehicles",
+    component: Vehicles,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/vehicle/:id",
+    name: "VehicleDetails",
+    component: VehiclesDetail,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+
 
 
 ];

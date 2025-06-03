@@ -50,10 +50,16 @@ Route::middleware("auth:sanctum")->group(function () {
         // Add other bank account routes as needed
     });
 
-    // Bank Account routes
-    // Route::apiResource('bank-accounts', BankAccountController::class)->except(['index', 'show']);
     // Vehicle routes
-    Route::apiResource('vehicles', VehicleController::class);
+    Route::prefix('vehicles')->group(function () {
+        Route::get('/', [VehicleController::class, 'index']);
+        Route::get('/{id}', [VehicleController::class, 'show']);
+        Route::post('/', [VehicleController::class, 'store']);
+        Route::get('/search', [VehicleController::class, 'search']);
+        Route::delete('/{id}', [VehicleController::class, 'destroy']);
+        Route::put('/{id}', [VehicleController::class, 'update']);
+        // Add other vehicle routes as needed
+    });
 
     // Customer routes
     Route::apiResource('customers', CustomerController::class);
