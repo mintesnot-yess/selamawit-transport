@@ -39,9 +39,19 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::delete('/{id}', [BankController::class, 'destroy']);
         Route::put('/{id}', [BankController::class, 'update']);
         // Add other bank routes as needed
+    }); // Bank Accounts routes
+
+    Route::prefix('bank-accounts')->group(function () {
+        Route::get('/{bankId}', [BankAccountController::class, 'index']);
+        Route::post('/', [BankAccountController::class, 'store']);
+        Route::get('/search/{id}', [BankAccountController::class, 'search']);
+        Route::delete('/{id}', [BankAccountController::class, 'destroy']);
+        Route::put('/{id}', [BankAccountController::class, 'update']);
+        // Add other bank account routes as needed
     });
+
     // Bank Account routes
-    Route::apiResource('bank-accounts', BankAccountController::class)->except(['index', 'show']);
+    // Route::apiResource('bank-accounts', BankAccountController::class)->except(['index', 'show']);
     // Vehicle routes
     Route::apiResource('vehicles', VehicleController::class);
 

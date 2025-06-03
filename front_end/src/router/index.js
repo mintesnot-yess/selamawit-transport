@@ -7,6 +7,7 @@ import Register from "@/pages/Register.vue";
 import ForgotPassword from "@/pages/ForgotPassword.vue";
 import ResetPassword from "@/pages/ResetPassword.vue";
 import Banks from "@/pages/Banks.vue";
+import BankAccounts from "@/pages/BankAccounts.vue";
 
 
 const routes = [
@@ -59,7 +60,14 @@ const routes = [
     component: Banks,
     meta: { requiresAuth: true } // Requires authentication
   },
-  // Authentication routes
+
+  {
+    path: "/bank-accounts/:id",
+    name: "Bank Accounts",
+    component: BankAccounts,
+    meta: { requiresAuth: true } // Requires authentication
+  }
+
 
 ];
 

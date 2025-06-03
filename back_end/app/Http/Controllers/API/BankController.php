@@ -7,6 +7,8 @@ use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+require_once app_path('Helpers/Logger.php');
+
 
 class BankController extends Controller
 {
@@ -27,6 +29,8 @@ class BankController extends Controller
             "created_by" => Auth::id(),
             "updated_by" => Auth::id(),
         ]);
+        log_action('Created ' . class_basename($bank) . ' #' . $bank->id);
+
 
         return response()->json(
             [
@@ -85,6 +89,8 @@ class BankController extends Controller
             }
 
             $bank->delete();
+            log_action('Deleted ' . class_basename($bank) . ' #' . $bank->id);
+
 
             return response()->json([
                 'success' => true,
@@ -122,6 +128,9 @@ class BankController extends Controller
         $bank->name = $request->name;
         $bank->updated_by = Auth::id();
         $bank->save();
+        log_action('Updated ' . class_basename($bank) . ' #' . $bank->id);
+
+
 
         return response()->json([
             'success' => true,

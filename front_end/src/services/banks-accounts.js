@@ -8,7 +8,7 @@ const bankService = {
 
     async getAll(params = {}) {
         try {
-            const response = await axios.get(`${API_BASE_URL}/banks`, {
+            const response = await axios.get(`${API_BASE_URL}/bank-accounts`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
                 },
@@ -24,9 +24,23 @@ const bankService = {
         }
     },
 
-    async search(params = {}) {
+    // Fetch a single bank account by ID
+    async getById(id) {
         try {
-            const response = await axios.get(`${API_BASE_URL}/banks/search`, {
+            const response = await axios.get(`${API_BASE_URL}/bank-accounts/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    },
+
+    async search(params = {}, id) {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/bank-accounts/search/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
                 },
@@ -45,7 +59,7 @@ const bankService = {
     // Create a new bank
     async store(bankData) {
         try {
-            const response = await axios.post(`${API_BASE_URL}/banks`, bankData, {
+            const response = await axios.post(`${API_BASE_URL}/bank-accounts`, bankData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
                     'Content-Type': 'application/json'
@@ -60,7 +74,7 @@ const bankService = {
     // Update a bank
     async update(id, bankData) {
         try {
-            const response = await axios.put(`${API_BASE_URL}/banks/${id}`, bankData, {
+            const response = await axios.put(`${API_BASE_URL}/bank-accounts/${id}`, bankData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
                     'Content-Type': 'application/json',
@@ -76,7 +90,7 @@ const bankService = {
     // Delete a bank
     async delete(id) {
         try {
-            const response = await axios.delete(`${API_BASE_URL}/banks/${id}`, {
+            const response = await axios.delete(`${API_BASE_URL}/bank-accounts/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
                 }

@@ -17,7 +17,10 @@ class BankAccountFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            "account_number" => fake()->bankAccountNumber(),
+            "bank_id" => 70, // Assuming you have a Bank factory
+            "created_by" => 10,
+            "updated_by" => 10,
         ];
     }
 }

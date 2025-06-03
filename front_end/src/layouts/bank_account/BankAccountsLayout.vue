@@ -51,20 +51,19 @@
                 <div class="px-6 py-4 border-b border-surface-200">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h2 class="text-lg font-semibold text-surface-900">Banks Accounts</h2>
+                            <h2 class="text-lg font-semibold text-surface-900">Banks</h2>
                             <p class="text-sm text-surface-500">
                                 <template v-if="isSearching">Searching...</template>
                                 <template v-else-if="searchError" class="text-red-500">{{ searchError }}</template>
                                 <template v-else>
-                                    Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} bank
-                                    Accounts
+                                    Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} banks
                                 </template>
                             </p>
                         </div>
                         <button @click="openAddBankForm"
                             class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
                             <i class="fas fa-plus"></i>
-                            <span>Add Bank Accounts</span>
+                            <span>Add Bank</span>
                         </button>
                     </div>
                 </div>
@@ -81,6 +80,10 @@
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
                                     Bank Name
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
+                                    Account Number
                                 </th>
                                 <th scope="col" class="relative px-6 py-3">
                                 </th>
@@ -122,17 +125,24 @@
                                                     src="@/assets/bank1.png" :alt="bank.name">
                                             </div>
                                             <div class="ml-4">
-                                                <router-link :to="`/bank-accounts/${bank.id}`"
-                                                    class="text-sm font-medium text-surface-900 hover:underline">{{
-                                                        bank.name
-                                                    }}</router-link>
+                                                <div class="text-sm font-medium text-surface-900">{{ bank.bank.name }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-surface-900">{{ bank.account_number
+                                                }}</div>
                                             </div>
                                         </div>
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/bank-accounts/${bank.id}`)"
-                                            @edit="editBank(bank)" @delete="confirmDelete(bank.id, bank.name)" />
+                                        <ToggleMenu @edit="editBank(bank)"
+                                            @delete="confirmDelete(bank.id, `${bank.bank.name + '_' + bank.account_number}`)" />
                                     </td>
                                 </tr>
                                 <tr v-if="banks.length === 0 && !loadingBanks">
@@ -195,11 +205,11 @@
                     <div id="side_form" class="md:max-w-md p-6 w-full h-full bg-white rounded-xl">
                         <div class="flex justify-between items-center mb-3">
                             <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
-                                Banks
+                                Bank Account
                             </h2>
                         </div>
                         <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
-                            Update Bank Information
+                            Fill Bank Accounts Information
                         </p>
 
                         <template v-if="isUpdating">
@@ -208,16 +218,16 @@
                                 <div>
                                     <label for="siteName"
                                         class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Bank Name</label>
-                                    <input v-model="form.name" id="siteName" type="text"
+                                        Account Number</label>
+                                    <input v-model="form.account_number" id="siteName" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Bank name" />
+                                        placeholder="Account Number" />
                                     <input type="number" v-model="form.id" hidden>
                                 </div>
                                 <div v-if="success" class="text-blue-600 text-sm ">
                                     {{ success }}
                                 </div>
-                                <div v-else class="text-red-500 text-sm ">
+                                <div v-if="error" class="text-red-500 text-sm ">
                                     {{ error }}
                                 </div>
                                 <!-- Submit Button -->
@@ -233,12 +243,15 @@
                                 <div>
                                     <label for="siteName"
                                         class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Bank Name</label>
-                                    <input v-model="form.name" id="siteName" type="text"
+                                        Account Number</label>
+                                    <input v-model="form.account_number" id="siteName" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Bank name" />
+                                        placeholder="Enter Account Number" />
+                                    <input type="number" v-model="form.bank_id" hidden>
                                 </div>
                                 <!-- Error Message -->
+
+
                                 <div v-if="error" class="text-red-500 text-sm ">
                                     {{ error }}
                                 </div>
@@ -258,10 +271,9 @@
 </template>
 
 <script>
-import bankService from '@/services/banks';
+import bankService from '@/services/banks-accounts';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
-// import Forms from "./components/Forms.vue";
 import ToggleMenu from "./components/ToggleMenu.vue";
 import { debounce } from 'lodash';
 
@@ -274,7 +286,8 @@ export default {
     data() {
         return {
             form: {
-                name: "",
+                account_number: "",
+                bank_id: null,
                 active: true,
                 isMenuOpen: false,
                 created_by: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).id : null, // user id from localStorage
@@ -285,6 +298,7 @@ export default {
             loadingBanks: false,
             error: null,
             success: null,
+
             editingBank: null,
             searchQuery: '',
             isSearching: false,
@@ -314,16 +328,22 @@ export default {
 
             this.loading = true;
             this.error = null;
-            // If editingBank is set, update the bank, else create new
+            const bankId = this.$route.params.id;
+            // add id from inform
+            if (bankId) {
+                this.form.bank_id = bankId;
+            } else {
+                this.form.bank_id = null; // Ensure id is null if not provided
+            }
 
             try {
                 const response = await bankService.store(this.form);
-                await this.fetchBanks();
-                this.$router.push('banks');
 
 
-                this.form.name = "";
+                this.form.account_number = "";
                 this.isSideFormVisible = false;
+                await this.fetchBanks();
+
 
 
             } catch (error) {
@@ -337,39 +357,35 @@ export default {
             this.loading = true;
             this.error = null;
             this.success = null;
-            // If editingBank is set, update the bank, else create new
 
             try {
                 const response = await bankService.update(this.form.id, this.form);
+
                 await this.fetchBanks();
-                this.success = "Bank updated successfully"
-
-
-
+                this.success = "Bank Account updated successfully"
 
             } catch (error) {
                 this.error = error.response?.data?.message || error.message || "Failed to save bank information";
-                console.error("Bank save error:", error);
+                console.error("Bank  account save error:", error);
             } finally {
                 this.loading = false;
+
             }
         },
         async fetchBanks(page = 1) {
             this.loadingBanks = true;
             try {
-                const response = await bankService.getAll({
-                    page: page,
-                    perPage: this.pagination.per_page,
-                    search: this.searchQuery
-                });
 
-                // Debug the response structure
+                const bankId = this.$route.params.id;
+                // If bankId is provided, fetch a specific bank
 
-                // Handle different response structures
+                const response = await bankService.getById(bankId);
+
                 if (response.data && response.meta) {
-                    // Standard Laravel API Resource response
                     this.banks = response.data;
                     this.updatePagination(response.meta);
+                    this.fetchBanks();
+
                 } else if (Array.isArray(response)) {
                     // Simple array response
                     this.banks = response;
@@ -393,6 +409,8 @@ export default {
                         to: this.banks.length
                     });
                 }
+
+
             } catch (error) {
                 console.error('Error fetching banks:', error);
                 this.error = error.message;
@@ -402,6 +420,7 @@ export default {
                 this.loadingBanks = false;
             }
         },
+
 
         updatePagination(meta) {
             this.pagination = {
@@ -425,13 +444,15 @@ export default {
 
             this.isSearching = true;
             this.searchError = null;
+            const bankId = this.$route.params.id;
+
 
             try {
                 const response = await bankService.search({
                     query: this.searchQuery,
                     page: this.pagination.current_page,
                     perPage: this.pagination.per_page
-                });
+                }, this.$route.params.bankId);
 
                 if (response.success) {
                     this.banks = response.data;
@@ -507,7 +528,6 @@ export default {
 
         openAddBankForm() {
             this.isUpdating = false;
-
             this.resetForm();
             this.isSideFormVisible = true;
         },
@@ -545,7 +565,8 @@ export default {
         editBank(bank) {
             this.isUpdating = true;
             this.form = {
-                name: bank.name,
+                account_number: bank.account_number,
+                bank_id: bank.bank.id,
                 id: bank.id,
             };
             this.isSideFormVisible = true;
@@ -553,7 +574,7 @@ export default {
         },
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} bank?`)) {
+            if (confirm(`Are you sure you want to delete ${name}`)) {
                 try {
                     await bankService.delete(id);
                     await this.fetchBanks();

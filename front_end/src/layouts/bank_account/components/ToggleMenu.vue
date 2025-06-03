@@ -19,24 +19,16 @@
             <div v-show="isOpen"
                 class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div class="py-1">
-                    <button @click="handleAction('show')"
-                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-                        <i class="fas fa-eye mr-3  "></i>
-                        <span>Show</span>
-                    </button>
-
                     <button @click="handleAction('edit')"
                         class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                         <i class="fas fa-edit mr-3  "></i>
                         <span>Edit</span>
                     </button>
-
                     <button @click="handleAction('delete')"
                         class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                         <i class="fas fa-trash mr-3  "></i>
                         <span>Delete</span>
                     </button>
-
                 </div>
             </div>
         </transition>
