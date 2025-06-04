@@ -274,6 +274,7 @@
                             <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
                                 Update vehicle information
                             </p>
+
                             <form @submit.prevent="handleSubmitUpdate" class="space-y-6 font-['Inter']">
                                 <div>
                                     <label for="vehicle_name" class="block text-sm font-medium text-gray-800 mb-1">
@@ -356,7 +357,9 @@
                                     <span v-else>Processing...</span>
                                 </button>
                             </form>
+
                         </template>
+
                         <template v-else>
                             <div class="flex justify-between items-center mb-3">
                                 <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
@@ -366,6 +369,7 @@
                             <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
                                 Fill vehicle Information
                             </p>
+
                             <form @submit.prevent="handleSubmitAdd" enctype="multipart/form-data"
                                 class="space-y-6 font-['Inter']">
                                 <div>

@@ -102,6 +102,8 @@ class ExpenseController extends Controller
         ], 201);
 
     }
+
+
     public function update(Request $request, $id)
     {
         $expense = Expense::find($id);
@@ -111,12 +113,33 @@ class ExpenseController extends Controller
         }
 
         $validated = $request->validate([
-            "expense_type_id" => "required|exists:expense_types,id",
-            "vehicle_id" => "required|exists:vehicles,id",
-            "employee_id" => "required|exists:employees,id",
+            "General_category" => "nullable|exists:expense_types,id",
+            "employees_category" => "nullable|exists:expense_types,id",
+            "vehicle_category" => "nullable|exists:expense_types,id",
+            "vehicle_id" => "nullable|exists:vehicles,id",
+            "employee_id" => "nullable|exists:employees,id",
+            "selectedBank" => "nullable|exists:banks,id",
+            "selectedAccount" => "nullable|exists:bank_accounts,id",
+            "toBank" => "nullable|exists:banks,id",
+            "toAccount" => "string|nullable",
             "amount" => "required|numeric",
             "paid_date" => "required|date",
+            "remark" => "nullable|string",
+            "file" => "nullable|max:2048",
         ]);
+
+        // Set expense_type_id based on which category is provided
+        $validated['expense_type_id'] = $request->General_category ?? $request->employees_category ?? $request->vehicle_category;
+
+        // Set from_bank and to_bank fields, retain existing if not provided
+        $validated['from_bank'] = $request->has('selectedBank') && $request->selectedBank !== null ? $request->selectedBank : $expense->from_bank;
+        $validated['from_account'] = $request->has('selectedAccount') && $request->selectedAccount !== null ? $request->selectedAccount : $expense->from_account;
+        $validated['to_bank'] = $request->has('toBank') && $request->toBank !== null ? $request->toBank : $expense->to_bank;
+
+        // Handle file upload if present
+        if ($request->hasFile('file')) {
+            $validated['file'] = $request->file('file')->store('expenses', 'public');
+        }
 
         $validated['updated_by'] = Auth::id();
 

@@ -62,6 +62,10 @@ const expenseService = {
     // Create a new expense
     async store(expenseData) {
         try {
+            const formData = new FormData();
+            for (const key in expenseData) {
+                formData.append(key, expenseData[key]);
+            }
             const response = await axios.post(`${API_BASE_URL}/expenses`, expenseData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,

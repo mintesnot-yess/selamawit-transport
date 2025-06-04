@@ -291,89 +291,307 @@
                             <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
                                 Update expense information
                             </p>
-                            <form @submit.prevent="handleSubmitUpdate" class="space-y-6 font-['Inter']">
-                                <div>
-                                    <label for="expense_name" class="block text-sm font-medium text-gray-800 mb-1">
-                                        expense Name
-                                    </label>
-                                    <input v-model="form.expense_name" id="expense_name" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter expense name" />
+
+                            <form @submit.prevent="handleSubmitUpdate" enctype="multipart/form-data"
+                                class="space-y-6 font-['Inter']">
+
+                                <div class="space-y-6 max-w-3xl mx-auto">
+                                    <!-- Main Category Selector -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Expense
+                                            Category</label>
+                                        <div class="grid grid-cols-3 gap-3">
+                                            <label v-for="option in categoryOptions" :key="option.value" :class="{
+                                                'border-blue-500 bg-blue-50 shadow-inner': form.expense_category === option.value,
+                                                'border-gray-200': form.expense_category !== option.value
+                                            }"
+                                                class="cursor-pointer rounded-lg border p-4 transition-all duration-200 hover:border-blue-400 hover:shadow-sm">
+                                                <input type="radio" v-model="form.expense_category"
+                                                    :value="option.value" class="hidden" @change="resetSubCategories">
+                                                <div class="flex flex-col items-center gap-2">
+                                                    <span :class="{
+                                                        'text-blue-600': form.expense_category === option.value,
+                                                        'text-gray-600': form.expense_category !== option.value
+                                                    }" class="text-2xl">
+                                                        <i :class="option.icon"></i>
+                                                    </span>
+                                                    <span :class="{
+                                                        'text-blue-700': form.expense_category === option.value,
+                                                        'text-gray-700': form.expense_category !== option.value
+                                                    }" class="text-sm font-medium">
+                                                        {{ option.label }}
+                                                    </span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dynamic Subcategory Sections with Animation -->
+                                    <transition enter-active-class="transition-all duration-300 ease-out"
+                                        enter-from-class="opacity-0 scale-95 translate-y-1"
+                                        enter-to-class="opacity-100 scale-100 translate-y-0"
+                                        leave-active-class="transition-all duration-200 ease-in"
+                                        leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95"
+                                        mode="out-in">
+
+                                        <!-- General Expenses -->
+                                        <div v-if="form.expense_category === 'General'" key="general"
+                                            class="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">General Expense
+                                                Type</label>
+                                            <div class="relative">
+                                                <select v-model="form.General_category"
+                                                    class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                                    <option value="" disabled>Select expense type</option>
+                                                    <option v-for="cat in CategoryGeneral" :key="cat.id"
+                                                        :value="cat.id">
+                                                        {{ cat.name }}
+                                                    </option>
+                                                </select>
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Vehicle Expenses -->
+                                        <div v-else-if="form.expense_category === 'Vehicle'" key="vehicle"
+                                            class="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                                            <div class="grid grid-cols-1 gap-4">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select
+                                                        Vehicle</label>
+                                                    <div class="relative">
+                                                        <select v-model="form.vehicles_id"
+                                                            class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                                            <option value="" disabled>Choose vehicle</option>
+                                                            <option v-for="cat in AllVehicles" :key="cat.id"
+                                                                :value="cat.id">
+                                                                {{ cat.plate_number }}
+                                                            </option>
+                                                        </select>
+                                                        <div
+                                                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                            <i class="fas fa-chevron-down"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Vehicle
+                                                        Expense Type</label>
+                                                    <div class="relative">
+                                                        <select v-model="form.vehicle_category"
+                                                            class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                                            <option value="" disabled>Select vehicle expense</option>
+                                                            <option v-for="cat in CategoryVehicle" :key="cat.id"
+                                                                :value="cat.id">
+                                                                {{ cat.name }}
+                                                            </option>
+                                                        </select>
+                                                        <div
+                                                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                            <i class="fas fa-chevron-down"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+
+                                        <!-- Employee Expenses -->
+                                        <div v-else-if="form.expense_category === 'Employee'" key="employee"
+                                            class="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                                            <div class="grid grid-cols-1 gap-4">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                        Select Employee
+                                                    </label>
+                                                    <div class="relative">
+                                                        <select v-model="form.employees_id"
+                                                            class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                                            <option value="" disabled>Choose employee</option>
+                                                            <option v-for="cat in AllEmployees" :key="cat.id"
+                                                                :value="cat.id">
+                                                                {{ cat.first_name }} {{ cat.last_name }}
+                                                            </option>
+                                                        </select>
+                                                        <div
+                                                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                            <i class="fas fa-chevron-down"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select
+                                                        Vehicle</label>
+                                                    <div class="relative">
+                                                        <select v-model="form.employees_category"
+                                                            class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                                            <option value="" disabled>Choose vehicle</option>
+                                                            <option v-for="cat in CategoryEmployee" :key="cat.id"
+                                                                :value="cat.id">
+                                                                {{ cat.name }}
+                                                            </option>
+                                                        </select>
+                                                        <div
+                                                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                            <i class="fas fa-chevron-down"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </transition>
                                 </div>
-                                <div>
-                                    <label for="plate_number" class="block text-sm font-medium text-gray-800 mb-1">
-                                        Plate Number
-                                    </label>
-                                    <input v-model="form.plate_number" id="plate_number" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter plate number" />
+
+                                <div class="space-y-6 max-w-3xl mx-auto">
+                                    <!-- Bank Selection Section -->
+                                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">From Bank
+                                            </label>
+                                            <div class="relative">
+                                                <select v-model="form.selectedBank" @change="filterBankAccounts"
+                                                    class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                                    <option value="">select bank</option>
+                                                    <option v-for="bank in AllBanks" :key="bank.id" :value="bank.id">
+                                                        {{ bank.name }}
+                                                    </option>
+                                                </select>
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Bank Account Selection -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">From Account
+                                            </label>
+                                            <div class="relative">
+                                                <select v-model="form.selectedAccount"
+                                                    class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                                    :disabled="!filteredAccounts.length">
+                                                    <option value="" disabled>Select account</option>
+                                                    <option v-for="account in filteredAccounts" :key="account.id"
+                                                        :value="account.id">
+                                                        {{ account.account_number }} - {{ account.account_name }}
+                                                        <template v-if="!selectedBank">
+                                                            ({{ getBankName(account.bank_id) }})
+                                                        </template>
+                                                    </option>
+                                                </select>
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <p v-if="!filteredAccounts.length" class="mt-1 text-sm text-gray-500">
+                                                No accounts available for selected bank
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">To Bank </label>
+                                            <div class="relative">
+                                                <select v-model="form.toBank"
+                                                    class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                                    <option v-for="bank in AllBanks" :key="bank.id" :value="bank.id">
+                                                        {{ bank.name }}
+                                                    </option>
+                                                </select>
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">To Account
+                                            </label>
+
+                                            <input v-model="form.toAccount" id="owner_name" type="text"
+                                                class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                                placeholder="Enter Amount" />
+                                        </div>
+                                    </div>
                                 </div>
+
                                 <div>
-                                    <label for="owner_name" class="block text-sm font-medium text-gray-800 mb-1">
-                                        Owner Name
+                                    <label for="amount" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Amount
                                     </label>
-                                    <input v-model="form.owner_name" id="owner_name" type="text"
+                                    <input v-model="form.amount" id="amount" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter owner name" />
+                                        placeholder="Enter Amount" />
                                 </div>
+
+
                                 <div>
-                                    <label for="owner_phone" class="block text-sm font-medium text-gray-800 mb-1">
-                                        Owner Phone
+                                    <label for="date" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Date
                                     </label>
-                                    <input v-model="form.owner_phone" id="owner_phone" type="text"
+                                    <input v-model="form.paid_date" id="date" type="date"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
                                         placeholder="Enter owner phone" />
                                 </div>
                                 <div>
-                                    <label for="owner_type" class="block text-sm font-medium text-gray-800 mb-1">
-                                        Owner Type
+                                    <label for="remark" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Remark
                                     </label>
-                                    <div class="relative">
-                                        <select v-model="form.owner_type" id="owner_type"
-                                            class="w-full appearance-none rounded-xl border border-gray-300/80 px-4 py-3 pr-10 text-gray-900 bg-white/95 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200">
-                                            <option value="">Select type</option>
-                                            <option value="OWNED">OWNED</option>
-                                            <option value="PRIVATE">PRIVATE</option>
-                                        </select>
-                                        <span
-                                            class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </span>
-                                    </div>
+                                    <input v-model="form.remark" id="remark" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter owner phone" />
                                 </div>
                                 <div>
-                                    <label for="libre_input" class="block text-sm font-medium text-gray-800 mb-1">
-                                        Libre
+                                    <label for="file" class="block text-sm font-medium text-gray-800 mb-1">
+                                        File
                                     </label>
                                     <div class="relative flex items-center">
                                         <input id="libre_input" type="file" class="sr-only"
-                                            @change="form.libre = $event.target.files[0]" />
+                                            @change="form.file = $event.target.files[0]" />
                                         <label for="libre_input"
                                             class="flex items-center justify-center w-full px-4 py-2 bg-white border border-gray-300/80 rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-all duration-200 text-gray-700">
                                             <i class="fas fa-upload mr-2 text-blue-500"></i>
                                             <span>
-                                                {{ form.libre && form.libre.name ? form.libre.name : 'Choose file...' }}
+                                                {{ form.file ? form.file.name : 'Choose file...' }}
                                             </span>
                                         </label>
                                     </div>
+
+
+
                                 </div>
-                                <div v-if="success" class="text-blue-600 text-sm">
-                                    {{ success }}
-                                </div>
-                                <div v-else-if="error" class="text-red-500 text-sm">
+                                <div v-if="error" class="text-red-500 text-sm">
                                     {{ error }}
                                 </div>
                                 <button :disabled="loading" type="submit"
                                     class="mt-2 w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed">
-                                    <span v-if="!loading">Update</span>
+                                    <span v-if="!loading">SAVE</span>
                                     <span v-else>Processing...</span>
                                 </button>
                             </form>
                         </template>
+
                         <template v-else>
                             <div class="flex justify-between items-center mb-3">
                                 <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
@@ -654,11 +872,11 @@
                                         placeholder="Enter owner phone" />
                                 </div>
                                 <div>
-                                    <label for="file_input" class="block text-sm font-medium text-gray-800 mb-1">
+                                    <label for="file" class="block text-sm font-medium text-gray-800 mb-1">
                                         File
                                     </label>
                                     <div class="relative flex items-center">
-                                        <input id="file_input" type="file" class="sr-only"
+                                        <input id="libre_input" type="file" class="sr-only"
                                             @change="form.file = $event.target.files[0]" />
                                         <label for="libre_input"
                                             class="flex items-center justify-center w-full px-4 py-2 bg-white border border-gray-300/80 rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-all duration-200 text-gray-700">
@@ -713,6 +931,7 @@ export default {
     data() {
         return {
             form: {
+                id: null,
                 General_category: '',
                 vehicles_id: '',
                 vehicle_category: '',
@@ -726,6 +945,7 @@ export default {
                 paid_date: '',
                 remark: '',
                 file: null,
+
 
 
 
@@ -852,16 +1072,28 @@ export default {
         },
 
         editVehicle(expense) {
+
             this.isUpdating = true;
             this.form = {
                 id: expense.id,
-                plate_number: expense.plate_number || "",
-                expense_name: expense.expense_name || "",
-                owner_name: expense.owner_name || "",
-                owner_phone: expense.owner_phone || "",
-                owner_type: expense.owner_type || "",
-                libre: expense.libre || "",
-                // active: expense.active !== undefined ? expense.active : true,
+                General_category: expense.expense_type && expense.expense_type.category === 'General' ? expense.expense_type.id : '',
+                // Always set expense_type_id for all categories
+                expense_type_id: expense.expense_type ? expense.expense_type.id : '',
+                vehicles_id: expense.expense_type && expense.expense_type.category === 'Vehicle' ? expense.vehicles_id || expense.vehicle_id || '' : '',
+                vehicle_category: expense.expense_type && expense.expense_type.category === 'Vehicle' ? expense.expense_type.id : '',
+                employees_id: expense.expense_type && expense.expense_type.category === 'Employee' ? expense.employees_id : '',
+                employees_category: expense.expense_type && expense.expense_type.category === 'Employee' ? expense.expense_type.id : '',
+                // Ensure required fields are set for validation
+                expense_category: expense.expense_type ? expense.expense_type.category : '',
+                selectedBank: expense.from_bank ? expense.from_bank.id : '',
+                selectedAccount: expense.from_account ? expense.from_account.id : '',
+                toAccount: expense.to_account || '',
+                toBank: expense.to_bank ? expense.to_bank.id : '',
+                amount: expense.amount || '',
+                paid_date: expense.paid_date ? expense.paid_date.substring(0, 10) : '',
+                remark: expense.remark || '',
+                file: null,
+                expense_category: expense.expense_type ? expense.expense_type.category : '',
 
             };
             this.isSideFormVisible = true;
