@@ -177,7 +177,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
                                         data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            expense.expense_type.category + " | " + expense.expense_type.category
+                                            expense.expense_type.category + " | " + expense.expense_type.name
                                         }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
@@ -193,13 +193,13 @@
 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
                                         data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            expense.from_bank.name + " | " + expense.to_account
+                                            expense.from_bank.name + " | " + expense.from_account.account_number
                                         }}
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
                                         data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            expense.to_bank.name + " | " + expense.from_account.account_number
+                                            expense.to_bank.name + " | " + expense.to_account
                                         }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
@@ -424,13 +424,14 @@
                                         leave-active-class="transition-all duration-200 ease-in"
                                         leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95"
                                         mode="out-in">
+
                                         <!-- General Expenses -->
                                         <div v-if="form.expense_category === 'General'" key="general"
                                             class="p-4 rounded-xl bg-gray-50 border border-gray-100">
                                             <label class="block text-sm font-medium text-gray-700 mb-2">General Expense
                                                 Type</label>
                                             <div class="relative">
-                                                <select v-model="form.expense_type_id"
+                                                <select v-model="form.General_category"
                                                     class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                                                     <option value="" disabled>Select expense type</option>
                                                     <option v-for="cat in CategoryGeneral" :key="cat.id"
@@ -450,10 +451,28 @@
                                             class="p-4 rounded-xl bg-gray-50 border border-gray-100">
                                             <div class="grid grid-cols-1 gap-4">
                                                 <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select
+                                                        Vehicle</label>
+                                                    <div class="relative">
+                                                        <select v-model="form.vehicles_id"
+                                                            class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                                            <option value="" disabled>Choose vehicle</option>
+                                                            <option v-for="cat in AllVehicles" :key="cat.id"
+                                                                :value="cat.id">
+                                                                {{ cat.plate_number }}
+                                                            </option>
+                                                        </select>
+                                                        <div
+                                                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                                            <i class="fas fa-chevron-down"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div>
                                                     <label class="block text-sm font-medium text-gray-700 mb-2">Vehicle
                                                         Expense Type</label>
                                                     <div class="relative">
-                                                        <select v-model="form.expense_type_id"
+                                                        <select v-model="form.vehicle_category"
                                                             class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                                                             <option value="" disabled>Select vehicle expense</option>
                                                             <option v-for="cat in CategoryVehicle" :key="cat.id"
@@ -468,24 +487,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select
-                                                        Vehicle</label>
-                                                    <div class="relative">
-                                                        <select v-model="form.expense_category"
-                                                            class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
-                                                            <option value="" disabled>Choose vehicle</option>
-                                                            <option v-for="cat in AllVehicles" :key="cat.id"
-                                                                :value="cat.id">
-                                                                {{ cat.plate_number }}
-                                                            </option>
-                                                        </select>
-                                                        <div
-                                                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-                                                            <i class="fas fa-chevron-down"></i>
-                                                        </div>
-                                                    </div>
-                                                </div>
+
                                             </div>
                                         </div>
 
@@ -498,7 +500,7 @@
                                                         Select Employee
                                                     </label>
                                                     <div class="relative">
-                                                        <select v-model="form.expense_type_id"
+                                                        <select v-model="form.employees_id"
                                                             class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                                                             <option value="" disabled>Choose employee</option>
                                                             <option v-for="cat in AllEmployees" :key="cat.id"
@@ -512,11 +514,12 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-700 mb-2">Select
                                                         Vehicle</label>
                                                     <div class="relative">
-                                                        <select v-model="form.expense_type_id"
+                                                        <select v-model="form.employees_category"
                                                             class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                                                             <option value="" disabled>Choose vehicle</option>
                                                             <option v-for="cat in CategoryEmployee" :key="cat.id"
@@ -542,9 +545,9 @@
                                             <label class="block text-sm font-medium text-gray-700 mb-2">From Bank
                                             </label>
                                             <div class="relative">
-                                                <select v-model="selectedBank" @change="filterBankAccounts"
+                                                <select v-model="form.selectedBank" @change="filterBankAccounts"
                                                     class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
-                                                    <option value="">All Banks</option>
+                                                    <option value="">select bank</option>
                                                     <option v-for="bank in AllBanks" :key="bank.id" :value="bank.id">
                                                         {{ bank.name }}
                                                     </option>
@@ -566,7 +569,7 @@
                                             <label class="block text-sm font-medium text-gray-700 mb-2">From Account
                                             </label>
                                             <div class="relative">
-                                                <select v-model="selectedAccount"
+                                                <select v-model="form.selectedAccount"
                                                     class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                                                     :disabled="!filteredAccounts.length">
                                                     <option value="" disabled>Select account</option>
@@ -596,7 +599,7 @@
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">To Bank </label>
                                             <div class="relative">
-                                                <select v-model="toBank"
+                                                <select v-model="form.toBank"
                                                     class="w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                                                     <option v-for="bank in AllBanks" :key="bank.id" :value="bank.id">
                                                         {{ bank.name }}
@@ -617,7 +620,7 @@
                                             <label class="block text-sm font-medium text-gray-700 mb-2">To Account
                                             </label>
 
-                                            <input v-model="form.to_account_number" id="owner_name" type="text"
+                                            <input v-model="form.toAccount" id="owner_name" type="text"
                                                 class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
                                                 placeholder="Enter Amount" />
                                         </div>
@@ -625,43 +628,43 @@
                                 </div>
 
                                 <div>
-                                    <label for="owner_name" class="block text-sm font-medium text-gray-800 mb-1">
+                                    <label for="amount" class="block text-sm font-medium text-gray-800 mb-1">
                                         Amount
                                     </label>
-                                    <input v-model="form.owner_name" id="owner_name" type="text"
+                                    <input v-model="form.amount" id="amount" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
                                         placeholder="Enter Amount" />
                                 </div>
 
 
                                 <div>
-                                    <label for="owner_phone" class="block text-sm font-medium text-gray-800 mb-1">
+                                    <label for="date" class="block text-sm font-medium text-gray-800 mb-1">
                                         Date
                                     </label>
-                                    <input v-model="form.owner_phone" id="owner_phone" type="date"
+                                    <input v-model="form.paid_date" id="date" type="date"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
                                         placeholder="Enter owner phone" />
                                 </div>
                                 <div>
-                                    <label for="owner_type" class="block text-sm font-medium text-gray-800 mb-1">
+                                    <label for="remark" class="block text-sm font-medium text-gray-800 mb-1">
                                         Remark
                                     </label>
-                                    <input v-model="form.owner_phone" id="owner_phone" type="text"
+                                    <input v-model="form.remark" id="remark" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
                                         placeholder="Enter owner phone" />
                                 </div>
                                 <div>
-                                    <label for="libre_input" class="block text-sm font-medium text-gray-800 mb-1">
+                                    <label for="file_input" class="block text-sm font-medium text-gray-800 mb-1">
                                         File
                                     </label>
                                     <div class="relative flex items-center">
-                                        <input id="libre_input" type="file" class="sr-only"
-                                            @change="form.libre = $event.target.files[0]" />
+                                        <input id="file_input" type="file" class="sr-only"
+                                            @change="form.file = $event.target.files[0]" />
                                         <label for="libre_input"
                                             class="flex items-center justify-center w-full px-4 py-2 bg-white border border-gray-300/80 rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-all duration-200 text-gray-700">
                                             <i class="fas fa-upload mr-2 text-blue-500"></i>
                                             <span>
-                                                {{ form.libre ? form.libre.name : 'Choose file...' }}
+                                                {{ form.file ? form.file.name : 'Choose file...' }}
                                             </span>
                                         </label>
                                     </div>
@@ -710,20 +713,21 @@ export default {
     data() {
         return {
             form: {
-                id: "",
-                expense_type_id: "",
-                selectedBank: "",
+                General_category: '',
+                vehicles_id: '',
+                vehicle_category: '',
+                employees_id: '',
+                employees_category: '',
+                selectedBank: '',
                 selectedAccount: '',
+                toAccount: '',
                 toBank: '',
+                amount: '',
+                paid_date: '',
+                remark: '',
+                file: null,
 
-                expense_name: "",
-                expense_number: "",
-                owner_name: "",
-                owner_phone: "",
-                owner_type: "",
-                libre: "",
-                active: true,
-                isMenuOpen: false,
+
 
             },
             categoryOptions: [
@@ -829,12 +833,13 @@ export default {
             // If editingVehicle is set, update the expense, else create new
 
             try {
+
+
                 const response = await expenseService.store(this.form);
                 await this.fetchVehicles();
-                this.$router.push('expenses');
+                console.log(this.form);
 
 
-                this.form.name = "";
                 this.isSideFormVisible = false;
 
 
@@ -1073,7 +1078,7 @@ export default {
             }
         },
         filterBankAccounts() {
-            // Ensure allAccounts is an array before filtering
+            // Ensure AllBankAccounts is an array before filtering
             if (!Array.isArray(this.AllBankAccounts)) {
                 this.AllBankAccounts = [];
             }
@@ -1081,7 +1086,7 @@ export default {
             if (!this.selectedBank) {
                 this.filteredAccounts = [...this.AllBankAccounts]; // Now safe to spread
             } else {
-                this.filteredAccounts = this.allAccounts.filter(
+                this.filteredAccounts = this.AllBankAccounts.filter(
                     account => account.bank_id === this.selectedBank
                 );
             }
@@ -1160,72 +1165,9 @@ export default {
 
 .pagination-info {
     font-size: 0.9rem;
-    color: #666;
+    color: #5f5f5f;
 }
 
-.expense-form-container {
-    @apply space-y-6 max-w-3xl mx-auto;
-}
-
-/* Form Labels */
-.form-label {
-    @apply block text-sm font-medium text-gray-700 mb-2;
-}
-
-/* Radio Group Styling */
-.radio-group {
-    @apply grid grid-cols-3 gap-3;
-}
-
-.radio-option {
-    @apply cursor-pointer rounded-lg border border-gray-200 p-4 transition-all duration-200;
-}
-
-.radio-option:hover {
-    @apply border-blue-400 shadow-sm;
-}
-
-.radio-option.active {
-    @apply border-blue-500 bg-blue-50 shadow-inner;
-}
-
-.radio-content {
-    @apply flex flex-col items-center gap-2;
-}
-
-.radio-icon {
-    @apply text-2xl text-gray-600;
-}
-
-.radio-option.active .radio-icon {
-    @apply text-blue-600;
-}
-
-.radio-label {
-    @apply text-sm font-medium text-gray-700;
-}
-
-.radio-option.active .radio-label {
-    @apply text-blue-700;
-}
-
-/* Custom Select Styling */
-.custom-select {
-    @apply relative;
-}
-
-.select-input {
-    @apply w-full appearance-none rounded-lg border border-gray-300 px-4 py-3 pr-10 text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200;
-}
-
-.select-arrow {
-    @apply pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400;
-}
-
-/* Subcategory Sections */
-.subcategory-section {
-    @apply p-4 rounded-xl bg-gray-50 border border-gray-100;
-}
 
 /* Animations */
 .fade-grow-enter-active,

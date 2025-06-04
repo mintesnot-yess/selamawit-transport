@@ -64,19 +64,33 @@ class ExpenseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "expense_type_id" => "required|exists:expense_types,id",
-            "vehicle_id" => "required|exists:vehicles,id",
-            "employee_id" => "required|exists:employees,id",
+            "General_category" => "nullable:expense_types,id",
+            "employees_category" => "nullable:expense_types,id",
+            "vehicle_category" => "nullable:expense_types,id",
+            "vehicle_id" => "nullable|exists:vehicles,id",
+            "employee_id" => "nullable|exists:employees,id",
+            "selectedBank" => "nullable|exists:banks,id",
+            "selectedAccount" => "nullable|exists:bank_accounts,id",
+            "toBank" => "nullable|exists:banks,id",
+            "toAccount" => "string|nullable",
             "amount" => "required|numeric",
             "paid_date" => "required|date",
+            "remark" => "nullable|string",
+            "file" => "nullable|max:2048",
         ]);
 
         $expense = Expense::create([
-            "expense_type_id" => $request->expense_type_id,
+            "expense_type_id" => $request->General_category ?? $request->employees_category ?? $request->vehicle_category,
             "vehicle_id" => $request->vehicle_id,
             "employee_id" => $request->employee_id,
+            "from_account" => $request->selectedAccount,
+            "to_account" => $request->toAccount,
+            "to_bank" => $request->toBank,
+            "from_bank" => $request->selectedBank,
             "amount" => $request->amount,
             "paid_date" => $request->paid_date,
+            "remark" => $request->remark,
+            "file" => $request->file('file') ? $request->file('file')->store('expenses', 'public') : null,
             "created_by" => Auth::id(),
             "updated_by" => Auth::id(),
         ]);
@@ -86,6 +100,7 @@ class ExpenseController extends Controller
             'data' => $expense,
             'message' => 'Expense  created successfully.'
         ], 201);
+
     }
     public function update(Request $request, $id)
     {
