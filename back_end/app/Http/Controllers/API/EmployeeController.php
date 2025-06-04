@@ -13,7 +13,6 @@ class EmployeeController extends Controller
     public function index()
     {
         $employees = Employee::all();
-
         $perPage = request()->input('per_page', 15);
         $employees = Employee::paginate($perPage);
 
@@ -74,7 +73,7 @@ class EmployeeController extends Controller
             "last_name" => "sometimes|string|max:255",
             "email" => "sometimes|email|unique:employees,email," . $employee->id,
             "phone" => "sometimes|string|max:20",
-            "type" => "sometimes|in:STUFF,DRIVER,MANAGER",
+            "type" => "sometimes|in:STUFF,DRIVER,MECHANIC",
         ]);
 
         if ($validator->fails()) {

@@ -9,20 +9,16 @@ return new class extends Migration {
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->unsignedInteger('id')->autoIncrement();
-            // $table->unsignedInteger('expense_type_id');
-            // 
-            $table->foreignId('expense_type_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('employee_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
 
+            $table->foreignId('expense_type_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('vehicle_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('employee_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
 
 
             $table->foreignId('from_account')->constrained('bank_accounts')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('to_account')->constrained('bank_accounts')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('to_account')->nullable();
             $table->foreignId('to_bank')->constrained('banks')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('from_bank')->constrained('banks')->cascadeOnDelete()->cascadeOnUpdate();
-
-
 
             $table->decimal('amount', 12, 2);
             $table->date('paid_date');
@@ -31,7 +27,6 @@ return new class extends Migration {
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
-
 
 
 

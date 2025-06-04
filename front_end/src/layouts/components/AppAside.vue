@@ -11,12 +11,11 @@
         <button @click="sidebarCollapse"
             class="p-2 rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 hidden md:flex">
             <img src="../../assets/sidebar-close.svg" class="w-5 opacity-70   " alt="">
-
         </button>
 
     </div>
 
-    <nav class="flex-1 overflow-y-auto px-4 py-6 text-sm text-surface-600 scrollbar-hide">
+    <nav class="flex-1 overflow-y-auto px-4 py-6 text-sm text-surface-600 scrollbar-hide ">
         <div class="mb-8">
             <p class="text-xs font-medium uppercase mb-3 text-surface-500 tracking-wider sidebar-title">Menu</p>
             <ul class="space-y-2 sidebar-ul  ">
@@ -36,11 +35,12 @@
                     </router-link>
                 </li>
                 <li>
-                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors"
+                    <router-link to="/expense" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors"
                         href="#">
                         <img class="w-5 h-5 invert" src="../../assets//wallet.png" alt="">
                         <span class="sidebar-text">Exposes</span>
-                    </a>
+                    </router-link>
                 </li>
                 <li class="relative">
                     <button type="button" @click="toggleSidebar"
@@ -68,11 +68,11 @@
                     </ul>
                 </li>
                 <li>
-                    <button
+                    <router-link to="/expense_type" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100"
                         class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors">
                         <img class="w-5 h-4 invert" src="../../assets//wallet.png" alt="">
                         <span class="sidebar-text">Expose Type</span>
-                    </button>
+                    </router-link>
                 </li>
                 <li>
                     <router-link to="/vehicles" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100"
@@ -82,7 +82,7 @@
                     </router-link>
                 </li>
                 <li>
-                    <router-link to="/employees" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100" tton
+                    <router-link to="/employees" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100"
                         class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors">
                         <img class="w-5 invert" src="../../assets/users.png" alt="">
                         <span class="sidebar-text">Employees</span>
@@ -143,59 +143,6 @@
 
 
 
-    <!-- <button id="bottom_dropdownAvatarNameButton" data-dropdown-toggle="bottom_dropdownAvatarName"
-            class="p-4 border-t border-surface-200 cursor-pointer text-start  ">
-            <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface-100">
-                <div class="relative">
-                    <img alt="User avatar" class="w-8 h-8 rounded-full object-cover"
-                        src="https://storage.googleapis.com/a1aa/image/9b17cfa5-29f3-43f0-ea5a-c4ab7fc82603.jpg" />
-                    <span
-                        class="absolute bottom-0 right-0 block w-2 h-2 rounded-full bg-green-500 ring-2 ring-white"></span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-surface-900 truncate">Musharof Chowdhury</p>
-                    <p class="text-xs text-surface-500 truncate">Admin</p>
-                </div>
-                <span class="text-surface-400 hover:text-surface-600">
-                    <i class="fas fa-ellipsis-vertical text-sm"></i>
-                </span>
-            </div>
-        </button>
-
-        <div id="bottom_dropdownAvatarName"
-            class="z-10 hidden  absolute bottom-20 left-5 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-52">
-            <div class="px-2 py-3 text-sm text-gray-900">
-                <div class="font-medium">admin</div>
-                <div class="truncate">name@flowbite.com</div>
-            </div>
-            <ul class="py-2 text-base text-gray-700"
-                aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton">
-                <li>
-                    <a href="#"
-                        class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex gap-2 content-between items-center">
-                        <i class="fa fa-user "></i> Account</a>
-                </li>
-                <li>
-                    <label
-                        class="px-4 py-2 text-base text-gray-700 hover:bg-gray-100 gap-2 flex content-between items-center text-nowrap">
-                        <i class="fa fa-moon "></i>
-                        <span class="text-sm font-medium ">Dark Mode</span>
-                        <div class="ml-10">
-                            <input type="checkbox" value="" class="sr-only peer">
-                            <div
-                                class="relative w-10 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
-                            </div>
-                        </div>
-                    </label>
-
-                </li>
-            </ul>
-            <div class="py-2">
-                <a href="#"
-                    class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex gap-2 content-between items-center">
-                    <i class="fa fa-sign-out "></i> Sign Out</a>
-            </div>
-        </div> -->
 </template>
 
 
@@ -235,6 +182,12 @@ function toggleSidebar() {
 .sidebar-collapsed nav {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+
+}
+
+nav::-webkit-scrollbar {
+    display: none;
+
 }
 
 .sidebar-collapsed .flex.items-center.gap-3 {

@@ -17,7 +17,10 @@ class ExpenseTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->word(),
+            'category' => $this->faker->randomElement(['Private', 'Own', 'General', 'Vehicle', 'Employee']),
+            'created_by' => 1,
+            'updated_by' => 1,
         ];
     }
 }

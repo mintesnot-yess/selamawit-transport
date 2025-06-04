@@ -81,10 +81,24 @@ Route::middleware("auth:sanctum")->group(function () {
 
 
     // Expense Type routes
-    Route::apiResource('expense-types', ExpenseTypeController::class);
+    Route::prefix('expense-types')->group(function () {
+        Route::get('/', [ExpenseTypeController::class, 'index']);
+        Route::post('/', [ExpenseTypeController::class, 'store']);
+        Route::get('/search', [ExpenseTypeController::class, 'search']);
+        Route::delete('/{id}', [ExpenseTypeController::class, 'destroy']);
+        Route::put('/{id}', [ExpenseTypeController::class, 'update']);
+        // Add other expense type routes as needed
+    });
 
     // Expense routes
-    Route::apiResource('expenses', ExpenseController::class);
+    Route::prefix('expenses')->group(function () {
+        Route::get('/', [ExpenseController::class, 'index']);
+        Route::post('/', [ExpenseController::class, 'store']);
+        Route::get('/search', [ExpenseController::class, 'search']);
+        Route::delete('/{id}', [ExpenseController::class, 'destroy']);
+        Route::put('/{id}', [ExpenseController::class, 'update']);
+        // Add other expense routes as needed
+    });
 
     // Load Type routes
     Route::apiResource('load-types', LoadTypeController::class);

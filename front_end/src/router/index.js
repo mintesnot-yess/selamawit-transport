@@ -12,6 +12,8 @@ import Vehicles from "@/pages/Vehicles.vue";
 import VehiclesDetail from "@/pages/VehiclesDetail.vue";
 import Clients from "@/pages/Clients.vue";
 import Employees from "@/pages/Employees.vue";
+import ExpenseTypes from "@/pages/ExpenseTypes.vue";
+import Expenses from "@/pages/Expenses.vue";
 
 
 const routes = [
@@ -92,8 +94,19 @@ const routes = [
   {
     path: "/employees",
     name: "Employees",
-    name: "Employees",
     component: Employees,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/expense_type",
+    name: "Expense_type",
+    component: ExpenseTypes,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/expense",
+    name: "Expense",
+    component: Expenses,
     meta: { requiresAuth: true } // Requires authentication
   },
 

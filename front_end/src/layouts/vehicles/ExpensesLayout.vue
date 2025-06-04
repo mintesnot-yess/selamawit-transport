@@ -22,12 +22,13 @@
                     class="p-2 rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 md:hidden">
                     <i class="fas fa-bars"></i>
                 </button>
-                <form @input.prevent="searchClients(searchQuery)"
+
+                <form @input.prevent="searchVehicles(searchQuery)"
                     class="flex items-center border border-surface-300 rounded-lg px-2 py-2 text-surface-500 max-w-md w-full focus-within:ring-2 focus-within:ring-accent-500 focus-within:border-accent-500 transition-all">
                     <i class="fas fa-search mr-2 text-sm"></i>
                     <input v-model="searchQuery" @input="handleSearchInput"
                         class="flex-1 outline-none text-sm text-surface-700 placeholder:text-surface-400 bg-transparent"
-                        placeholder="Search Employees..." type="search" />
+                        placeholder="Search vehicles..." type="search" />
                     <button v-if="searchQuery" @click="clearSearch" type="button"
                         class="ml-2 text-surface-400 hover:text-surface-600">
                         <i class="fas fa-times"></i>
@@ -46,25 +47,46 @@
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
-            <!-- employee Table -->
+            <!-- vehicles Table -->
             <div class="bg-white rounded-xl shadow-sm border border-surface-200">
                 <div class="px-6 py-4 border-b border-surface-200">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h2 class="text-lg font-semibold text-surface-900">Clients</h2>
+                            <h2 class="text-lg font-semibold text-surface-900">Vehicles</h2>
                             <p class="text-sm text-surface-500">
                                 <template v-if="isSearching">Searching...</template>
                                 <template v-else-if="searchError" class="text-red-500">{{ searchError }}</template>
-                                <template v-else>
+                                <!-- <template v-else>
                                     Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }}
-                                    Clients
-                                </template>
+                                    vehicle
+                                </template> -->
                             </p>
+                            <!-- Filterable Buttons -->
+                            <div class="flex gap-2 mt-2">
+                                <button :class="[
+                                    'px-3 py-1 rounded-md text-xs font-semibold border transition-colors',
+                                    !filterType ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-surface-700 border-surface-300 hover:bg-blue-50'
+                                ]" @click="filterType = ''; fetchVehicles(1)">
+                                    All
+                                </button>
+                                <button :class="[
+                                    'px-3 py-1 rounded-md text-xs font-semibold border transition-colors',
+                                    filterType === 'OWNED' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-surface-700 border-surface-300 hover:bg-blue-50'
+                                ]" @click="filterType = 'OWNED'; fetchVehicles(1)">
+                                    Owned
+                                </button>
+                                <button :class="[
+                                    'px-3 py-1 rounded-md text-xs font-semibold border transition-colors',
+                                    filterType === 'PRIVATE' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-surface-700 border-surface-300 hover:bg-blue-50'
+                                ]" @click="filterType = 'PRIVATE'; fetchVehicles(1)">
+                                    Private
+                                </button>
+                            </div>
                         </div>
-                        <button @click="openAddClientForm"
+                        <button @click="openAddVehicleForm"
                             class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
                             <i class="fas fa-plus"></i>
-                            <span>Add employee</span>
+                            <span>Add vehicle</span>
                         </button>
                     </div>
                 </div>
@@ -80,27 +102,36 @@
 
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Name
+                                    Plate Number
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Employee Type
+                                    Vehicle Name
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Phone
+                                    Own Type
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    File
+                                    Own Name
                                 </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
+                                    Own Phone
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
+                                    libre
+                                </th>
+
                                 <th scope="col" class="relative px-6 py-3">
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-surface-200">
+                        <tbody class="bg-white divide-y divide-surface-200 w-full">
 
-                            <template v-if="loadingClients">
+                            <template v-if="loadingVehicles">
                                 <tr v-for="i in 5" :key="`skeleton-${i}`">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="h-4 bg-surface-200 rounded w-1/2 animate-pulse"></div>
@@ -122,47 +153,70 @@
                             </template>
 
                             <template v-else>
-                                <tr v-for="employee in Employees" :key="employee.id" class="hover:bg-surface-50">
+                                <tr v-for="vehicle in vehicles" :key="vehicle.id" class="hover:bg-surface-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-surface-900">
-                                        {{ (pagination.from - 1) + (Employees.indexOf(employee) + 1) }}
+                                        {{ (pagination.from - 1) + (vehicles.indexOf(vehicle) + 1) }}
+                                    </td>
+
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+
+                                            <!-- <div
+                                                class="flex-shrink-0 h-8 w-8 bg-blue-400 rounded-full flex items-center justify-center">
+                                                <img class="h-7 w-7 object-contain rounded-full "
+                                                    src="@/assets/vehicles.png" :alt="">
+                                            </div> -->
+
+                                            <div class="ml-4">
+                                                <router-link :to="`/vehicle/${vehicle.id}`"
+                                                    class="text-sm font-medium text-surface-900 hover:underline">{{
+                                                        vehicle.plate_number
+                                                    }}</router-link>
+                                            </div>
+                                        </div>
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
                                         data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            employee.first_name + ' ' + employee.last_name
+                                            vehicle.vehicle_name
                                         }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
                                         data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            employee.type
+                                            vehicle.owner_type
                                         }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
                                         data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            employee.phone
+                                            vehicle.owner_name
+                                        }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
+                                        data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
+                                            vehicle.owner_phone
                                         }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                        <template v-if="employee.image">
-                                            <img :src="`http://127.0.0.1:8000/storage/${employee.image}`"
-                                                alt="Employee Image" class="w-10 h-10 rounded-full object-cover" />
+                                        <template v-if="vehicle.libre">
+                                            <img :src="`http://127.0.0.1:8000/storage/${vehicle.libre}`" alt="Libre"
+                                                class="h-10 w-10 object-cover rounded"
+                                                style="max-width: 60px; max-height: 60px;" />
                                         </template>
                                         <template v-else>
-                                            <span class="text-surface-400 italic">No Image</span>
+                                            <span class="text-surface-400 italic">No image</span>
                                         </template>
                                     </td>
-                                    <!-- data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> -->
-
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/employee-accounts/${employee.id}`)"
-                                            @edit="editClient(employee)"
-                                            @delete="confirmDelete(employee.id, employee.name)" />
+                                        <ToggleMenu @show="() => $router.push(`/vehicle/${vehicle.id}`)"
+                                            @edit="editVehicle(vehicle)"
+                                            @delete="confirmDelete(vehicle.id, vehicle.name)" />
                                     </td>
                                 </tr>
-                                <tr v-if="Employees.length === 0 && !loadingClients">
+                                <tr v-if="vehicles.length === 0 && !loadingVehicles">
+
                                     <td colspan="3" class="px-6 py-4 text-center text-sm text-surface-500">
-                                        No Employees found
+                                        No vehicles found
                                     </td>
                                 </tr>
                             </template>
@@ -177,7 +231,6 @@
                     </table>
 
                     <!-- Pagination -->
-                    <!-- <div v-if="pagination.last_page > 1" -->
 
                     <div v-if="pagination.last_page > 1"
                         class="px-6 py-4 border-t border-surface-200 flex items-center justify-between">
@@ -198,78 +251,72 @@
                 </div>
             </div>
 
-            <!-- employee Form Sidebar -->
+            <!-- vehicle Form Sidebar -->
             <div id="side_form_container" class="side-form" :class="{ hidden: !isSideFormVisible }">
                 <div
                     class="fixed z-50 top-0 left-0 bg-zinc-900 bg-opacity-50 h-full w-full shadow-2xl border border-gray-10 flex overflow-y-auto">
-                    <button aria-label="Close" @click="toggleAddClientForm"
+                    <button aria-label="Close" @click="toggleAddVehicleForm"
                         class="toggle_side_form_btn absolute top-0 right-2 text-gey-500 m-5 hover:text-gray-700 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors duration-200">
                         <i class="fa fa-xmark"></i>
                     </button>
-                    <div @click="toggleAddClientForm" id="side_form"
+                    <div @click="toggleAddVehicleForm" id="side_form"
                         class="w-0 md:w-full sticky top-0 bg-transparent cursor-pointer">
                     </div>
                     <div id="side_form" class="md:max-w-md p-6 w-full h-full bg-white rounded-xl">
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
-                                Clients
-                            </h2>
-                        </div>
+
+
                         <template v-if="isUpdating">
-
+                            <div class="flex justify-between items-center mb-3">
+                                <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
+                                    Update Vehicle
+                                </h2>
+                            </div>
                             <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
-                                Update employee Information
+                                Update vehicle information
                             </p>
-
-                            <form @submit.prevent="handleSubmitUpdate"
-                                class="flex flex-col  space-y-6 js font-['Inter']">
+                            <form @submit.prevent="handleSubmitUpdate" class="space-y-6 font-['Inter']">
                                 <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        First Name</label>
-                                    <input v-model="form.first_name" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter employee name" />
-
+                                    <label for="vehicle_name" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Vehicle Name
+                                    </label>
+                                    <input v-model="form.vehicle_name" id="vehicle_name" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter vehicle name" />
                                 </div>
                                 <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Last Name</label>
-                                    <input v-model="form.last_name" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter employee name" />
-
+                                    <label for="plate_number" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Plate Number
+                                    </label>
+                                    <input v-model="form.plate_number" id="plate_number" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter plate number" />
                                 </div>
                                 <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Email</label>
-                                    <input v-model="form.email" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Contact Person" />
-
+                                    <label for="owner_name" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Owner Name
+                                    </label>
+                                    <input v-model="form.owner_name" id="owner_name" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter owner name" />
                                 </div>
                                 <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Phone</label>
-                                    <input v-model="form.phone" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Phone" />
-
+                                    <label for="owner_phone" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Owner Phone
+                                    </label>
+                                    <input v-model="form.owner_phone" id="owner_phone" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter owner phone" />
                                 </div>
                                 <div>
                                     <label for="owner_type" class="block text-sm font-medium text-gray-800 mb-1">
-                                        Type
+                                        Owner Type
                                     </label>
                                     <div class="relative">
-                                        <select v-model="form.type" id="owner_type"
+                                        <select v-model="form.owner_type" id="owner_type"
                                             class="w-full appearance-none rounded-xl border border-gray-300/80 px-4 py-3 pr-10 text-gray-900 bg-white/95 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200">
-                                            <option value="" selected disabled>Select type</option>
-                                            <option value="STUFF">STUFF</option>
-                                            <option value="DRIVER">DRIVER</option>
-                                            <option value="MECHANIC">MECHANIC</option>
+                                            <option value="">Select type</option>
+                                            <option value="OWNED">OWNED</option>
+                                            <option value="PRIVATE">PRIVATE</option>
                                         </select>
                                         <span
                                             class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
@@ -283,7 +330,7 @@
                                 </div>
                                 <div>
                                     <label for="libre_input" class="block text-sm font-medium text-gray-800 mb-1">
-                                        ID Image
+                                        Libre
                                     </label>
                                     <div class="relative flex items-center">
                                         <input id="libre_input" type="file" class="sr-only"
@@ -292,81 +339,77 @@
                                             class="flex items-center justify-center w-full px-4 py-2 bg-white border border-gray-300/80 rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-all duration-200 text-gray-700">
                                             <i class="fas fa-upload mr-2 text-blue-500"></i>
                                             <span>
-                                                {{
-                                                    form.id_file && form.id_file.name ? form.id_file.name : 'Choose file...'
-                                                }}
+                                                {{ form.libre && form.libre.name ? form.libre.name : 'Choose file...' }}
                                             </span>
                                         </label>
                                     </div>
                                 </div>
-
-
-                                <div v-if="success" class="text-blue-600 text-sm ">
+                                <div v-if="success" class="text-blue-600 text-sm">
                                     {{ success }}
                                 </div>
-                                <div v-else class="text-red-500 text-sm ">
+                                <div v-else-if="error" class="text-red-500 text-sm">
                                     {{ error }}
                                 </div>
-                                <!-- Submit Button -->
                                 <button :disabled="loading" type="submit"
-                                    class="mt-6 w-full place-self-end-end bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg">
-                                    <span v-if="!loading">Update </span>
-                                    <span v-else>Processing...</span> </button>
+                                    class="mt-2 w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed">
+                                    <span v-if="!loading">Update</span>
+                                    <span v-else>Processing...</span>
+                                </button>
                             </form>
                         </template>
                         <template v-else>
+                            <div class="flex justify-between items-center mb-3">
+                                <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
+                                    Vehicles
+                                </h2>
+                            </div>
                             <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
-                                Fill the employee Information
+                                Fill vehicle Information
                             </p>
-
-                            <form @submit.prevent="handleSubmitAdd" class="flex flex-col  space-y-6 js font-['Inter']">
+                            <form @submit.prevent="handleSubmitAdd" enctype="multipart/form-data"
+                                class="space-y-6 font-['Inter']">
                                 <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        First Name</label>
-                                    <input v-model="form.first_name" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter employee name" />
-
+                                    <label for="vehicle_name" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Vehicle Name
+                                    </label>
+                                    <input v-model="form.vehicle_name" id="vehicle_name" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter vehicle name" />
                                 </div>
                                 <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Last Name</label>
-                                    <input v-model="form.last_name" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter employee name" />
-
+                                    <label for="vehicle_number" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Plate Number
+                                    </label>
+                                    <input v-model="form.plate_number" id="vehicle_number" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter plate number" />
                                 </div>
                                 <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Email</label>
-                                    <input v-model="form.email" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Contact Person" />
-
+                                    <label for="owner_name" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Owner Name
+                                    </label>
+                                    <input v-model="form.owner_name" id="owner_name" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter owner name" />
                                 </div>
                                 <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Phone</label>
-                                    <input v-model="form.phone" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Phone" />
-
+                                    <label for="owner_phone" class="block text-sm font-medium text-gray-800 mb-1">
+                                        Owner Phone
+                                    </label>
+                                    <input v-model="form.owner_phone" id="owner_phone" type="text"
+                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                        placeholder="Enter owner phone" />
                                 </div>
                                 <div>
                                     <label for="owner_type" class="block text-sm font-medium text-gray-800 mb-1">
-                                        Type of Employee
+                                        Owner Type
                                     </label>
                                     <div class="relative">
-                                        <select v-model="form.type" name="category" id="owner_type"
+                                        <select v-model="form.owner_type" id="owner_type"
                                             class="w-full appearance-none rounded-xl border border-gray-300/80 px-4 py-3 pr-10 text-gray-900 bg-white/95 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200">
-                                            <option value="Select" disabled selected>Select type</option>
-                                            <option value="STUFF">STUFF</option>
-                                            <option value="DRIVER">DRIVER</option>
-                                            <option value="MECHANIC">MECHANIC</option>
+                                            <option value="" disabled>Select type</option>
+                                            <option value="OWNED">OWNED</option>
+                                            <option value="PRIVATE">PRIVATE</option>
                                         </select>
                                         <span
                                             class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
@@ -380,7 +423,7 @@
                                 </div>
                                 <div>
                                     <label for="libre_input" class="block text-sm font-medium text-gray-800 mb-1">
-                                        ID Image
+                                        Libre
                                     </label>
                                     <div class="relative flex items-center">
                                         <input id="libre_input" type="file" class="sr-only"
@@ -389,23 +432,25 @@
                                             class="flex items-center justify-center w-full px-4 py-2 bg-white border border-gray-300/80 rounded-xl shadow-sm cursor-pointer hover:bg-blue-50 transition-all duration-200 text-gray-700">
                                             <i class="fas fa-upload mr-2 text-blue-500"></i>
                                             <span>
-                                                {{
-                                                    form.id_file && form.id_file.name ? form.id_file.name : 'Choose file...'
-                                                }}
+                                                {{ form.libre ? form.libre.name : 'Choose file...' }}
                                             </span>
                                         </label>
-                                    </div>
-                                </div>
 
-                                <!-- Error Message -->
-                                <div v-if="error" class="text-red-500 text-sm ">
+                                    </div>
+
+
+
+
+
+                                </div>
+                                <div v-if="error" class="text-red-500 text-sm">
                                     {{ error }}
                                 </div>
-                                <!-- Submit Button -->
                                 <button :disabled="loading" type="submit"
-                                    class="mt-6 w-full place-self-end-end bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg">
+                                    class="mt-2 w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed">
                                     <span v-if="!loading">SAVE</span>
-                                    <span v-else>Processing...</span> </button>
+                                    <span v-else>Processing...</span>
+                                </button>
                             </form>
                         </template>
 
@@ -417,7 +462,7 @@
 </template>
 
 <script>
-import EmployeeService from '@/services/employees';
+import vehicleService from '@/services/vehicle';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
 // import Forms from "./components/Forms.vue";
@@ -433,21 +478,26 @@ export default {
     data() {
         return {
             form: {
-                first_name: "",
-                last_page: "",
-                email: "",
-                phone: "",
-                id_file: "",
-                type: "",
+                id: "",
+                plate_number: "",
+                vehicle_name: "",
+                vehicle_number: "",
+                owner_name: "",
+                owner_phone: "",
+                owner_type: "",
+                libre: "",
+                active: true,
+                isMenuOpen: false,
 
             },
-            Employees: [],
+            vehicles: [],
             loading: false,
-            loadingClients: false,
+            loadingVehicles: false,
             error: null,
             success: null,
-            editingClient: null,
+            editingVehicle: null,
             searchQuery: '',
+            filterType: '',
             isSearching: false,
             isUpdating: false,
 
@@ -467,21 +517,26 @@ export default {
         };
     },
     async created() {
-        await this.fetchClients();
+        await this.fetchVehicles();
     },
     methods: {
-        async fetchClients(page = 1) {
-            this.loadingClients = true;
+        async fetchVehicles(page = 1) {
+            this.loadingVehicles = true;
             try {
-                const response = await EmployeeService.getAll({
+                const params = {
                     page: page,
                     perPage: this.pagination.per_page,
                     search: this.searchQuery
-                });
+                };
+                // Add filterType if set
+                if (this.filterType) {
+                    params.owner_type = this.filterType;
+                }
 
+                const response = await vehicleService.getAll(params);
 
                 // Standardized response handling
-                this.Employees = response.data;
+                this.vehicles = response.data;
 
                 // Ensure meta exists
                 if (!response.meta) {
@@ -499,10 +554,10 @@ export default {
                 this.updatePagination(response.meta);
 
             } catch (error) {
-                console.error('Error fetching Employees:', error);
-                this.$toast.error("Failed to load Employees: " + error.message);
+                console.error('Error fetching vehicles:', error);
+                this.$toast.error("Failed to load vehicles: " + error.message);
             } finally {
-                this.loadingClients = false;
+                this.loadingVehicles = false;
             }
         },
 
@@ -510,12 +565,12 @@ export default {
 
             this.loading = true;
             this.error = null;
-            // If editingClient is set, update the employee, else create new
+            // If editingVehicle is set, update the vehicle, else create new
 
             try {
-                const response = await EmployeeService.store(this.form);
-                await this.fetchClients();
-                this.$router.push('Employees');
+                const response = await vehicleService.store(this.form);
+                await this.fetchVehicles();
+                this.$router.push('vehicles');
 
 
                 this.form.name = "";
@@ -523,29 +578,47 @@ export default {
 
 
             } catch (error) {
-                this.error = error.response?.data?.message || error.message || "Failed to save employee information";
-                console.error("employee save error:", error);
+                this.error = error.response?.data?.message || error.message || "Failed to save vehicle information";
+                console.error("vehicle save error:", error);
             } finally {
                 this.loading = false;
             }
-        }, async handleSubmitUpdate() {
+        },
+
+        editVehicle(vehicle) {
+            this.isUpdating = true;
+            this.form = {
+                id: vehicle.id,
+                plate_number: vehicle.plate_number || "",
+                vehicle_name: vehicle.vehicle_name || "",
+                owner_name: vehicle.owner_name || "",
+                owner_phone: vehicle.owner_phone || "",
+                owner_type: vehicle.owner_type || "",
+                libre: vehicle.libre || "",
+                // active: vehicle.active !== undefined ? vehicle.active : true,
+
+            };
+            this.isSideFormVisible = true;
+
+        },
+        async handleSubmitUpdate() {
 
             this.loading = true;
             this.error = null;
             this.success = null;
-            // If editingClient is set, update the employee, else create new
+            // If editingVehicle is set, update the vehicle, else create new
 
             try {
-                const response = await EmployeeService.update(this.form.id, this.form);
-                await this.fetchClients();
-                this.success = "employee updated successfully"
+                const response = await vehicleService.update(this.form.id, this.form);
+                await this.fetchVehicles();
+                this.success = "vehicle updated successfully"
 
 
 
 
             } catch (error) {
-                this.error = error.response?.data?.message || error.message || "Failed to save employee information";
-                console.error("employee save error:", error);
+                this.error = error.response?.data?.message || error.message || "Failed to save vehicle information";
+                console.error("vehicle save error:", error);
             } finally {
                 this.loading = false;
             }
@@ -569,7 +642,7 @@ export default {
             };
 
         },
-        async searchClients() {
+        async searchVehicles() {
             if (!this.searchQuery.trim()) {
                 this.clearSearch();
                 return;
@@ -579,14 +652,14 @@ export default {
             this.searchError = null;
 
             try {
-                const response = await EmployeeService.search({
-                    name: this.searchQuery,
+                const response = await vehicleService.search({
+                    query: this.searchQuery,
                     page: this.pagination.current_page,
                     perPage: this.pagination.per_page
                 });
 
                 if (response.success) {
-                    this.Employees = response.data;
+                    this.vehicles = response.data;
                     this.updatePagination(response.meta);
                 } else {
                     throw new Error(response.message || 'Invalid response');
@@ -594,7 +667,7 @@ export default {
             } catch (error) {
                 console.error('Search error:', error);
                 this.searchError = typeof error === 'string' ? error : error.message;
-                this.Employees = [];
+                this.vehicles = [];
                 this.$toast.error(`Search failed: ${this.searchError}`);
             } finally {
                 this.isSearching = false;
@@ -604,7 +677,7 @@ export default {
         // Debounced search input handler
         handleSearchInput: debounce(function () {
             if (this.searchQuery.trim().length >= 3) {
-                this.searchClients();
+                this.searchVehicles();
             } else if (!this.searchQuery.trim()) {
                 this.clearSearch();
             }
@@ -613,24 +686,24 @@ export default {
         clearSearch() {
             this.searchQuery = '';
             this.searchError = null;
-            this.fetchClients();
+            this.fetchVehicles();
         },
         nextPage() {
             if (this.pagination.current_page < this.pagination.last_page) {
                 this.pagination.current_page++;
-                this.loadClients();
+                this.loadVehicles();
             }
         },
 
         prevPage() {
             if (this.pagination.current_page > 1) {
                 this.pagination.current_page--;
-                this.loadClients();
+                this.loadVehicles();
             }
         },
 
-        async loadClients() {
-            this.loadingClients = true;
+        async loadVehicles() {
+            this.loadingVehicles = true;
             try {
                 const params = {
                     page: this.pagination.current_page,
@@ -642,29 +715,29 @@ export default {
                     params.q = this.searchQuery.trim();
                 }
 
-                const response = await EmployeeService.getAll(params);
+                const response = await vehicleService.getAll(params);
 
-                this.Employees = response.data || [];
+                this.vehicles = response.data || [];
                 this.updatePagination(response.meta || {});
 
             } catch (error) {
-                console.error('Error loading Employees:', error);
-                this.$toast.error('Failed to load Employees');
+                console.error('Error loading vehicles:', error);
+                this.$toast.error('Failed to load vehicles');
             } finally {
-                this.loadingClients = false;
+                this.loadingVehicles = false;
             }
         },
 
 
 
-        openAddClientForm() {
+        openAddVehicleForm() {
             this.isUpdating = false;
 
             this.resetForm();
             this.isSideFormVisible = true;
         },
 
-        toggleAddClientForm() {
+        toggleAddVehicleForm() {
             this.isSideFormVisible = !this.isSideFormVisible;
             if (!this.isSideFormVisible) {
                 this.resetForm();
@@ -676,16 +749,16 @@ export default {
             this.error = null;
 
             try {
-                if (this.editingClient) {
-                    await EmployeeService.update(this.editingClient.id, this.form);
-                    this.$toast.success("employee updated successfully");
+                if (this.editingVehicle) {
+                    await vehicleService.update(this.editingVehicle.id, this.form);
+                    this.$toast.success("vehicle updated successfully");
                 } else {
-                    await EmployeeService.store(this.form);
-                    this.$toast.success("employee created successfully");
+                    await vehicleService.store(this.form);
+                    this.$toast.success("vehicle created successfully");
                 }
 
                 this.closeSideForm();
-                await this.fetchClients();
+                await this.fetchVehicles();
             } catch (error) {
                 this.error = error.message;
                 this.$toast.error("Operation failed");
@@ -693,33 +766,20 @@ export default {
                 this.loading = false;
             }
         },
-        // employee edit function
-        editClient(employee) {
-            this.isUpdating = true;
+        // vehicle edit function
 
-            this.form = {
-                first_name: employee.first_name,
-                last_name: employee.last_name,
-                email: employee.email,
-                type: employee.type,
-                phone: employee.phone,
-                id: employee.id,
-            };
-            this.isSideFormVisible = true;
-
-        },
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} employee?`)) {
+            if (confirm(`Are you sure you want to delete ${name} vehicle?`)) {
                 try {
-                    await EmployeeService.delete(id);
-                    await this.fetchClients();
+                    await vehicleService.delete(id);
+                    await this.fetchVehicles();
 
-                    this.$toast.success("employee deleted successfully");
+                    this.$toast.success("vehicle deleted successfully");
 
 
                 } catch (error) {
-                    this.$toast.error("Failed to delete employee");
+                    this.$toast.error("Failed to delete vehicle");
                 }
             }
         },
@@ -729,7 +789,7 @@ export default {
                 name: "",
                 active: true
             };
-            this.editingClient = null;
+            this.editingVehicle = null;
             this.error = null;
         },
 

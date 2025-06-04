@@ -13,6 +13,10 @@ class Expense extends Model
         "expense_type_id",
         "vehicle_id",
         "employee_id",
+        "from_account",
+        "to_account",
+        "to_bank",
+        "from_bank",
         "amount",
         "paid_date",
         "remark",
@@ -25,7 +29,6 @@ class Expense extends Model
         "paid_date" => "date",
         "amount" => "decimal:2",
     ];
-
     public function expenseType()
     {
         return $this->belongsTo(ExpenseType::class);
@@ -40,12 +43,32 @@ class Expense extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+    public function fromBank()
+    {
+        return $this->belongsTo(Bank::class, 'from_bank');
+    }
+
+    public function toBank()
+    {
+        return $this->belongsTo(Bank::class, 'to_bank');
+    }
+
+    // Optional: Add a generic bank() relationship if needed
     public function bank()
     {
-        return $this->belongsTo(Bank::class);
+        // Adjust logic as needed; here, just returns fromBank by default
+        return $this->fromBank();
     }
+
+    public function fromAccount()
+    {
+        return $this->belongsTo(BankAccount::class, 'from_account');
+    }
+
     public function bankAccount()
     {
-        return $this->belongsTo(BankAccount::class);
+        // Adjust the foreign key if needed
+        return $this->belongsTo(BankAccount::class, 'from_account');
     }
+
 }
