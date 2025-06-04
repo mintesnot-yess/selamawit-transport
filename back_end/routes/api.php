@@ -70,9 +70,15 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::put('/{id}', [ClientsController::class, 'update']);
         // Add other vehicle routes as needed
     });
+    // Customer routes
+    Route::prefix('employees')->group(function () {
+        Route::get('/', [EmployeeController::class, 'index']);
+        Route::post('/', [EmployeeController::class, 'store']);
+        Route::delete('/{id}', [EmployeeController::class, 'destroy']);
+        Route::put('/{id}', [EmployeeController::class, 'update']);
+        // Add other vehicle routes as needed
+    });
 
-    // Employee routes
-    Route::apiResource('employees', EmployeeController::class);
 
     // Expense Type routes
     Route::apiResource('expense-types', ExpenseTypeController::class);

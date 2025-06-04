@@ -13,7 +13,22 @@ class EmployeeController extends Controller
     public function index()
     {
         $employees = Employee::all();
-        return response()->json($employees);
+
+        $perPage = request()->input('per_page', 15);
+        $employees = Employee::paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $employees->items(),
+            'meta' => [
+                'current_page' => $employees->currentPage(),
+                'per_page' => $employees->perPage(),
+                'total' => $employees->total(),
+                'last_page' => $employees->lastPage(),
+                'from' => $employees->firstItem(),
+                'to' => $employees->lastItem()
+            ]
+        ]);
     }
 
     public function store(Request $request)
@@ -23,8 +38,7 @@ class EmployeeController extends Controller
             "last_name" => "required|string|max:255",
             "email" => "required|email|unique:employees",
             "phone" => "required|string|max:20",
-            "type" => "required|in:STUFF,DRIVER,MANAGER",
-            "hire_date" => "required|date",
+            "type" => "required|in:STUFF,DRIVER,MECHANIC",
         ]);
 
         if ($validator->fails()) {
@@ -58,11 +72,9 @@ class EmployeeController extends Controller
         $validator = Validator::make($request->all(), [
             "first_name" => "sometimes|string|max:255",
             "last_name" => "sometimes|string|max:255",
-            "email" =>
-                "sometimes|email|unique:employees,email," . $employee->id,
+            "email" => "sometimes|email|unique:employees,email," . $employee->id,
             "phone" => "sometimes|string|max:20",
             "type" => "sometimes|in:STUFF,DRIVER,MANAGER",
-            "hire_date" => "sometimes|date",
         ]);
 
         if ($validator->fails()) {

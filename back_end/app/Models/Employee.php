@@ -16,7 +16,6 @@ class Employee extends Model
         "phone",
         "id_file",
         "type",
-        "hire_date",
         "created_by",
         "updated_by",
     ];

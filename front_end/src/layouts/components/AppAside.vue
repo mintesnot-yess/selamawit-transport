@@ -82,11 +82,11 @@
                     </router-link>
                 </li>
                 <li>
-                    <button
+                    <router-link to="/employees" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100" tton
                         class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors">
                         <img class="w-5 invert" src="../../assets/users.png" alt="">
                         <span class="sidebar-text">Employees</span>
-                    </button>
+                    </router-link>
                 </li>
                 <li>
                     <button

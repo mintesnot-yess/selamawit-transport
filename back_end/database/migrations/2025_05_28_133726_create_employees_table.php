@@ -15,7 +15,6 @@ return new class extends Migration {
             $table->string('phone', 50)->nullable();
             $table->bigInteger('id_file')->nullable();
             $table->enum('type', ['STUFF', 'DRIVER', 'MECHANIC'])->nullable();
-            $table->date('hire_date')->nullable();
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
             $table->timestamps();

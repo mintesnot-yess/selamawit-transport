@@ -90,7 +90,7 @@
 
                                 </span>
                                 <span class="text-sm font-medium text-surface-900">{{ vehicle.plate_number
-                                }}</span>
+                                    }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-sm text-surface-500">Owner Type
@@ -107,7 +107,7 @@
                                 <span class="text-sm text-surface-500">Owner Phone
                                 </span>
                                 <span class="text-sm font-medium text-surface-900">{{ vehicle.owner_phone || 'N/A'
-                                }}</span>
+                                    }}</span>
                             </div>
                         </div>
                     </div>

@@ -10,7 +10,8 @@ import Banks from "@/pages/Banks.vue";
 import BankAccounts from "@/pages/BankAccounts.vue";
 import Vehicles from "@/pages/Vehicles.vue";
 import VehiclesDetail from "@/pages/VehiclesDetail.vue";
-import ClientsLayout from "@/layouts/clients/ClientsLayout.vue";
+import Clients from "@/pages/Clients.vue";
+import Employees from "@/pages/Employees.vue";
 
 
 const routes = [
@@ -81,10 +82,18 @@ const routes = [
     name: "VehicleDetails",
     component: VehiclesDetail,
     meta: { requiresAuth: true } // Requires authentication
-  }, {
+  },
+  {
     path: "/clients",
-    name: "ClientsLayout",
-    component: ClientsLayout,
+    name: "Clients",
+    component: Clients,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/employees",
+    name: "Employees",
+    name: "Employees",
+    component: Employees,
     meta: { requiresAuth: true } // Requires authentication
   },
 
