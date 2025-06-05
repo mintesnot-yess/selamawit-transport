@@ -153,6 +153,8 @@ import { ref } from 'vue';
 const isSidebarCollapsed = ref(false);
 const reportDropdownOpen = ref(false);
 
+
+
 function sidebarCollapse() {
     isSidebarCollapsed.value = !isSidebarCollapsed.value;
     if (isSidebarCollapsed.value) {

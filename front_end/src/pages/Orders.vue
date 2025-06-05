@@ -3,5 +3,6 @@ import OrdersLayout from "@/layouts/orders/OrdersLayout.vue";
 </script>
 
 <template>
+
     <OrdersLayout />
 </template>
