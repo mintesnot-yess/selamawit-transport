@@ -228,10 +228,12 @@
                                             @delete="confirmDelete(expense.id, expense.name)" />
                                     </td>
                                 </tr>
-                                <tr v-if="expenses.length === 0 && !loadingVehicles">
 
-                                    <td colspan="3" class="px-6 py-4 text-center text-sm text-surface-500">
-                                        No expenses found
+                                <tr v-if="expenses.length === 0 && !loadingVehicles">
+                                    <td colspan="10"
+                                        class="px-4 py-8 text-center text-surface-400 text-base font-medium">
+                                        <i class="fas fa-wallet text-2xl mb-2 block"></i>
+                                        No expenses found.
                                     </td>
                                 </tr>
                             </template>
@@ -249,8 +251,8 @@
 
                     <!-- Pagination -->
 
-                    <!-- <div v-if="pagination.last_page > 1" -->
-                    <div class="px-6 py-4 border-t border-surface-200 flex items-center justify-between">
+                    <div v-if="pagination.last_page > 1"
+                        class="px-6 py-4 border-t border-surface-200 flex items-center justify-between">
                         <div class="text-sm text-surface-500">
                             Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} results
                         </div>

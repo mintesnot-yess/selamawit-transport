@@ -26,17 +26,11 @@ class ExpenseController extends Controller
         $CategoryEmployee = ExpenseType::where('category', 'Employee')->get();
         $CategoryVehicle = ExpenseType::where('category', 'Vehicle')->get();
         $CategoryGeneral = ExpenseType::where('category', 'General')->get();
+
         $employees = Employee::all();
         $Vehicles = Vehicle::all();
         $Banks = Bank::all();
         $BanksAccount = BankAccount::all();
-
-
-
-
-
-
-
         $expenses = $query->paginate($perPage);
 
         return response()->json([

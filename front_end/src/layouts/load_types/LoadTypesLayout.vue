@@ -237,7 +237,6 @@
                                     <span v-else>Processing...</span> </button>
                             </form>
                         </template>
-
                     </div>
                 </div>
             </div>
@@ -284,7 +283,7 @@ export default {
             isSideFormVisible: false,
             pagination: {
                 current_page: 1,
-                per_page: 15,
+                per_page: 10,
                 total: 0,
                 last_page: 1,
                 from: 0,

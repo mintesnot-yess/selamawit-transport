@@ -126,7 +126,12 @@ Route::middleware("auth:sanctum")->group(function () {
 
     // Order routes
     Route::prefix('orders')->group(function () {
-        Route::apiResource('/', OrderController::class);
+        Route::get('/', [OrderController::class, 'index']);
+        Route::post('/', [OrderController::class, 'store']);
+        Route::get('/search', [OrderController::class, 'search']);
+        Route::get('/{id}', [OrderController::class, 'show']);
+        Route::put('/{id}', [OrderController::class, 'update']);
+        Route::delete('/{id}', [OrderController::class, 'destroy']);
     });
 
     // Income routes

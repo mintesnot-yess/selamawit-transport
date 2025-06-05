@@ -10,9 +10,7 @@ return new class extends Migration {
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
             $table->string('account_number', 100);
-            $table->foreignId('bank_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            // $table->unsignedInteger('created_by');
-            // $table->unsignedInteger('updated_by');
+            $table->foreignId('bank_id')->constrained()->restrictOnDelete()->cascadeOnUpdate();
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
             $table->timestamps();

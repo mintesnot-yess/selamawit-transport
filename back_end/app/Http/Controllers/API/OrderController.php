@@ -3,7 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bank;
+use App\Models\BankAccount;
+use App\Models\Client;
+use App\Models\Employee;
+use App\Models\LoadType;
+use App\Models\Location;
 use App\Models\Order;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -15,16 +22,48 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with([
-            "customer",
+        $perPage = request()->input('per_page', 15);
+
+        // Eager load related models
+        $query = Order::with([
+            "client",
             "employee",
             "vehicle",
             "loadType",
             "loadingLocation",
             "destinationLocation",
-        ])->get();
+        ]);
 
-        return response()->json(["data" => $orders]);
+        $clients = Client::all();
+        $employees = Employee::all();
+        $Vehicles = Vehicle::all();
+        $location = Location::all();
+        $loadTypes = LoadType::all();
+
+
+
+
+
+        $orders = $query->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders->items(),
+            'clients' => $clients,
+            'employees' => $employees,
+            'vehicles' => $Vehicles,
+            'locations' => $location,
+            'loadTypes' => $loadTypes,
+
+            'meta' => [
+                'current_page' => $orders->currentPage(),
+                'per_page' => $orders->perPage(),
+                'total' => $orders->total(),
+                'last_page' => $orders->lastPage(),
+                'from' => $orders->firstItem(),
+                'to' => $orders->lastItem()
+            ]
+        ]);
     }
 
     /**
@@ -33,7 +72,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "customer_id" => "required|exists:customers,id",
+            "client_id" => "required|exists:clients,id",
             "employee_id" => "required|exists:employees,id",
             "vehicle_id" => "required|exists:vehicles,id",
             "loading_place" => "required|exists:locations,id",
@@ -57,8 +96,10 @@ class OrderController extends Controller
             );
         }
 
-        $order = Order::create([
-            "customer_id" => $request->customer_id,
+
+
+        $order = Order::create(attributes: [
+            "client_id" => $request->client_id,
             "employee_id" => $request->employee_id,
             "vehicle_id" => $request->vehicle_id,
             "loading_place" => $request->loading_place,
@@ -91,6 +132,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
+
         $order = Order::with([
             "customer",
             "employee",
@@ -129,20 +171,17 @@ class OrderController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            "customer_id" => "sometimes|exists:customers,id",
-            "employee_id" => "sometimes|exists:employees,id",
-            "vehicle_id" => "sometimes|exists:vehicles,id",
-            "loading_place" => "sometimes|exists:locations,id",
-            "destination" => "sometimes|exists:locations,id",
-            "load_type_id" => "sometimes|exists:load_types,id",
-            "quintal" => "sometimes|numeric|min:0",
-            "given_tariff" => "sometimes|numeric|min:0",
-            "sub_tariff" => "sometimes|numeric|min:0",
-            "arrival_at_loading_site" => "sometimes|date",
-            "loading_date" => "sometimes|date",
-            "current_condition" => "sometimes|in:LOADED,UNLOADED,IN_TRANSIT",
-            "payment_collected" => "sometimes|boolean",
-            "status" => "sometimes|in:PENDING,COMPLETED,CANCELLED",
+            "client_id" => "required|exists:clients,id",
+            "employee_id" => "required|exists:employees,id",
+            "vehicle_id" => "required|exists:vehicles,id",
+            "loading_place" => "required|exists:locations,id",
+            "destination" => "required|exists:locations,id",
+            "load_type_id" => "required|exists:load_types,id",
+            "quintal" => "required|numeric|min:0",
+            "given_tariff" => "required|numeric|min:0",
+            "sub_tariff" => "required|numeric|min:0",
+            "arrival_at_loading_site" => "required|date",
+            "loading_date" => "required|date|after_or_equal:arrival_at_loading_site",
         ]);
 
         if ($validator->fails()) {
@@ -155,11 +194,20 @@ class OrderController extends Controller
             );
         }
 
-        $order->update(
-            $request->all() + [
-                "updated_by" => Auth::id(),
-            ]
-        );
+        $order->update([
+            "client_id" => $request->client_id,
+            "employee_id" => $request->employee_id,
+            "vehicle_id" => $request->vehicle_id,
+            "loading_place" => $request->loading_place,
+            "destination" => $request->destination,
+            "load_type_id" => $request->load_type_id,
+            "quintal" => $request->quintal,
+            "given_tariff" => $request->given_tariff,
+            "sub_tariff" => $request->sub_tariff,
+            "arrival_at_loading_site" => $request->arrival_at_loading_site,
+            "loading_date" => $request->loading_date,
+            "updated_by" => Auth::id(),
+        ]);
 
         return response()->json([
             "message" => "Order updated successfully",

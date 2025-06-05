@@ -89,6 +89,7 @@ class VehicleController extends Controller
     {
         $vehicle = Vehicle::find($id);
 
+
         if (!$vehicle) {
             return response()->json([
                 'message' => 'Vehicle not found'

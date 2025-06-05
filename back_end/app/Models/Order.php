@@ -10,7 +10,7 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        "customer_id",
+        "client_id",
         "employee_id",
         "vehicle_id",
         "loading_place",
@@ -40,9 +40,9 @@ class Order extends Model
     ];
 
     // Relationship with customer
-    public function customer()
+    public function client()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Client::class);
     }
 
     // Relationship with employee

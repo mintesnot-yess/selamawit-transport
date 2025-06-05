@@ -1,0 +1,17 @@
+{
+     "client_id": <select> element   from client.id,
+    "employee_id": <select> element   from employee.id,
+    "vehicle_id": <select> element   from vehicle.id,
+    "loading_place": <select> element   from location.id,
+    "destination": <select> element   from location.id,
+    "load_type_id": <select> element   from load_type.id,
+    "quintal": "12.00" <input> number type,
+    "given_tariff": "122.00" <input> number type,
+    "sub_tariff": "2112.00" <input> number type,
+     "arrival_at_loading_site": "<input> date type",
+    "loading_date": "<input> date type",
+    "current_condition": <select> element  ['OFFLOADED','LOADED;],
+ 
+   
+     
+}

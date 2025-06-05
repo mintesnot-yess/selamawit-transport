@@ -83,228 +83,69 @@
                 <OrdersTable />
             </div>
 
-            <!-- side form -->
-
+            <!-- Order Form Sidebar -->
             <div id="side_form_container" class="side-form" :class="{ hidden: !isSideFormVisible }">
                 <div
-                    class="fixed z-50 -top-0.5 left-0 bg-slate-700 bg-opacity-50 h-full w-full shadow-2xl border border-gray-10 flex overflow-y-auto">
-                    <button aria-label="Close" @click="toggleSideForm"
+                    class="fixed z-50 top-0 left-0 bg-zinc-900 bg-opacity-50 h-full w-full shadow-2xl border border-gray-10 flex overflow-y-auto">
+                    <button aria-label="Close" @click="toggleAddOrderForm"
                         class="toggle_side_form_btn absolute top-0 right-2 text-gey-500 m-5 hover:text-gray-700 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <i class="fa fa-xmark"></i>
                     </button>
-                    <div @click="hideSideForm" id="side_form"
+                    <div @click="toggleAddOrderForm" id="side_form"
                         class="w-0 md:w-full sticky top-0 bg-transparent cursor-pointer"></div>
-                    <div id="side_form" class="md:max-w-md p-6 w-full h-fit bg-white rounded-xl">
+                    <div id="side_form" class="md:max-w-md p-6 w-full h-full bg-white rounded-xl">
                         <div class="flex justify-between items-center mb-3">
                             <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
                                 Orders
                             </h2>
                         </div>
                         <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
-                            Fill Order Information
+                            {{ isUpdating ? 'Update Order Information' : 'Add Order Information' }}
                         </p>
-                        <form class="flex flex-col space-y-6 font-['Inter']">
+                        <form @submit.prevent="isUpdating ? handleSubmitUpdate() : handleSubmitAdd()"
+                            class="flex flex-col space-y-6 font-['Inter']">
                             <div>
-                                <label for="siteType"
-                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                    Client</label>
-                                <select id="siteType"
-                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48L3N2Zz4=')] bg-no-repeat bg-[right_1rem_center] bg-[length:1.25em]">
-                                    <option value="" disabled selected>
-                                        Select Client
-                                    </option>
-                                    <option value="residential">
-                                        Residential
-                                    </option>
-                                    <option value="commercial">
-                                        Commercial
-                                    </option>
-                                    <option value="industrial">
-                                        Industrial
-                                    </option>
-                                    <option value="mixed-use">Mixed-Use</option>
-                                </select>
+                                <label
+                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Client</label>
+                                <input v-model="form.client" type="text"
+                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3"
+                                    placeholder="Client name" />
                             </div>
                             <div>
-                                <label for="siteType"
-                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                    Driver</label>
-                                <select id="siteType"
-                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48L3N2Zz4=')] bg-no-repeat bg-[right_1rem_center] bg-[length:1.25em]">
-                                    <option value="" disabled selected>
-                                        Select Driver
-                                    </option>
-                                    <option value="residential">
-                                        Residential
-                                    </option>
-                                    <option value="commercial">
-                                        Commercial
-                                    </option>
-                                    <option value="industrial">
-                                        Industrial
-                                    </option>
-                                    <option value="mixed-use">Mixed-Use</option>
-                                </select>
+                                <label
+                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Driver</label>
+                                <input v-model="form.driver" type="text"
+                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3"
+                                    placeholder="Driver name" />
                             </div>
                             <div>
-                                <label for="siteType"
-                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                    Vehicle</label>
-                                <select id="siteType"
-                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48L3N2Zz4=')] bg-no-repeat bg-[right_1rem_center] bg-[length:1.25em]">
-                                    <option value="" disabled selected>
-                                        Select Vehicle
-                                    </option>
-                                    <option value="residential">
-                                        Residential
-                                    </option>
-                                    <option value="commercial">
-                                        Commercial
-                                    </option>
-                                    <option value="industrial">
-                                        Industrial
-                                    </option>
-                                    <option value="mixed-use">Mixed-Use</option>
-                                </select>
+                                <label
+                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Vehicle</label>
+                                <input v-model="form.vehicle" type="text"
+                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3"
+                                    placeholder="Vehicle" />
                             </div>
                             <div>
-                                <label for="siteType"
-                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                    Load Type
-                                </label>
-                                <select id="siteType"
-                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48L3N2Zz4=')] bg-no-repeat bg-[right_1rem_center] bg-[length:1.25em]">
-                                    <option value="" disabled selected>
-                                        Select Load Type
-                                    </option>
-                                    <option value="residential">
-                                        Residential
-                                    </option>
-                                    <option value="commercial">
-                                        Commercial
-                                    </option>
-                                    <option value="industrial">
-                                        Industrial
-                                    </option>
-                                    <option value="mixed-use">Mixed-Use</option>
-                                </select>
+                                <label class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Load
+                                    Type</label>
+                                <input v-model="form.load_type" type="text"
+                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3"
+                                    placeholder="Load Type" />
                             </div>
                             <div>
-                                <label for="siteType"
-                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                    Loading Place</label>
-                                <select id="siteType"
-                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48L3N2Zz4=')] bg-no-repeat bg-[right_1rem_center] bg-[length:1.25em]">
-                                    <option value="" disabled selected>
-                                        Select Loading Place
-                                    </option>
-                                    <option value="residential">
-                                        Residential
-                                    </option>
-                                    <option value="commercial">
-                                        Commercial
-                                    </option>
-                                    <option value="industrial">
-                                        Industrial
-                                    </option>
-                                    <option value="mixed-use">Mixed-Use</option>
-                                </select>
+                                <label
+                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Destination</label>
+                                <input v-model="form.destination" type="text"
+                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3"
+                                    placeholder="Destination" />
                             </div>
-                            <div>
-                                <label for="siteType"
-                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                    Destination</label>
-                                <select id="siteType"
-                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48L3N2Zz4=')] bg-no-repeat bg-[right_1rem_center] bg-[length:1.25em]">
-                                    <option value="" disabled selected>
-                                        Select Destination
-                                    </option>
-                                    <option value="residential">
-                                        Residential
-                                    </option>
-                                    <option value="commercial">
-                                        Commercial
-                                    </option>
-                                    <option value="industrial">
-                                        Industrial
-                                    </option>
-                                    <option value="mixed-use">Mixed-Use</option>
-                                </select>
+                            <div v-if="error" class="text-red-500 text-sm ">
+                                {{ error }}
                             </div>
-                            <div>
-                                <label for="siteQuintal"
-                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Quintal</label>
-                                <input id="siteQuintal" type="number"
-                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                    placeholder="Enter site name" />
-                            </div>
-
-                            <div class="space-y-3">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="latitude"
-                                            class="block text-xs font-medium text-gray-600 mb-2 tracking-wider">Sub
-                                            Tarrif</label>
-                                        <input id="latitude" type="number"
-                                            class="w-full rounded-xl border border-gray-300/80 px-4 py-2.5 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 bg-white/95 shadow-sm"
-                                            placeholder="Sub Tarrif" />
-                                    </div>
-                                    <div>
-                                        <label for="longitude"
-                                            class="block text-xs font-medium text-gray-600 mb-2 tracking-wider">Given
-                                            Tarrif</label>
-                                        <input id="longitude" type="number"
-                                            class="w-full rounded-xl border border-gray-300/80 px-4 py-2.5 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 bg-white/95 shadow-sm"
-                                            placeholder="Given Tarrif" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="longitude"
-                                            class="block text-xs font-medium text-gray-600 mb-2 tracking-wider">Loading
-                                            Date</label>
-                                        <input id="longitude" type="date"
-                                            class="w-full rounded-xl border border-gray-300/80 px-4 py-2.5 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 bg-white/95 shadow-sm"
-                                            placeholder="Loading Date" />
-                                    </div>
-                                    <div>
-                                        <label for="latitude"
-                                            class="block text-xs font-medium text-gray-600 mb-2 tracking-wider">Arrival
-                                            Date</label>
-                                        <input id="latitude" type="date"
-                                            class="w-full rounded-xl border border-gray-300/80 px-4 py-2.5 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 bg-white/95 shadow-sm"
-                                            placeholder="Sub Tarrif" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label for="siteType"
-                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                    Condition</label>
-                                <select id="siteType"
-                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48L3N2Zz4=')] bg-no-repeat bg-[right_1rem_center] bg-[length:1.25em]">
-                                    <option value="" disabled selected>
-                                        Select Loading Place
-                                    </option>
-                                    <option value="residential">
-                                        Residential
-                                    </option>
-                                    <option value="commercial">
-                                        Commercial
-                                    </option>
-                                </select>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <button type="submit"
+                            <button :disabled="loading" type="submit"
                                 class="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg">
-                                SAVE CHANGES
+                                <span v-if="!loading">{{ isUpdating ? 'Update' : 'SAVE' }}</span>
+                                <span v-else>Processing...</span>
                             </button>
                         </form>
                     </div>
