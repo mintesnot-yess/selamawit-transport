@@ -14,7 +14,7 @@ const toggleDark = useToggle(isDark)
 </script>
 
 <template>
-    <label class="px-4 py-2 text-base text-gray-700 hover:bg-gray-100 gap-2 flex items-center text-nowrap">
+    <label class="px-4 w-full py-2 text-base text-gray-700 hover:bg-gray-100 gap-2 flex items-center text-nowrap">
         <i class="fa fa-moon"></i>
         <span class="text-sm font-medium">Dark Mode</span>
         <div class="ml-10">

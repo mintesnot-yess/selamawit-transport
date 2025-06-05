@@ -14,6 +14,9 @@ import Clients from "@/pages/Clients.vue";
 import Employees from "@/pages/Employees.vue";
 import ExpenseTypes from "@/pages/ExpenseTypes.vue";
 import Expenses from "@/pages/Expenses.vue";
+import Locations from "@/pages/Locations.vue";
+import LoadTypes from "@/pages/LoadTypes.vue";
+import Logs from "@/pages/Logs.vue";
 
 
 const routes = [
@@ -107,6 +110,24 @@ const routes = [
     path: "/expense",
     name: "Expense",
     component: Expenses,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/location",
+    name: "Location",
+    component: Locations,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/load_types",
+    name: "LoadTypes",
+    component: LoadTypes,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/logs",
+    name: "Logs",
+    component: Logs,
     meta: { requiresAuth: true } // Requires authentication
   },
 

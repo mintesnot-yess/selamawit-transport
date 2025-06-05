@@ -15,8 +15,21 @@ class LoadTypeController extends Controller
      */
     public function index()
     {
-        $loadTypes = LoadType::all();
-        return response()->json(["data" => $loadTypes]);
+        $perPage = request()->input('per_page', 15);
+        $loadTypes = LoadType::paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $loadTypes->items(),
+            'meta' => [
+                'current_page' => $loadTypes->currentPage(),
+                'per_page' => $loadTypes->perPage(),
+                'total' => $loadTypes->total(),
+                'last_page' => $loadTypes->lastPage(),
+                'from' => $loadTypes->firstItem(),
+                'to' => $loadTypes->lastItem()
+            ]
+        ]);
     }
 
     /**

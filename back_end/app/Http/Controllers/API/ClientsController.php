@@ -7,9 +7,34 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+require_once app_path('Helpers/Logger.php');
+
 
 class ClientsController extends Controller
 {
+
+
+    // Add other CRUD methods as needed
+    public function index()
+    {
+
+        $clients = Client::all();
+        $perPage = request()->input('per_page', 15);
+        $clients = Client::paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $clients->items(),
+            'meta' => [
+                'current_page' => $clients->currentPage(),
+                'per_page' => $clients->perPage(),
+                'total' => $clients->total(),
+                'last_page' => $clients->lastPage(),
+                'from' => $clients->firstItem(),
+                'to' => $clients->lastItem()
+            ]
+        ]);
+    }
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -37,6 +62,7 @@ class ClientsController extends Controller
             "created_by" => Auth::id(),
             "updated_by" => Auth::id(),
         ]);
+        log_action('Created ' . class_basename($client) . ' #' . $client->id);
 
         return response()->json(
             [
@@ -46,29 +72,6 @@ class ClientsController extends Controller
             201
         );
     }
-
-    // Add other CRUD methods as needed
-    public function index()
-    {
-
-        $clients = Client::all();
-        $perPage = request()->input('per_page', 15);
-        $clients = Client::paginate($perPage);
-
-        return response()->json([
-            'success' => true,
-            'data' => $clients->items(),
-            'meta' => [
-                'current_page' => $clients->currentPage(),
-                'per_page' => $clients->perPage(),
-                'total' => $clients->total(),
-                'last_page' => $clients->lastPage(),
-                'from' => $clients->firstItem(),
-                'to' => $clients->lastItem()
-            ]
-        ]);
-    }
-
     public function show($id)
     {
         $client = Client::find($id);
@@ -112,6 +115,8 @@ class ClientsController extends Controller
         $client->updated_by = Auth::id();
         $client->save();
 
+        log_action('Updated ' . class_basename($client) . ' #' . $client->id);
+
         return response()->json([
             "message" => "Client updated successfully",
             "customer" => $client,
@@ -127,6 +132,8 @@ class ClientsController extends Controller
         }
 
         $client->delete();
+
+        log_action('Deleted ' . class_basename($client) . ' #' . $client->id);
 
         return response()->json([
             "message" => "Client deleted successfully"

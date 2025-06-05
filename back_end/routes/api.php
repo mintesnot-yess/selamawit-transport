@@ -20,8 +20,11 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post("/register", [AuthController::class, "register"]);
 Route::post("/login", [AuthController::class, "login"]);
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
-Route::post('/reset-password', [ForgotPasswordController::class, 'reset']);
+Route::post("/forgot-password", [
+    ForgotPasswordController::class,
+    "sendResetLinkEmail",
+]);
+Route::post("/reset-password", [ForgotPasswordController::class, "reset"]);
 
 // Authenticated routes
 Route::middleware("auth:sanctum")->group(function () {
@@ -32,87 +35,108 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post("/logout", [AuthController::class, "logout"]);
 
     // Bank routes
-    Route::prefix('banks')->group(function () {
-        Route::get('/', [BankController::class, 'index']);
-        Route::post('/', [BankController::class, 'store']);
-        Route::get('/search', [BankController::class, 'search']);
-        Route::delete('/{id}', [BankController::class, 'destroy']);
-        Route::put('/{id}', [BankController::class, 'update']);
+    Route::prefix("banks")->group(function () {
+        Route::get("/", [BankController::class, "index"]);
+        Route::post("/", [BankController::class, "store"]);
+        Route::get("/search", [BankController::class, "search"]);
+        Route::delete("/{id}", [BankController::class, "destroy"]);
+        Route::put("/{id}", [BankController::class, "update"]);
         // Add other bank routes as needed
-    }); // Bank Accounts routes
+    });
 
-    Route::prefix('bank-accounts')->group(function () {
-        Route::get('/{bankId}', [BankAccountController::class, 'index']);
-        Route::post('/', [BankAccountController::class, 'store']);
-        Route::get('/search/{id}', [BankAccountController::class, 'search']);
-        Route::delete('/{id}', [BankAccountController::class, 'destroy']);
-        Route::put('/{id}', [BankAccountController::class, 'update']);
+    // Bank Accounts routes
+    Route::prefix("bank-accounts")->group(function () {
+        Route::get("/{bankId}", [BankAccountController::class, "index"]);
+        Route::post("/", [BankAccountController::class, "store"]);
+        Route::get("/search/{id}", [BankAccountController::class, "search"]);
+        Route::delete("/{id}", [BankAccountController::class, "destroy"]);
+        Route::put("/{id}", [BankAccountController::class, "update"]);
         // Add other bank account routes as needed
     });
 
     // Vehicle routes
-    Route::prefix('vehicles')->group(function () {
-        Route::get('/', [VehicleController::class, 'index']);
-        Route::get('/{id}', [VehicleController::class, 'show']);
-        Route::post('/', [VehicleController::class, 'store']);
-        Route::get('/search', [VehicleController::class, 'search']);
-        Route::delete('/{id}', [VehicleController::class, 'destroy']);
-        Route::put('/{id}', [VehicleController::class, 'update']);
+    Route::prefix("vehicles")->group(function () {
+        Route::get("/", [VehicleController::class, "index"]);
+        Route::get("/{id}", [VehicleController::class, "show"]);
+        Route::post("/", [VehicleController::class, "store"]);
+        Route::get("/search", [VehicleController::class, "search"]);
+        Route::delete("/{id}", [VehicleController::class, "destroy"]);
+        Route::put("/{id}", [VehicleController::class, "update"]);
         // Add other vehicle routes as needed
     });
 
     // Customer routes
-    Route::prefix('clients')->group(function () {
-        Route::get('/', [ClientsController::class, 'index']);
-        Route::post('/', [ClientsController::class, 'store']);
-        Route::get('/search', [ClientsController::class, 'search']);
-        Route::delete('/{id}', [ClientsController::class, 'destroy']);
-        Route::put('/{id}', [ClientsController::class, 'update']);
-        // Add other vehicle routes as needed
-    });
-    // Customer routes
-    Route::prefix('employees')->group(function () {
-        Route::get('/', [EmployeeController::class, 'index']);
-        Route::post('/', [EmployeeController::class, 'store']);
-        Route::delete('/{id}', [EmployeeController::class, 'destroy']);
-        Route::put('/{id}', [EmployeeController::class, 'update']);
-        // Add other vehicle routes as needed
+    Route::prefix("clients")->group(function () {
+        Route::get("/", [ClientsController::class, "index"]);
+        Route::post("/", [ClientsController::class, "store"]);
+        Route::get("/search", [ClientsController::class, "search"]);
+        Route::delete("/{id}", [ClientsController::class, "destroy"]);
+        Route::put("/{id}", [ClientsController::class, "update"]);
+        // Add other client routes as needed
     });
 
+    // Employee routes
+    Route::prefix("employees")->group(function () {
+        Route::get("/", [EmployeeController::class, "index"]);
+        Route::post("/", [EmployeeController::class, "store"]);
+        Route::delete("/{id}", [EmployeeController::class, "destroy"]);
+        Route::put("/{id}", [EmployeeController::class, "update"]);
+        // Add other employee routes as needed
+    });
 
     // Expense Type routes
-    Route::prefix('expense-types')->group(function () {
-        Route::get('/', [ExpenseTypeController::class, 'index']);
-        Route::post('/', [ExpenseTypeController::class, 'store']);
-        Route::get('/search', [ExpenseTypeController::class, 'search']);
-        Route::delete('/{id}', [ExpenseTypeController::class, 'destroy']);
-        Route::put('/{id}', [ExpenseTypeController::class, 'update']);
+    Route::prefix("expense-types")->group(function () {
+        Route::get("/", [ExpenseTypeController::class, "index"]);
+        Route::post("/", [ExpenseTypeController::class, "store"]);
+        Route::get("/search", [ExpenseTypeController::class, "search"]);
+        Route::delete("/{id}", [ExpenseTypeController::class, "destroy"]);
+        Route::put("/{id}", [ExpenseTypeController::class, "update"]);
         // Add other expense type routes as needed
     });
 
     // Expense routes
-    Route::prefix('expenses')->group(function () {
-        Route::get('/', [ExpenseController::class, 'index']);
-        Route::post('/', [ExpenseController::class, 'store']);
-        Route::get('/search', [ExpenseController::class, 'search']);
-        Route::delete('/{id}', [ExpenseController::class, 'destroy']);
-        Route::put('/{id}', [ExpenseController::class, 'update']);
+    Route::prefix("expenses")->group(function () {
+        Route::get("/", [ExpenseController::class, "index"]);
+        Route::post("/", [ExpenseController::class, "store"]);
+        Route::get("/search", [ExpenseController::class, "search"]);
+        Route::delete("/{id}", [ExpenseController::class, "destroy"]);
+        Route::put("/{id}", [ExpenseController::class, "update"]);
         // Add other expense routes as needed
     });
 
-    // Load Type routes
-    Route::apiResource('load-types', LoadTypeController::class);
+    // Load Type crud routes
+    Route::prefix("load-types")->group(function () {
+        Route::get("/", [LoadTypeController::class, "index"]);
+        Route::post("/", [LoadTypeController::class, "store"]);
+        Route::get("/search", [LoadTypeController::class, "search"]);
+        Route::get("/{id}", [LoadTypeController::class, "show"]);
+        Route::put("/{id}", [LoadTypeController::class, "update"]);
+        Route::delete("/{id}", [LoadTypeController::class, "destroy"]);
+    });
 
-    // Location routes
-    Route::apiResource('locations', LocationController::class);
+    // Location crud routes
+    Route::prefix("locations")->group(function () {
+        Route::get("/", [LocationController::class, "index"]);
+        Route::post("/", [LocationController::class, "store"]);
+        Route::get("/search", [LocationController::class, "search"]);
+        Route::get("/{id}", [LocationController::class, "show"]);
+        Route::put("/{id}", [LocationController::class, "update"]);
+        Route::delete("/{id}", [LocationController::class, "destroy"]);
+    });
 
     // Order routes
-    Route::apiResource('orders', OrderController::class);
+    Route::prefix('orders')->group(function () {
+        Route::apiResource('/', OrderController::class);
+    });
 
     // Income routes
-    Route::apiResource('incomes', IncomeController::class);
+    Route::prefix('incomes')->group(function () {
+        Route::apiResource('/', IncomeController::class);
+    });
 
     // Log routes
-    Route::get("/logs", [LogController::class, "index"]);
-    Route::get("/logs/{log}", [LogController::class, "show"]);
+    Route::prefix('logs')->group(function () {
+        Route::get('/', [LogController::class, 'index']);
+        Route::get('/{log}', [LogController::class, 'show']);
+    });
 });

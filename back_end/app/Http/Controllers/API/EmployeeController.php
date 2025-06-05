@@ -7,6 +7,7 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+require_once app_path('Helpers/Logger.php');
 
 class EmployeeController extends Controller
 {
@@ -55,6 +56,8 @@ class EmployeeController extends Controller
             "updated_by" => Auth::id(),
         ]);
 
+        log_action('Created ' . class_basename($employee) . ' #' . $employee->id);
+
         return response()->json($employee, 201);
     }
 
@@ -82,12 +85,18 @@ class EmployeeController extends Controller
 
         $employee->update($request->all() + ["updated_by" => Auth::id()]);
 
+        log_action('Updated ' . class_basename($employee) . ' #' . $employee->id);
+
         return response()->json($employee);
     }
 
     public function destroy($id)
     {
-        Employee::findOrFail($id)->delete();
+        $employee = Employee::findOrFail($id);
+        $employee->delete();
+
+        log_action('Deleted ' . class_basename($employee) . ' #' . $employee->id);
+
         return response()->json(null, 204);
     }
 }

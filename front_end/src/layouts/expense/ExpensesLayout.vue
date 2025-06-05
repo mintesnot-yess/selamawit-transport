@@ -61,7 +61,7 @@
                                     expense
                                 </template> -->
                             </p>
-                            <!-- Filterable Buttons -->
+                            <!-- Filterable Buttons
                             <div class="flex gap-2 mt-2">
                                 <button :class="[
                                     'px-3 py-1 rounded-md text-xs font-semibold border transition-colors',
@@ -81,7 +81,7 @@
                                 ]" @click="filterType = 'PRIVATE'; fetchVehicles(1)">
                                     Private
                                 </button>
-                            </div>
+                            </div> -->
                         </div>
                         <button @click="openAddVehicleForm"
                             class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">

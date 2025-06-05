@@ -15,8 +15,21 @@ class LocationController extends Controller
      */
     public function index()
     {
-        $locations = Location::all();
-        return response()->json(["data" => $locations]);
+        $perPage = request()->input('per_page', 15);
+        $locations = Location::paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $locations->items(),
+            'meta' => [
+                'current_page' => $locations->currentPage(),
+                'per_page' => $locations->perPage(),
+                'total' => $locations->total(),
+                'last_page' => $locations->lastPage(),
+                'from' => $locations->firstItem(),
+                'to' => $locations->lastItem()
+            ]
+        ]);
     }
 
     /**

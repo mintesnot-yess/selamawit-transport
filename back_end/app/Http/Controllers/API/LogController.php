@@ -14,6 +14,8 @@ class LogController extends Controller
      */
     public function index(Request $request)
     {
+        $perPage = $request->input('per_page', 15);
+
         $query = Log::with("user")->latest();
 
         // Add filters if needed
@@ -25,15 +27,19 @@ class LogController extends Controller
             $query->where("user_id", $request->user_id);
         }
 
-        $logs = $query->paginate(25);
+        $logs = $query->paginate($perPage);
 
         return response()->json([
-            "data" => $logs->items(),
-            "meta" => [
-                "current_page" => $logs->currentPage(),
-                "total" => $logs->total(),
-                "per_page" => $logs->perPage(),
-            ],
+            'success' => true,
+            'data' => $logs->items(),
+            'meta' => [
+                'current_page' => $logs->currentPage(),
+                'per_page' => $logs->perPage(),
+                'total' => $logs->total(),
+                'last_page' => $logs->lastPage(),
+                'from' => $logs->firstItem(),
+                'to' => $logs->lastItem()
+            ]
         ]);
     }
 

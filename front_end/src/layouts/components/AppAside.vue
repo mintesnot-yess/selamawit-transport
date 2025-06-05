@@ -89,18 +89,19 @@
                     </router-link>
                 </li>
                 <li>
-                    <button
+                    <router-link to="/location" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100"
                         class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors">
                         <i class="fa fa-location text-xl opacity-70 w-5"></i>
                         <span class="sidebar-text">Location</span>
-                    </button>
+                    </router-link>
                 </li>
                 <li>
-                    <button
+
+                    <router-link to="/load_types" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100"
                         class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors">
                         <img class="w-6 invert" src="../../assets/load.png" alt="">
                         <span class="sidebar-text">Load Type</span>
-                    </button>
+                    </router-link>
                 </li>
                 <li>
                     <router-link to="/banks" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100"
@@ -131,11 +132,11 @@
                     </button>
                 </li>
                 <li>
-                    <button
-                        class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors cursor-pointer ">
-                        <img class="w-5 h-4 invert" src="../../assets/users.png" alt="">
-                        <span class="sidebar-text">Employees</span>
-                    </button>
+                    <router-link to="/logs" active-class="bg-accent-100 text-accent-700 hover:bg-accent-100"
+                        class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-surface-100 font-medium text-surface-700 transition-colors cursor-pointer">
+                        <i class="fa-solid ext-xl opacity-70 w-5 fa-bars-progress"></i>
+                        <span class="sidebar-text">Logs</span>
+                    </router-link>
                 </li>
             </ul>
         </div>
