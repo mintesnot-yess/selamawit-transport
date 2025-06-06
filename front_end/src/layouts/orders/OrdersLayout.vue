@@ -162,22 +162,22 @@
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
                                             <span v-if="order.client" class="text-surface-800">{{ order.client.name
-                                                }}</span>
+                                            }}</span>
                                             <span v-else class="text-surface-300 italic">N/A</span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
                                             <div v-if="order.vehicle" class="flex flex-col">
                                                 <span class="font-medium text-surface-800">{{ order.vehicle.plate_number
-                                                    }}</span>
+                                                }}</span>
                                                 <span class="text-xs text-surface-400">{{ order.vehicle.vehicle_name
-                                                    }}</span>
+                                                }}</span>
                                             </div>
                                             <span v-else class="text-surface-300 italic">N/A</span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
                                             <div v-if="order.employee" class="flex flex-col">
                                                 <span class="font-medium text-surface-800">{{ order.employee.first_name
-                                                    }} {{ order.employee.last_name }}</span>
+                                                }} {{ order.employee.last_name }}</span>
                                                 <span class="text-xs text-surface-400">Driver</span>
                                             </div>
                                             <span v-else class="text-surface-300 italic">N/A</span>
@@ -297,11 +297,11 @@
                             {{ isUpdating ? 'Update Order Information' : 'Add Order Information' }}
                         </p>
                         <form @submit.prevent="isUpdating ? handleSubmitUpdate() : handleSubmitAdd()"
-                            class="flex flex-col space-y-6 font-['Inter']">
+                            class="flex flex-col space-y-6 font-['Inter']" novalidate>
                             <div>
                                 <label
                                     class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Client</label>
-                                <select v-model="form.client_id"
+                                <select v-model="form.client_id" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3">
                                     <option value="">Select client</option>
                                     <option v-for="client in clients" :key="client.id" :value="client.id">
@@ -312,7 +312,7 @@
                             <div>
                                 <label
                                     class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Driver</label>
-                                <select v-model="form.employee_id"
+                                <select v-model="form.employee_id" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3">
                                     <option value="">Select driver</option>
                                     <option v-for="employee in employees" :key="employee.id" :value="employee.id">
@@ -323,7 +323,7 @@
                             <div>
                                 <label
                                     class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Vehicle</label>
-                                <select v-model="form.vehicle_id"
+                                <select v-model="form.vehicle_id" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3">
                                     <option value="">Select vehicle</option>
                                     <option v-for="vehicle in vehicles" :key="vehicle.id" :value="vehicle.id">
@@ -334,7 +334,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Load
                                     Type</label>
-                                <select v-model="form.load_type_id"
+                                <select v-model="form.load_type_id" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3">
                                     <option value="">Select load type</option>
                                     <option v-for="type in loadTypes" :key="type.id" :value="type.id">
@@ -345,7 +345,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Loading
                                     Place</label>
-                                <select v-model="form.loading_place"
+                                <select v-model="form.loading_place" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3">
                                     <option value="">Select loading place</option>
                                     <option v-for="location in locations" :key="location.id" :value="location.id">
@@ -353,11 +353,10 @@
                                     </option>
                                 </select>
                             </div>
-
                             <div>
                                 <label
                                     class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Destination</label>
-                                <select v-model="form.destination"
+                                <select v-model="form.destination" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3">
                                     <option value="">Select destination</option>
                                     <option v-for="location in locations" :key="location.id" :value="location.id">
@@ -368,21 +367,21 @@
                             <div>
                                 <label
                                     class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Quintal</label>
-                                <input v-model.number="form.quintal" type="number" step="0.01"
+                                <input v-model.number="form.quintal" type="number" step="0.01" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3"
                                     placeholder="Quintal" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Given
                                     Tariff</label>
-                                <input v-model.number="form.given_tariff" type="number" step="0.01"
+                                <input v-model.number="form.given_tariff" type="number" step="0.01" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3"
                                     placeholder="Given Tariff" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Sub
                                     Tariff</label>
-                                <input v-model.number="form.sub_tariff" type="number" step="0.01"
+                                <input v-model.number="form.sub_tariff" type="number" step="0.01" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3"
                                     placeholder="Sub Tariff" />
                             </div>
@@ -390,19 +389,19 @@
                                 <label class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Arrival at
                                     Loading
                                     Site</label>
-                                <input v-model="form.arrival_at_loading_site" type="date"
+                                <input v-model="form.arrival_at_loading_site" type="date" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Loading
                                     Date</label>
-                                <input v-model="form.loading_date" type="date"
+                                <input v-model="form.loading_date" type="date" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">Current
                                     Condition</label>
-                                <select v-model="form.current_condition"
+                                <select v-model="form.current_condition" required
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3">
                                     <option value="">Select condition</option>
                                     <option value="OFFLOADED">OFFLOADED</option>
@@ -537,6 +536,16 @@ export default {
             this.loading = true;
             this.error = null;
             // If editingOrder is set, update the order, else create new
+            // make Validation
+            if (!this.form.client_id || !this.form.employee_id || !this.form.vehicle_id ||
+                !this.form.loading_place || !this.form.destination || !this.form.load_type_id ||
+                this.form.quintal === null || this.form.given_tariff === null ||
+                this.form.sub_tariff === null || !this.form.arrival_at_loading_site ||
+                !this.form.loading_date || !this.form.current_condition) {
+                this.error = "Please fill all required fields";
+                this.loading = false;
+                return;
+            }
 
             try {
                 const response = await orderService.store(this.form);

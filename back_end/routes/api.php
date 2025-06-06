@@ -14,6 +14,8 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\IncomeController;
 use App\Http\Controllers\API\LogController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -143,5 +145,34 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::prefix('logs')->group(function () {
         Route::get('/', [LogController::class, 'index']);
         Route::get('/{log}', [LogController::class, 'show']);
+    });
+
+
+    // Ensure only authorized users (e.g., admins) can create roles
+    Route::prefix('roles')->group(function () {
+        Route::get('/', [RoleController::class, 'index']);
+        Route::post('/', [RoleController::class, 'store']);
+        Route::get('/search', [RoleController::class, 'search']);
+        Route::get('/{role}', [RoleController::class, 'show']);
+        Route::put('/{role}', [RoleController::class, 'update']);
+        Route::delete('/{role}', [RoleController::class, 'destroy']);
+        Route::post('/{role}/permissions', [RoleController::class, 'updatePermissions']); // Existing POST endpoint
+        Route::get('/{role}/permissions', [RoleController::class, 'getPermissions']); // New GET endpoint
+        Route::match(['get', 'post'], '/{role}/permissions', [RoleController::class, 'handlePermissions']);
+
+
+
+    });
+
+
+    Route::prefix('permissions')->group(function () {
+
+        Route::get('/', [PermissionController::class, 'index']);
+        Route::post('/', [PermissionController::class, 'store']);
+        Route::get('/{role}', [PermissionController::class, 'show']);
+        Route::get('/search', [PermissionController::class, 'search']);
+
+        Route::put('/{role}', [PermissionController::class, 'update']);
+        Route::delete('/{role}', [PermissionController::class, 'destroy']);
     });
 });

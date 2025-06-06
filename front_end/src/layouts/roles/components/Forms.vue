@@ -69,7 +69,8 @@ export default {
                 // Reset form
                 this.form.name = "";
                 // return to the show tables
- 
+                this.$router.push('banks');
+
 
                 // Optionally fetch updated bank list
                 // await this.$store.dispatch('fetchBanks');

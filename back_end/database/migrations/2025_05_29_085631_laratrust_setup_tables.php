@@ -19,6 +19,8 @@ class LaratrustSetupTables extends Migration
             $table->string('name')->unique();
             $table->string('display_name')->nullable();
             $table->string('description')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable(); // Make it nullable
+            $table->unsignedBigInteger('updated_by')->nullable(); // Also include updated_by for consist
             $table->timestamps();
         });
 
@@ -28,6 +30,7 @@ class LaratrustSetupTables extends Migration
             $table->string('name')->unique();
             $table->string('display_name')->nullable();
             $table->string('description')->nullable();
+
             $table->timestamps();
         });
 

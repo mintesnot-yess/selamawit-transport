@@ -7,12 +7,12 @@
             <span></span>
             <div class="flex items-center gap-3">
 
-                <form @input.prevent="searchClients(searchQuery)"
+                <form @input.prevent="searchRoles(searchQuery)"
                     class="flex items-center border border-surface-300 rounded-lg px-2 py-2 text-surface-500 max-w-md w-full focus-within:ring-2 focus-within:ring-accent-500 focus-within:border-accent-500 transition-all">
                     <i class="fas fa-search mr-2 text-sm"></i>
                     <input v-model="searchQuery" @input="handleSearchInput"
                         class="flex-1 outline-none text-sm text-surface-700 placeholder:text-surface-400 bg-transparent"
-                        placeholder="Search clients..." type="search" />
+                        placeholder="Search roles..." type="search" />
                     <button v-if="searchQuery" @click="clearSearch" type="button"
                         class="ml-2 text-surface-400 hover:text-surface-600">
                         <i class="fas fa-times"></i>
@@ -30,26 +30,29 @@
             </div>
         </header>
 
+
+
+
         <main class="p-4 md:p-6 space-y-6">
-            <!-- Client Table -->
+            <!-- Roles Table -->
             <div class="bg-white rounded-xl shadow-sm border border-surface-200">
                 <div class="px-6 py-4 border-b border-surface-200">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h2 class="text-lg font-semibold text-surface-900">Clients</h2>
+                            <h2 class="text-lg font-semibold text-surface-900">Roles</h2>
                             <p class="text-sm text-surface-500">
                                 <template v-if="isSearching">Searching...</template>
                                 <template v-else-if="searchError" class="text-red-500">{{ searchError }}</template>
                                 <template v-else>
-                                    Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }}
-                                    Clients
+                                    Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} role
+
                                 </template>
                             </p>
                         </div>
-                        <button @click="openAddClientForm"
+                        <button @click="openAddRoleForm"
                             class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
                             <i class="fas fa-plus"></i>
-                            <span>Add Client</span>
+                            <span>Add Role</span>
                         </button>
                     </div>
                 </div>
@@ -62,22 +65,13 @@
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
                                     #
                                 </th>
-
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Name
+                                    Role Name
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Contact Person
-                                </th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Address
-                                </th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Phone
+                                    Permissions
                                 </th>
                                 <th scope="col" class="relative px-6 py-3">
                                 </th>
@@ -85,7 +79,7 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-surface-200">
 
-                            <template v-if="loadingClients">
+                            <template v-if="loadingRoles">
                                 <tr v-for="i in 5" :key="`skeleton-${i}`">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="h-4 bg-surface-200 rounded w-1/2 animate-pulse"></div>
@@ -101,61 +95,74 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="h-4 bg-surface-200 rounded w-12 animate-pulse"></div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="h-4 bg-surface-200 rounded w-8 animate-pulse"></div>
                                     </td>
                                 </tr>
                             </template>
 
                             <template v-else>
-                                <tr v-for="client in clients" :key="client.id" class="hover:bg-surface-50">
+                                <tr v-for="role in roles" :key="role.id" class="hover:bg-surface-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-surface-900">
-                                        {{ (pagination.from - 1) + (clients.indexOf(client) + 1) }}
+                                        {{ (pagination.from - 1) + (roles.indexOf(role) + 1) }}
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-8 w-8">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-user-cog-icon lucide-user-cog">
+                                                    <path d="M10 15H6a4 4 0 0 0-4 4v2" />
+                                                    <path d="m14.305 16.53.923-.382" />
+                                                    <path d="m15.228 13.852-.923-.383" />
+                                                    <path d="m16.852 12.228-.383-.923" />
+                                                    <path d="m16.852 17.772-.383.924" />
+                                                    <path d="m19.148 12.228.383-.923" />
+                                                    <path d="m19.53 18.696-.382-.924" />
+                                                    <path d="m20.772 13.852.924-.383" />
+                                                    <path d="m20.772 16.148.924.383" />
+                                                    <circle cx="18" cy="15" r="3" />
+                                                    <circle cx="9" cy="7" r="4" />
+                                                </svg>
+                                            </div>
+                                            <div class="ml-4">
 
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
-                                        data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            client.name
-                                        }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
-                                        data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            client.contact_person
-                                        }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
-                                        data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            client.address
-                                        }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500"
-                                        data-v-inspector="src/layouts/orders/components/Tables.vue:53:21"> {{
-                                            client.phone
-                                        }}
-                                    </td>
+                                                <!-- make it link  permissions?role_id=1 -->
 
+
+                                                <router-link :to="`permissions?role_id=${role.id}`"
+                                                    class="text-sm font-medium text-surface-900 hover:underline">{{
+                                                        role.name
+                                                    }}</router-link>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700">
+                                        <!-- Show permission count, fallback to 0 if not present -->
+                                        <span v-if="role.permissions && Array.isArray(role.permissions)">
+                                            {{ role.permissions.length }}
+                                        </span>
+                                        <span v-else>0</span>
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/client-accounts/${client.id}`)"
-                                            @edit="editClient(client)"
-                                            @delete="confirmDelete(client.id, client.name)" />
+
+                                        <ToggleMenu @show="() => $router.push(`/permissions?role_id=${role.id}`)"
+                                            @edit="editRole(role)" @delete="confirmDelete(role.id, role.name)" />
                                     </td>
                                 </tr>
 
-                                <tr v-if="clients.length === 0 && !loadingVehicles">
+                                <tr v-if="roles.length === 0 && !loadingRoles">
                                     <td colspan="10"
                                         class="px-4 py-8 text-center text-surface-400 text-base font-medium">
-                                        <i class="fas fa-handshake text-2xl mb-2 block"></i>
-                                        No clients found
+                                        <i class="fas fa-building-columns text-2xl mb-2 block"></i>
+                                        No roles found
                                     </td>
                                 </tr>
                             </template>
-
-
-
-
                         </tbody>
-
-                        <!-- With this version -->
-
                     </table>
 
                     <!-- Pagination -->
@@ -180,66 +187,39 @@
                 </div>
             </div>
 
-            <!-- client Form Sidebar -->
+            <!-- Role Form Sidebar -->
             <div id="side_form_container" class="side-form" :class="{ hidden: !isSideFormVisible }">
                 <div
                     class="fixed z-50 top-0 left-0 bg-zinc-900 bg-opacity-50 h-full w-full shadow-2xl border border-gray-10 flex overflow-y-auto">
-                    <button aria-label="Close" @click="toggleAddClientForm"
+                    <button aria-label="Close" @click="toggleAddRoleForm"
                         class="toggle_side_form_btn absolute top-0 right-2 text-gey-500 m-5 hover:text-gray-700 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors duration-200">
                         <i class="fa fa-xmark"></i>
                     </button>
-                    <div @click="toggleAddClientForm" id="side_form"
+                    <div @click="toggleAddRoleForm" id="side_form"
                         class="w-0 md:w-full sticky top-0 bg-transparent cursor-pointer">
                     </div>
                     <div id="side_form" class="md:max-w-md p-6 w-full h-full bg-white rounded-xl">
                         <div class="flex justify-between items-center mb-3">
                             <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
-                                Clients
+                                Roles
                             </h2>
                         </div>
+                        <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
+                            Update Role Information
+                        </p>
+
                         <template v-if="isUpdating">
-
-                            <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
-                                Update Client Information
-                            </p>
-
                             <form @submit.prevent="handleSubmitUpdate"
                                 class="flex flex-col  space-y-6 js font-['Inter']">
                                 <div>
                                     <label for="siteName"
                                         class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Client Name</label>
+                                        Role Name</label>
                                     <input v-model="form.name" id="siteName" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Client name" />
-                                </div>
-                                <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Address</label>
-                                    <input v-model="form.address" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Contact Person" />
-                                </div>
-                                <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Phone</label>
-                                    <input v-model="form.phone" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Contact Person" />
-                                </div>
-                                <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Contact Person</label>
-                                    <input v-model="form.contact_person" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Contact Person" />
+                                        placeholder="Enter Role name" :required="form.isMenuOpen" />
                                     <input type="number" v-model="form.id" hidden>
                                 </div>
-
-
                                 <div v-if="success" class="text-blue-600 text-sm ">
                                     {{ success }}
                                 </div>
@@ -254,46 +234,15 @@
                             </form>
                         </template>
                         <template v-else>
-                            <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
-                                Fill the Client Information
-                            </p>
 
                             <form @submit.prevent="handleSubmitAdd" class="flex flex-col  space-y-6 js font-['Inter']">
                                 <div>
                                     <label for="siteName"
                                         class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Client Name</label>
+                                        Role Name</label>
                                     <input v-model="form.name" id="siteName" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Client name" />
-
-                                </div>
-                                <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Address</label>
-                                    <input v-model="form.address" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Contact Person" />
-
-                                </div>
-                                <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Phone</label>
-                                    <input v-model="form.phone" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Phone" />
-
-                                </div>
-                                <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Contact Person</label>
-                                    <input v-model="form.contact_person" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Contact Person" />
-                                    <input type="number" v-model="form.id" hidden>
+                                        placeholder="Enter Role name" />
                                 </div>
                                 <!-- Error Message -->
                                 <div v-if="error" class="text-red-500 text-sm ">
@@ -315,7 +264,7 @@
 </template>
 
 <script>
-import clientService from '@/services/clients';
+import roleService from '@/services/roles';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
 // import Forms from "./components/Forms.vue";
@@ -332,19 +281,16 @@ export default {
         return {
             form: {
                 name: "",
-                contact_person: "",
-                phone: "",
-                address: "",
                 active: true,
                 isMenuOpen: false,
 
             },
-            clients: [],
+            roles: [],
             loading: false,
-            loadingClients: false,
+            loadingRoles: false,
             error: null,
             success: null,
-            editingClient: null,
+            editingRole: null,
             searchQuery: '',
             isSearching: false,
             isUpdating: false,
@@ -365,13 +311,13 @@ export default {
         };
     },
     async created() {
-        await this.fetchClients();
+        await this.fetchRoles();
     },
     methods: {
-        async fetchClients(page = 1) {
-            this.loadingClients = true;
+        async fetchRoles(page = 1) {
+            this.loadingRoles = true;
             try {
-                const response = await clientService.getAll({
+                const response = await roleService.getAll({
                     page: page,
                     perPage: this.pagination.per_page,
                     search: this.searchQuery
@@ -379,7 +325,7 @@ export default {
 
 
                 // Standardized response handling
-                this.clients = response.data;
+                this.roles = response.data;
 
                 // Ensure meta exists
                 if (!response.meta) {
@@ -397,10 +343,10 @@ export default {
                 this.updatePagination(response.meta);
 
             } catch (error) {
-                console.error('Error fetching clients:', error);
-                this.$toast.error("Failed to load clients: " + error.message);
+                console.error('Error fetching roles:', error);
+                this.$toast.error("Failed to load roles: " + error.message);
             } finally {
-                this.loadingClients = false;
+                this.loadingRoles = false;
             }
         },
 
@@ -408,12 +354,11 @@ export default {
 
             this.loading = true;
             this.error = null;
-            // If editingClient is set, update the client, else create new
+            // If editingRole is set, update the role, else create new
 
             try {
-                const response = await clientService.store(this.form);
-                await this.fetchClients();
-                this.$router.push('clients');
+                const response = await roleService.store(this.form);
+                await this.fetchRoles();
 
 
                 this.form.name = "";
@@ -421,8 +366,8 @@ export default {
 
 
             } catch (error) {
-                this.error = error.response?.data?.message || error.message || "Failed to save client information";
-                console.error("client save error:", error);
+                this.error = error.response?.data?.message || error.message || "Failed to save role information";
+                console.error("Role save error:", error);
             } finally {
                 this.loading = false;
             }
@@ -431,19 +376,19 @@ export default {
             this.loading = true;
             this.error = null;
             this.success = null;
-            // If editingClient is set, update the client, else create new
+            // If editingRole is set, update the role, else create new
 
             try {
-                const response = await clientService.update(this.form.id, this.form);
-                await this.fetchClients();
-                this.success = "client updated successfully"
+                const response = await roleService.update(this.form.id, this.form);
+                await this.fetchRoles();
+                this.success = "Role updated successfully"
 
 
 
 
             } catch (error) {
-                this.error = error.response?.data?.message || error.message || "Failed to save client information";
-                console.error("client save error:", error);
+                this.error = error.response?.data?.message || error.message || "Failed to save role information";
+                console.error("Role save error:", error);
             } finally {
                 this.loading = false;
             }
@@ -467,7 +412,7 @@ export default {
             };
 
         },
-        async searchClients() {
+        async searchRoles() {
             if (!this.searchQuery.trim()) {
                 this.clearSearch();
                 return;
@@ -477,14 +422,14 @@ export default {
             this.searchError = null;
 
             try {
-                const response = await clientService.search({
-                    name: this.searchQuery,
+                const response = await roleService.search({
+                    query: this.searchQuery,
                     page: this.pagination.current_page,
                     perPage: this.pagination.per_page
                 });
 
                 if (response.success) {
-                    this.clients = response.data;
+                    this.roles = response.data;
                     this.updatePagination(response.meta);
                 } else {
                     throw new Error(response.message || 'Invalid response');
@@ -492,7 +437,7 @@ export default {
             } catch (error) {
                 console.error('Search error:', error);
                 this.searchError = typeof error === 'string' ? error : error.message;
-                this.clients = [];
+                this.roles = [];
                 this.$toast.error(`Search failed: ${this.searchError}`);
             } finally {
                 this.isSearching = false;
@@ -502,7 +447,7 @@ export default {
         // Debounced search input handler
         handleSearchInput: debounce(function () {
             if (this.searchQuery.trim().length >= 3) {
-                this.searchClients();
+                this.searchRoles();
             } else if (!this.searchQuery.trim()) {
                 this.clearSearch();
             }
@@ -511,24 +456,24 @@ export default {
         clearSearch() {
             this.searchQuery = '';
             this.searchError = null;
-            this.fetchClients();
+            this.fetchRoles();
         },
         nextPage() {
             if (this.pagination.current_page < this.pagination.last_page) {
                 this.pagination.current_page++;
-                this.loadClients();
+                this.loadRoles();
             }
         },
 
         prevPage() {
             if (this.pagination.current_page > 1) {
                 this.pagination.current_page--;
-                this.loadClients();
+                this.loadRoles();
             }
         },
 
-        async loadClients() {
-            this.loadingClients = true;
+        async loadRoles() {
+            this.loadingRoles = true;
             try {
                 const params = {
                     page: this.pagination.current_page,
@@ -540,29 +485,29 @@ export default {
                     params.q = this.searchQuery.trim();
                 }
 
-                const response = await clientService.getAll(params);
+                const response = await roleService.getAll(params);
 
-                this.clients = response.data || [];
+                this.roles = response.data || [];
                 this.updatePagination(response.meta || {});
 
             } catch (error) {
-                console.error('Error loading clients:', error);
-                this.$toast.error('Failed to load clients');
+                console.error('Error loading roles:', error);
+                this.$toast.error('Failed to load roles');
             } finally {
-                this.loadingClients = false;
+                this.loadingRoles = false;
             }
         },
 
 
 
-        openAddClientForm() {
+        openAddRoleForm() {
             this.isUpdating = false;
 
             this.resetForm();
             this.isSideFormVisible = true;
         },
 
-        toggleAddClientForm() {
+        toggleAddRoleForm() {
             this.isSideFormVisible = !this.isSideFormVisible;
             if (!this.isSideFormVisible) {
                 this.resetForm();
@@ -574,16 +519,16 @@ export default {
             this.error = null;
 
             try {
-                if (this.editingClient) {
-                    await clientService.update(this.editingClient.id, this.form);
-                    this.$toast.success("client updated successfully");
+                if (this.editingRole) {
+                    await roleService.update(this.editingRole.id, this.form);
+                    this.$toast.success("Role updated successfully");
                 } else {
-                    await clientService.store(this.form);
-                    this.$toast.success("client created successfully");
+                    await roleService.store(this.form);
+                    this.$toast.success("Role created successfully");
                 }
 
                 this.closeSideForm();
-                await this.fetchClients();
+                await this.fetchRoles();
             } catch (error) {
                 this.error = error.message;
                 this.$toast.error("Operation failed");
@@ -591,32 +536,28 @@ export default {
                 this.loading = false;
             }
         },
-        // client edit function
-        editClient(client) {
+        // role edit function
+        editRole(role) {
             this.isUpdating = true;
-
             this.form = {
-                name: client.name,
-                contact_person: client.contact_person,
-                phone: client.phone,
-                address: client.address,
-                id: client.id,
+                name: role.name,
+                id: role.id,
             };
             this.isSideFormVisible = true;
 
         },
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} client?`)) {
+            if (confirm(`Are you sure you want to delete ${name} role?`)) {
                 try {
-                    await clientService.delete(id);
-                    await this.fetchClients();
+                    await roleService.delete(id);
+                    await this.fetchRoles();
 
-                    this.$toast.success("client deleted successfully");
+                    this.$toast.success("Role deleted successfully");
 
 
                 } catch (error) {
-                    this.$toast.error("Failed to delete client");
+                    this.$toast.error("Failed to delete role");
                 }
             }
         },
@@ -626,7 +567,7 @@ export default {
                 name: "",
                 active: true
             };
-            this.editingClient = null;
+            this.editingRole = null;
             this.error = null;
         },
 

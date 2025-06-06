@@ -6,5 +6,13 @@ use Laratrust\Models\Role as RoleModel;
 
 class Role extends RoleModel
 {
-    public $guarded = [];
+    public $guarded = [
+        'id',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by'
+
+
+    ];
 }

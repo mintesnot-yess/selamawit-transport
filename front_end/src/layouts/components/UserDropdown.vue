@@ -38,10 +38,10 @@
                             <i class="fa fa-cog"></i>
                             <span>Settings</span>
                         </a>
-                    </li>
+                    </li> 
                     <li class="flex items-center gap-2 px-2 py-2  w-full  transition rounded">
                         <DarkModeToggle />
-                    </li> -->
+                    </li>-->
                 </ul>
                 <!-- Logout -->
                 <div class="border-t px-2 py-3">

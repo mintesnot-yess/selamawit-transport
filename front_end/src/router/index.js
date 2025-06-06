@@ -17,6 +17,8 @@ import Expenses from "@/pages/Expenses.vue";
 import Locations from "@/pages/Locations.vue";
 import LoadTypes from "@/pages/LoadTypes.vue";
 import Logs from "@/pages/Logs.vue";
+import RoleLayout from "@/layouts/roles/RoleLayout.vue";
+import PermissionLayout from "@/layouts/permissions/PermissionLayout.vue";
 
 
 const routes = [
@@ -128,6 +130,24 @@ const routes = [
     path: "/logs",
     name: "Logs",
     component: Logs,
+    meta: { requiresAuth: true } // Requires authentication
+  }, {
+    path: "/new_role",
+    name: "new_role",
+    component: Logs,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+  {
+    path: "/roles",
+    name: "role",
+    component: RoleLayout,
+    meta: { requiresAuth: true } // Requires authentication
+  },
+
+  {
+    path: "/permissions",
+    name: "permissions",
+    component: PermissionLayout,
     meta: { requiresAuth: true } // Requires authentication
   },
 
