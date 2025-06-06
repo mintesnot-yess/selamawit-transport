@@ -1,27 +1,13 @@
 <template>
-    <!-- Sidebar overlay -->
-    <div @click="toggleSidebar" :class="[
-        'fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden',
-        sidebarOpen ? '' : 'hidden',
-    ]" id="sidebar-overlay"></div>
 
-    <!-- Sidebar -->
-    <aside :class="[
-        'fixed md:sticky top-0 w-fit bg-white border-r border-surface-200 h-screen flex flex-col z-50 transition-transform duration-300',
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-    ]">
-        <AppAside />
-    </aside>
 
     <div class="flex-1 flex flex-col">
         <!-- Header with search -->
         <header
             class="sticky top-0 flex items-center justify-between px-4 md:px-6 py-4 border-b border-surface-200 bg-white/80 backdrop-blur-sm z-30">
+            <span></span>
             <div class="flex items-center gap-3">
-                <button @click="toggleSidebar" id="sidebar-toggle"
-                    class="p-2 rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 md:hidden">
-                    <i class="fas fa-bars"></i>
-                </button>
+
                 <form @input.prevent="searchClients(searchQuery)"
                     class="flex items-center border border-surface-300 rounded-lg px-2 py-2 text-surface-500 max-w-md w-full focus-within:ring-2 focus-within:ring-accent-500 focus-within:border-accent-500 transition-all">
                     <i class="fas fa-search mr-2 text-sm"></i>
@@ -160,8 +146,11 @@
                                             @delete="confirmDelete(employee.id, employee.name)" />
                                     </td>
                                 </tr>
-                                <tr v-if="Employees.length === 0 && !loadingClients">
-                                    <td colspan="3" class="px-6 py-4 text-center text-sm text-surface-500">
+
+                                <tr v-if="Employees.length === 0 && !loadingVehicles">
+                                    <td colspan="10"
+                                        class="px-4 py-8 text-center text-surface-400 text-base font-medium">
+                                        <i class="fas fa-users text-2xl mb-2 block"></i>
                                         No Employees found
                                     </td>
                                 </tr>

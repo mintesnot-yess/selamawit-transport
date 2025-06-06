@@ -1,5 +1,6 @@
 <template>
 
+    <AppAside v-if="$route.meta.requiresAuth" />
     <router-view />
 </template>
 

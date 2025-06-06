@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import VehiclesLayout from "@/layouts/vehicles/ExpensesLayout.vue";
+import VehiclesLayout from "../layouts/vehicles/VehiclesLayout.vue";
 </script>
 
 <template>
