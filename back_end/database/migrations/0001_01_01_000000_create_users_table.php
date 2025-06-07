@@ -29,6 +29,8 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
+
+
             $table->rememberToken();
             $table->timestamps();
         });

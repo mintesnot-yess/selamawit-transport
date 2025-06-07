@@ -13,27 +13,28 @@ use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\IncomeController;
 use App\Http\Controllers\API\LogController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Public routes
-Route::post("/register", [AuthController::class, "register"]);
-Route::post("/login", [AuthController::class, "login"]);
-Route::post("/forgot-password", [
-    ForgotPasswordController::class,
-    "sendResetLinkEmail",
-]);
-Route::post("/reset-password", [ForgotPasswordController::class, "reset"]);
 
-// Authenticated routes
+// Public routes
+Route::post("/login", [AuthController::class, "login"]);
+Route::post("/register", [AuthController::class, "register"]);
+
 Route::middleware("auth:sanctum")->group(function () {
-    // User routes
+
+    Route::get("/users", [AuthController::class, "index"]);
+    Route::delete("/user", [AuthController::class, "destroy"]);
+    Route::put("/users/{id}", [AuthController::class, "update"]);
+    // delete
+    Route::delete("/users/{id}", [AuthController::class, "destroy"]);
+
     Route::get("/user", function (Request $request) {
         return $request->user();
     });
+
     Route::post("/logout", [AuthController::class, "logout"]);
 
     // Bank routes
@@ -127,52 +128,55 @@ Route::middleware("auth:sanctum")->group(function () {
     });
 
     // Order routes
-    Route::prefix('orders')->group(function () {
-        Route::get('/', [OrderController::class, 'index']);
-        Route::post('/', [OrderController::class, 'store']);
-        Route::get('/search', [OrderController::class, 'search']);
-        Route::get('/{id}', [OrderController::class, 'show']);
-        Route::put('/{id}', [OrderController::class, 'update']);
-        Route::delete('/{id}', [OrderController::class, 'destroy']);
+    Route::prefix("orders")->group(function () {
+        Route::get("/", [OrderController::class, "index"]);
+        Route::post("/", [OrderController::class, "store"]);
+        Route::get("/search", [OrderController::class, "search"]);
+        Route::get("/{id}", [OrderController::class, "show"]);
+        Route::put("/{id}", [OrderController::class, "update"]);
+        Route::delete("/{id}", [OrderController::class, "destroy"]);
     });
 
     // Income routes
-    Route::prefix('incomes')->group(function () {
-        Route::apiResource('/', IncomeController::class);
+    Route::prefix("incomes")->group(function () {
+        Route::apiResource("/", IncomeController::class);
     });
 
     // Log routes
-    Route::prefix('logs')->group(function () {
-        Route::get('/', [LogController::class, 'index']);
-        Route::get('/{log}', [LogController::class, 'show']);
+    Route::prefix("logs")->group(function () {
+        Route::get("/", [LogController::class, "index"]);
+        Route::get("/{log}", [LogController::class, "show"]);
     });
-
 
     // Ensure only authorized users (e.g., admins) can create roles
-    Route::prefix('roles')->group(function () {
-        Route::get('/', [RoleController::class, 'index']);
-        Route::post('/', [RoleController::class, 'store']);
-        Route::get('/search', [RoleController::class, 'search']);
-        Route::get('/{role}', [RoleController::class, 'show']);
-        Route::put('/{role}', [RoleController::class, 'update']);
-        Route::delete('/{role}', [RoleController::class, 'destroy']);
-        Route::post('/{role}/permissions', [RoleController::class, 'updatePermissions']); // Existing POST endpoint
-        Route::get('/{role}/permissions', [RoleController::class, 'getPermissions']); // New GET endpoint
-        Route::match(['get', 'post'], '/{role}/permissions', [RoleController::class, 'handlePermissions']);
-
-
-
+    Route::prefix("roles")->group(function () {
+        Route::get("/", [RoleController::class, "index"]);
+        Route::post("/", [RoleController::class, "store"]);
+        Route::get("/search", [RoleController::class, "search"]);
+        Route::get("/{role}", [RoleController::class, "show"]);
+        Route::put("/{role}", [RoleController::class, "update"]);
+        Route::delete("/{role}", [RoleController::class, "destroy"]);
+        Route::post("/{role}/permissions", [
+            RoleController::class,
+            "updatePermissions",
+        ]); // Existing POST endpoint
+        Route::get("/{role}/permissions", [
+            RoleController::class,
+            "getPermissions",
+        ]); // New GET endpoint
+        Route::match(["get", "post"], "/{role}/permissions", [
+            RoleController::class,
+            "handlePermissions",
+        ]);
     });
 
+    Route::prefix("permissions")->group(function () {
+        Route::get("/", [PermissionController::class, "index"]);
+        Route::post("/", [PermissionController::class, "store"]);
+        Route::get("/{role}", [PermissionController::class, "show"]);
+        Route::get("/search", [PermissionController::class, "search"]);
 
-    Route::prefix('permissions')->group(function () {
-
-        Route::get('/', [PermissionController::class, 'index']);
-        Route::post('/', [PermissionController::class, 'store']);
-        Route::get('/{role}', [PermissionController::class, 'show']);
-        Route::get('/search', [PermissionController::class, 'search']);
-
-        Route::put('/{role}', [PermissionController::class, 'update']);
-        Route::delete('/{role}', [PermissionController::class, 'destroy']);
+        Route::put("/{role}", [PermissionController::class, "update"]);
+        Route::delete("/{role}", [PermissionController::class, "destroy"]);
     });
 });

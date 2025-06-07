@@ -19,7 +19,8 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = ["name", "email", "password"];
+    protected $fillable = ["name", "email", "password", 'remember_token', "created_by", "updated_by"];
+    // protected $fillable = ["name", "email", "password"];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -40,6 +41,11 @@ class User extends Authenticatable
             "password" => "hashed",
         ];
     }
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $url = url(config('app.frontend_url') . '/reset-password?token=' . $token . '&email=' . $this->email);

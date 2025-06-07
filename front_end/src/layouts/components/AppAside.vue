@@ -245,7 +245,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <button class="sidebar-link w-full">
+                        <router-link to="/users" class="sidebar-link w-full">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"
@@ -257,7 +257,7 @@
                                 </svg>
                             </div>
                             <span v-if="!isSidebarCollapsed">System User</span>
-                        </button>
+                        </router-link>
                     </li>
                     <li>
                         <router-link to="/roles" class="sidebar-link ">

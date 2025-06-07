@@ -84,7 +84,6 @@ export default {
 
                 // Fetch user data
                 await authService.fetchUser();
-
                 // Redirect to dashboard
                 this.$router.push("/");
             } catch (error) {

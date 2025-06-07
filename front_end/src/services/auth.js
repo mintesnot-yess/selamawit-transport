@@ -14,6 +14,7 @@ export default {
     }
   },
 
+
   async login(credentials) {
     try {
       const response = await api.post("/login", credentials);
@@ -22,6 +23,7 @@ export default {
       throw new Error(error.response?.data?.message || "Login failed");
     }
   },
+
 
   async logout() {
     try {

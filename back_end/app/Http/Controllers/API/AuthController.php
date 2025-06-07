@@ -3,58 +3,77 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
-use Dotenv\Validator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator as IlluminateValidator;
+// use Illuminate\Support\Facades\Validator as IlluminateValidator;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+
+
+    public function index()
+    {
+        $users = User::all();
+        $perPage = request()->input('per_page', 15);
+        $users = User::paginate($perPage);
+        $roles = Role::all();
+
+
+        return response()->json([
+            'success' => true,
+            'data' => $users->items(),
+            'roles' => $roles,
+            'meta' => [
+                'current_page' => $users->currentPage(),
+                'per_page' => $users->perPage(),
+                'total' => $users->total(),
+                'last_page' => $users->lastPage(),
+                'from' => $users->firstItem(),
+                'to' => $users->lastItem()
+            ]
+        ]);
+    }
     public function register(Request $request)
     {
+
         // Validate the request data
-        $validator = IlluminateValidator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             "name" => "required|string|max:255",
             "email" => "required|string|email|max:255|unique:users",
             "password" => "required|string|min:8|confirmed",
+            "role" => "exists:roles,id",
         ]);
 
         if ($validator->fails()) {
-            return response()->json(
-                [
-                    "errors" => $validator->errors(),
-                ],
-                422
-            );
+            return response()->json([
+                "errors" => $validator->errors(),
+            ], 422);
         }
-
-        // Determine the creating user (1 for system/admin if no authenticated user)
-        $creatingUserId = Auth::check() ? Auth::id() : 1;
 
         // Create the user
         $user = User::create([
             "name" => $request->name,
             "email" => $request->email,
             "password" => Hash::make($request->password),
-            "created_by" => $creatingUserId,
-            "updated_by" => $creatingUserId,
+            "created_by" => Auth::id(),
+            "updated_by" => Auth::id(),
         ]);
 
-        // Optionally create and return an access token
-        $token = $user->createToken("auth_token")->plainTextToken;
+        // Assign role
+        $user->roles()->attach($request->role, [
+            'user_type' => 'App\Models\User' // Or whatever your user class is
+        ]);
 
-        return response()->json(
-            [
-                "message" => "User registered successfully",
-                "access_token" => $token,
-                "token_type" => "Bearer",
-                "user" => $user,
-            ],
-            201
-        );
+        return response()->json([
+            "message" => "User registered successfully",
+            "user" => $user->load('roles') // Eager load roles if needed
+        ], 201);
+
     }
 
     public function login(Request $request)
@@ -92,7 +111,68 @@ class AuthController extends Controller
             "user" => $user,
         ]);
     }
+    // update
+    public function update(Request $request, $id): JsonResponse
+    {
+        // Find user by ID
+        $user = User::findOrFail($id);
 
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8',
+            'role' => 'sometimes|exists:roles,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Update user fields
+        if ($request->has('name')) {
+            $user->name = $request->input('name');
+        }
+
+        if ($request->has('email')) {
+            $user->email = $request->input('email');
+        }
+
+        if ($request->has('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+
+        // Optional: Track who updated this user
+        $user->updated_by = Auth::id();
+
+        // Save user
+        $user->save();
+        $roleId = $request->role;
+
+        // Handle role assignment
+        if ($request->has('role')) {
+            $user->roles()->attach($roleId, [
+                'user_type' => get_class($user),
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user->load('roles'), // Assuming you have a roles relationship
+        ]);
+    }
+    // destroy
+    public function destroy($id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return response()->json([
+            "message" => "User deleted successfully",
+        ]);
+    }
 
 
 

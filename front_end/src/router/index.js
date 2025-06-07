@@ -19,6 +19,7 @@ import LoadTypes from "@/pages/LoadTypes.vue";
 import Logs from "@/pages/Logs.vue";
 import RoleLayout from "@/layouts/roles/RoleLayout.vue";
 import PermissionLayout from "@/layouts/permissions/PermissionLayout.vue";
+import Users from "@/pages/Users.vue";
 
 
 const routes = [
@@ -26,6 +27,11 @@ const routes = [
     path: "/",
     name: "Dashboard",
     component: Dashboard,
+    meta: { requiresAuth: true } // Requires authentication
+  }, {
+    path: "/users",
+    name: "Users",
+    component: Users,
     meta: { requiresAuth: true } // Requires authentication
   },
   {

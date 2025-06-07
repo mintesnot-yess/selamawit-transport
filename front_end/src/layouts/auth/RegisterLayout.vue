@@ -62,6 +62,7 @@ export default {
         };
     },
     methods: {
+
         async handleSubmit() {
             this.loading = true;
             this.error = null;
@@ -72,16 +73,14 @@ export default {
                 this.loading = false;
                 return;
             }
-
             try {
-                const { access_token } = await authService.register(this.form);
 
+                const { access_token } = await authService.register(this.form);
                 // Automatically log in the user after registration
-                authService.setAuthToken(access_token);
-                await authService.fetchUser();
+                // await authService.fetchUser();
 
                 // Redirect to dashboard
-                this.$router.push("/");
+                // this.$router.push("/");
             } catch (error) {
                 this.error = error.message;
             } finally {
