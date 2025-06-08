@@ -83,6 +83,7 @@ class AuthController extends Controller
             "password" => "required",
         ]);
 
+
         $user = User::where("email", $request->email)->first();
 
         if (!$user) {
@@ -109,6 +110,7 @@ class AuthController extends Controller
             "access_token" => $token,
             "token_type" => "Bearer",
             "user" => $user,
+
         ]);
     }
     // update
@@ -171,6 +173,23 @@ class AuthController extends Controller
 
         return response()->json([
             "message" => "User deleted successfully",
+        ]);
+    }
+    public function bulkDelete(Request $request)
+    {
+        // Validate input
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:users,id'
+        ]);
+
+        $ids = $request->input('ids'); // Already decoded by Laravel
+
+        User::whereIn('id', $ids)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Selected users deleted successfully'
         ]);
     }
 

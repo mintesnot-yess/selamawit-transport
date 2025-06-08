@@ -23,11 +23,12 @@ class BankAccountController extends Controller
 
     public function index(Request $request, $id)
     {
+
         $bankAccounts = BankAccount::with('bank:id,name')
             ->where('bank_id', $id)
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($account) {
+            ->paginate(request()->input('per_page', 15))
+            ->through(function ($account) {
                 return [
                     'id' => $account->id,
                     'account_number' => $account->account_number,
@@ -39,9 +40,24 @@ class BankAccountController extends Controller
                     'updated_at' => $account->updated_at,
                 ];
             });
-        // log function
 
-        return response()->json($bankAccounts);
+        $response = [
+            'success' => true,
+            'data' => $bankAccounts->items(),
+            'meta' => [
+                'current_page' => $bankAccounts->currentPage(),
+                'per_page' => $bankAccounts->perPage(),
+                'total' => $bankAccounts->total(),
+                'last_page' => $bankAccounts->lastPage(),
+                'from' => $bankAccounts->firstItem(),
+                'to' => $bankAccounts->lastItem()
+            ]
+        ];
+
+
+        return response()->json($response);
+
+
     }
 
 

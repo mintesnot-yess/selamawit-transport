@@ -4,76 +4,96 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Chart } from 'chart.js/auto'
+
+const props = defineProps({
+    labels: {
+        type: Array,
+        required: true
+    },
+    incomeData: {
+        type: Array,
+        required: true
+    },
+    expenseData: {
+        type: Array,
+        required: true
+    }
+})
 
 const chartCanvas = ref(null)
 let chartInstance = null
 
-onMounted(() => {
-    if (chartCanvas.value) {
-        const ctx = chartCanvas.value.getContext('2d')
+const initChart = () => {
+    if (!chartCanvas.value) return
 
-        chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Apr', 'May'],
-                datasets: [
-                    {
-                        label: 'Income',
-                        data: [3200, 4200, 5100, 4800, 5900, 5200, 6700, 3323, 3121, 5167, 5122, 1221],
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Expenses',
-                        data: [2800, 3700, 4100, 3600, 4900, 4300, 5400, 2323, 1121, 2067, 5122, 1210],
-                        borderColor: '#cbd5e1',
-                        backgroundColor: 'rgba(203, 213, 225, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true
+    const ctx = chartCanvas.value.getContext('2d')
+
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: props.labels,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: props.incomeData,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Expenses',
+                    data: props.expenseData,
+                    borderColor: '#cbd5e1',
+                    backgroundColor: 'rgba(203, 213, 225, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: (context) => `ETB ${context.parsed.y.toLocaleString()}`
                     }
-                ]
+                }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        drawBorder: false,
+                        color: '#e2e8f0'
                     },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
+                    ticks: {
+                        callback: (value) => `${value.toLocaleString()}`
                     }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        grid: {
-                            drawBorder: false,
-                            color: '#e2e8f0'
-                        },
-                        ticks: {
-                            callback: function (value) {
-                                return '$' + value.toLocaleString()
-                            }
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        }
+                x: {
+                    grid: {
+                        display: false,
+                        drawBorder: false
                     }
                 }
             }
-        })
-    }
+        }
+    })
+}
+
+onMounted(() => {
+    initChart()
 })
 
 onBeforeUnmount(() => {
@@ -81,11 +101,22 @@ onBeforeUnmount(() => {
         chartInstance.destroy()
     }
 })
+
+// Re-render chart if data changes
+watch(
+    () => [props.labels, props.incomeData, props.expenseData],
+    () => {
+        if (chartInstance) {
+            chartInstance.destroy()
+        }
+        initChart()
+    },
+    { deep: true }
+)
 </script>
 
 <style scoped>
-.chart-container {
-    position: relative;
+canvas {
     height: 350px;
     width: 100%;
 }

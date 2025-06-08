@@ -7,7 +7,7 @@
                 {{ user_name ? user_name.charAt(0) : '' }}
             </span>
             <span class="hidden md:inline text-sm font-medium text-surface-900 capitalize">{{ user_name }}</span>
-            <i class="fas sm:flex hidden fa-chevron-down text-surface-400 text-xs"></i>
+            <i class="fas  fa-chevron-down text-surface-400 text-xs"></i>
         </button>
 
         <!-- Dropdown menu -->

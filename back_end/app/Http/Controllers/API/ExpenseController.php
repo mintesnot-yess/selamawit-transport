@@ -8,6 +8,7 @@ use App\Models\BankAccount;
 use App\Models\Employee;
 use App\Models\Expense;
 use App\Models\ExpenseType;
+use App\Models\Income;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,12 +27,47 @@ class ExpenseController extends Controller
         $CategoryEmployee = ExpenseType::where('category', 'Employee')->get();
         $CategoryVehicle = ExpenseType::where('category', 'Vehicle')->get();
         $CategoryGeneral = ExpenseType::where('category', 'General')->get();
+        $totalAmount = Expense::sum('amount');
+
 
         $employees = Employee::all();
         $Vehicles = Vehicle::all();
         $Banks = Bank::all();
         $BanksAccount = BankAccount::all();
         $expenses = $query->paginate($perPage);
+        $year = now()->year;
+        // Extract data for chart
+
+        $incomeData = Income::whereYear('created_at', $year)
+            ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        $expenseData = Expense::whereYear('created_at', $year)
+            ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        $monthNumbers = range(1, 12);
+        $monthLabels = array_map(fn($m) => \Carbon\Carbon::create()->month($m)->format('M'), $monthNumbers);
+
+        $income = [];
+        $monthlyExpenses = [];
+
+        foreach ($monthNumbers as $monthNumber) {
+            $income[] = $incomeData[$monthNumber] ?? 0;
+            $monthlyExpenses[] = $expenseData[$monthNumber] ?? 0;
+        }
+
+        // Get totals
+        $totalAmount = Expense::sum('amount');
+
+        // Get categories
+        $CategoryEmployee = ExpenseType::where('category', 'Employee')->get();
+        $CategoryVehicle = ExpenseType::where('category', 'Vehicle')->get();
+        $CategoryGeneral = ExpenseType::where('category', 'General')->get();
 
         return response()->json([
             'success' => true,
@@ -50,7 +86,20 @@ class ExpenseController extends Controller
                 'last_page' => $expenses->lastPage(),
                 'from' => $expenses->firstItem(),
                 'to' => $expenses->lastItem()
-            ]
+            ],
+            'categories' => [
+                'CategoryEmployee' => $CategoryEmployee,
+                'CategoryVehicle' => $CategoryVehicle,
+                'CategoryGeneral' => $CategoryGeneral,
+            ],
+            'chart' => [
+                'months' => $monthLabels,
+                'income' => $income,
+                'expenses' => $monthlyExpenses,
+            ],
+            "totalExpense" => $totalAmount,
+
+
         ]);
     }
 
@@ -203,5 +252,32 @@ class ExpenseController extends Controller
         }
     }
 
-    // Add other CRUD methods
+    // app/Http/Controllers/ExpenseController.php
+    public function chart()
+    {
+        $year = now()->year;
+
+        return [
+
+            'months' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+
+            'income' => Transaction::Income()
+                ->whereYear('created_at', $year)
+                ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+                ->groupBy('month')
+                ->get()
+                ->mapWithKeys(fn($item) => [$item['month'] => $item['total']])
+                ->toArray(),
+
+
+            'expense' => Transaction::Expense()
+                ->whereYear('created_at', $year)
+                ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+                ->groupBy('month')
+                ->get()
+                ->mapWithKeys(fn($item) => [$item['month'] => $item['total']])
+                ->toArray()
+        ];
+    }
+
 }

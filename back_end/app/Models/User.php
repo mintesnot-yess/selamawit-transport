@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -45,11 +46,22 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class);
     }
-
+    public function hasRole($role)
+    {
+        // Example implementation - adjust according to your database structure
+        return $this->roles()->where('name', $role)->exists();
+    }
+    public function hasPermission($role)
+    {
+        // Example implementation - adjust according to your database structure
+        return $this->permission()->where('name', $role)->exists();
+    }
     public function sendPasswordResetNotification($token)
     {
         $url = url(config('app.frontend_url') . '/reset-password?token=' . $token . '&email=' . $this->email);
 
         $this->notify(new ResetPasswordNotification($url));
     }
+
 }
+

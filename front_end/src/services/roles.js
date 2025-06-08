@@ -180,6 +180,22 @@ const roleService = {
             throw error.response?.data?.message || 'Search failed';
         }
     },
+    // multiple Delete a user
+    async bulkDelete(ids) {
+        try {
+            const response = await axios.delete(`${API_BASE_URL}/roles/bulk`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                },
+                data: ids,
+
+
+            });
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    },
 
     // Handle API errors
     handleError(error) {

@@ -22,10 +22,13 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post("/login", [AuthController::class, "login"]);
 Route::post("/register", [AuthController::class, "register"]);
+Route::get("/chart", [ExpenseController::class, "chart"]);
 
 Route::middleware("auth:sanctum")->group(function () {
 
     Route::get("/users", [AuthController::class, "index"]);
+    Route::delete('/users/bulk', [AuthController::class, 'bulkDelete']);
+
     Route::delete("/user", [AuthController::class, "destroy"]);
     Route::put("/users/{id}", [AuthController::class, "update"]);
     // delete
@@ -155,7 +158,9 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::get("/search", [RoleController::class, "search"]);
         Route::get("/{role}", [RoleController::class, "show"]);
         Route::put("/{role}", [RoleController::class, "update"]);
+
         Route::delete("/{role}", [RoleController::class, "destroy"]);
+
         Route::post("/{role}/permissions", [
             RoleController::class,
             "updatePermissions",
@@ -175,7 +180,6 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::post("/", [PermissionController::class, "store"]);
         Route::get("/{role}", [PermissionController::class, "show"]);
         Route::get("/search", [PermissionController::class, "search"]);
-
         Route::put("/{role}", [PermissionController::class, "update"]);
         Route::delete("/{role}", [PermissionController::class, "destroy"]);
     });

@@ -5,6 +5,8 @@
         <!-- Header with search -->
         <header
             class="sticky top-0 flex items-center justify-between px-4 md:px-6 py-4 border-b border-surface-200 bg-white/80 backdrop-blur-sm z-30">
+
+            <span></span>
             <div class="flex items-center gap-3">
 
                 <form @input.prevent="searchBanks(searchQuery)"

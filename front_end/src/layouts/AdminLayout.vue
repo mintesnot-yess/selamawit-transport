@@ -3,7 +3,7 @@
         <header
             class="sticky top-0 flex items-center justify-between px-4 md:px-6 py-4 border-b border-surface-200 bg-white/80 backdrop-blur-sm z-30">
             <span></span>
-            <div class="flex items-center gap-3">
+            <!-- <div class="flex items-center gap-3">
                 <form
                     class="flex items-center border border-surface-300 rounded-lg px-2 py-2 text-surface-500 max-w-md w-full focus-within:ring-2 focus-within:ring-accent-500 focus-within:border-accent-500 transition-all">
                     <i class="fas fa-search mr-2 text-sm"></i>
@@ -13,7 +13,7 @@
                     <kbd
                         class="ml-3 px-2 py-1 rounded-md border border-surface-300 text-surface-500 text-xs font-mono font-medium select-none hidden sm:inline-flex">⌘K</kbd>
                 </form>
-            </div>
+            </div> -->
             <div class="flex items-center gap-3 md:gap-4">
                 <button
                     class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
@@ -47,9 +47,8 @@
 
             <!-- Stats grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Total Revenue -->
 
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-surface-200">
+                <!-- <div class="bg-white rounded-xl p-5 shadow-sm border border-surface-200">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
@@ -73,11 +72,11 @@
                         <div class="h-2 bg-surface-100 rounded-full overflow-hidden">
                             <div class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
                         </div>
-                        <!-- <p class="text-xs p-1 rounded-md text-surface-500 mt-2 w-fit hover:bg-slate-100 cursor-pointer">
+                        <p class="text-xs p-1 rounded-md text-surface-500 mt-2 w-fit hover:bg-slate-100 cursor-pointer">
                             Show Detail
-                        </p> -->
+                        </p>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-surface-200">
                     <div class="flex items-center justify-between">
@@ -89,9 +88,13 @@
                                 <p class="text-xs text-surface-500">
                                     System User
                                 </p>
-                                <p class="text-xl font-bold text-surface-900">
-                                    1
+                                <p v-if="users && users.length" class="text-xl font-bold text-surface-900">
+                                    {{ users.length }} </p>
+                                <p v-else class="text-xl font-bold text-surface-900">
+                                    <i class="fa-solid fa-circle-notch animate-spin"></i>
                                 </p>
+
+
                             </div>
                         </div>
                         <div
@@ -116,7 +119,12 @@
                             <div>
                                 <p class="text-xs text-surface-500">Vehicles</p>
                                 <p class="text-xl font-bold text-surface-900">
-                                    10
+                                <p v-if="vehicles && vehicles.length" class="text-xl font-bold text-surface-900">
+                                    {{ vehicles.length }} </p>
+                                <p v-else class="text-xl font-bold text-surface-900">
+                                    <i class="fa-solid fa-circle-notch animate-spin"></i>
+                                </p>
+
                                 </p>
                             </div>
                         </div>
@@ -143,8 +151,15 @@
                                     Employees
                                 </p>
                                 <p class="text-xl font-bold text-surface-900">
-                                    17
+                                <p v-if="Employees && Employees.length" class="text-xl font-bold text-surface-900">
+                                    {{ Employees.length }} </p>
+                                <p v-else class="text-xl font-bold text-surface-900">
+                                    <i class="fa-solid fa-circle-notch animate-spin"></i>
                                 </p>
+
+                                </p>
+
+
                             </div>
                         </div>
                         <div
@@ -162,6 +177,8 @@
                 </div>
 
                 <!-- Orders -->
+
+
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-surface-200">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -172,9 +189,16 @@
                                 <p class="text-xs text-surface-500">
                                     Total Orders
                                 </p>
-                                <p class="text-xl font-bold text-surface-900">
-                                    75
+
+
+
+                                <p v-if="orders && orders.length" class="text-xl font-bold text-surface-900">
+                                    {{ orders.length }}
                                 </p>
+                                <p v-else class="text-xl font-bold text-surface-900">
+                                    <i class="fa-solid fa-circle-notch animate-spin"></i>
+                                </p>
+
                             </div>
                         </div>
                         <div
@@ -190,22 +214,30 @@
                         <!-- <p class="text-xs text-surface-500 mt-2">vs last month</p> -->
                     </div>
                 </div>
+
                 <!-- This Year Expense -->
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-surface-200">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                                <i class="fas fa-shopping-bag text-purple-600"></i>
+                                <i class="fas fa-money-bill text-purple-600"></i>
                             </div>
                             <div>
                                 <p class="text-xs text-surface-500">
                                     This Year Expense
                                 </p>
-                                <p class="text-xl font-bold text-surface-900">
-                                    $5,727,299
+                                <p v-if="Expense && orders.length" class="text-xl font-bold text-surface-900">
+                                    {{ formatCurrency(Expense) }}
                                 </p>
+                                <p v-else class="text-xl font-bold text-surface-900">
+                                    {{ formatCurrency(0) }}
+                                </p>
+
                             </div>
                         </div>
+
+
+
                         <div
                             class="text-xs font-medium text-purple-600 bg-purple-100 rounded-full px-2 py-1 flex items-center gap-1">
                             <!-- <i class="fas fa-arrow-down text-[0.6rem]"></i> -->
@@ -281,7 +313,7 @@
             </div>
 
             <!-- Charts row -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
                 <!-- Sales chart -->
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-surface-200 lg:col-span-2">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -302,20 +334,19 @@
                                 <span class="w-2 h-2 rounded-full bg-surface-300"></span>
                                 <span class="text-xs text-surface-500">Expose</span>
                             </div>
-                            <button class="ml-2 text-surface-400 hover:text-surface-600">
+                            <!-- <button class="ml-2 text-surface-400 hover:text-surface-600">
                                 <i class="fas fa-ellipsis-vertical"></i>
-                            </button>
+                            </button> -->
                         </div>
                     </div>
                     <div class="h-64">
-                        <IncomeExpenseChart />
-
+                        <IncomeExpenseChart :labels="months" :income-data="incomes" :expense-data="expenseData" />
                         <!-- <canvas id="salesChart"></canvas> -->
                     </div>
                 </div>
 
                 <!-- Revenue target -->
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-surface-200">
+                <!-- <div class="bg-white rounded-xl p-6 shadow-sm border border-surface-200">
                     <div class="flex items-center justify-between mb-6">
                         <div>
                             <h2 class="text-lg font-semibold text-surface-900"></h2>
@@ -323,9 +354,7 @@
                                 Monthly Income and Expense
                             </p>
                         </div>
-                        <button class="text-surface-400 hover:text-surface-600">
-                            <i class="fas fa-ellipsis-vertical"></i>
-                        </button>
+
                     </div>
                     <div class="flex justify-center">
                         <div class="relative w-40 h-40">
@@ -365,11 +394,12 @@
                             </p>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <!-- Recent orders -->
-            <div class="bg-white rounded-xl shadow-sm border border-surface-200 overflow-hidden">
+            <div v-if="orders.length > 1"
+                class="bg-white rounded-xl shadow-sm border border-surface-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-surface-200">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
@@ -383,7 +413,6 @@
                         <router-link to="/orders"
                             class="text-sm font-medium text-accent-600 hover:text-accent-700 flex items-center gap-1">
                             View All
-                            <i class="fas fa-chevron-right text-xs"></i>
                         </router-link>
                     </div>
                 </div>
@@ -399,14 +428,8 @@
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
                                     Client Name
                                 </th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Plate Number
-                                </th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Driver Name
-                                </th>
+
+
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
                                     Loading
@@ -423,178 +446,92 @@
                                     class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
                                     Status
                                 </th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Amount
-                                </th>
-                                <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">Action</span>
-                                </th>
+
+
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-surface-200">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-surface-900">
-                                    #ORD-0001
+
+                        <tbody class="bg-white divide-y  ">
+
+                            <tr v-for="(order, idx) in orders" :key="order.id">
+
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium  ">
+                                                {{ order.name || `Order #${order.id}` }}
+                                            </div>
+
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full"
-                                                src="https://randomuser.me/api/portraits/women/44.jpg" alt="" />
-                                        </div>
+
                                         <div class="ml-4">
-                                            <div class="text-sm font-medium text-surface-900">
-                                                Leslie Alexander
+                                            <div class="text-sm font-medium  ">
+                                                {{ order.client.name || `Order #${order.id}` }}
                                             </div>
-                                            <div class="text-sm text-surface-500">
-                                                leslie@example.com
-                                            </div>
+
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    3-A12797/33595
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Kassaye Haile
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Adama
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Addis Ababa
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Rice
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Loaded</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-900">
-                                    $249.00
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button class="text-accent-600 hover:text-accent-900">
-                                        <i class="fas fa-ellipsis-vertical"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-surface-900">
-                                    #ORD-0002
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full"
-                                                src="https://randomuser.me/api/portraits/men/32.jpg" alt="" />
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-surface-900">
-                                                Robert Fox
-                                            </div>
-                                            <div class="text-sm text-surface-500">
-                                                robert@example.com
-                                            </div>
-                                        </div>
+                                    <div class="text-sm font-medium  ">
+                                        {{ order.loading_location.location_name }}
                                     </div>
+
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    3-A12797/33595
+                                    <div class="text-sm font-medium  ">
+                                        {{ order.destination_location.location_name }}
+                                    </div>
+
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Kassaye Haile
+                                    {{ order.load_type.name }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Adama
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Addis Ababa
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Rice
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span :class="[
+                                        ' ',
+                                        order.status === 'PENDING' ? 'bg-yellow-50 text-yellow-600' : '',
+                                        order.status === 'COMPLETED' ? 'bg-green-50 text-green-600' : '',
+                                        order.status === 'IN_PROGRESS' ? 'bg-blue-50 text-blue-600' : '',
+                                        order.status === 'CANCELLED' ? 'bg-red-50 text-red-500' : ''
+                                    ]">
+                                        {{ order.status }}
+                                    </span>
                                 </td>
 
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Offloaded</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-900">
-                                    $149.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button class="text-accent-600 hover:text-accent-900">
-                                        <i class="fas fa-ellipsis-vertical"></i>
-                                    </button>
-                                </td>
+
+
+
+
+
                             </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-surface-900">
-                                    #ORD-0003
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full"
-                                                src="https://randomuser.me/api/portraits/women/68.jpg" alt="" />
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-surface-900">
-                                                Jenny Wilson
-                                            </div>
-                                            <div class="text-sm text-surface-500">
-                                                jenny@example.com
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    3-A12797/33595
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Kassaye Haile
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Adama
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Addis Ababa
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-500">
-                                    Rice
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Offloaded</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-900">
-                                    $399.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button class="text-accent-600 hover:text-accent-900">
-                                        <i class="fas fa-ellipsis-vertical"></i>
-                                    </button>
-                                </td>
-                            </tr>
+
+
                         </tbody>
                     </table>
                 </div>
             </div>
+
+
         </main>
     </div>
     <AppFooter />
 </template>
 
-<script setup>
+<script>
 import { ref } from "vue";
+import userService from '@/services/users';
+import vehicleService from '@/services/vehicle';
+import EmployeeService from '@/services/employees';
+import orderService from '@/services/orders';
+import ExpenseService from '@/services/expenses';
 
 import UserDropdown from "./components/UserDropdown.vue";
-
 import AppHeader from "./components/AppHeader.vue";
 import AppAside from "./components/AppAside.vue";
 import AppFooter from "./components/AppFooter.vue";
@@ -605,7 +542,102 @@ const sidebarOpen = ref(false);
 const toggleSidebar = () => {
     sidebarOpen.value = !sidebarOpen.value;
 };
+
 const closeSidebar = () => {
     sidebarOpen.value = false;
 };
+
+
+export default {
+    components: {
+        AppHeader,       // Added missing component
+        AppAside,
+        AppFooter,        // Added missing component
+        IncomeExpenseChart, // Added missing component
+        UserDropdown,
+    },
+    data() {
+        return {
+            users: [],
+            vehicles: [],
+            Employees: [],
+            orders: [],
+            Expense: [],
+            months: [],
+            incomes: [],
+            expenseData: [],
+
+
+            loadingUsers: false,
+            currentPage: 1,
+            totalPages: 0,
+            searchQuery: null,
+        }
+    },
+    created() {
+        this.fetchUsers(); // Fetch users when component is created
+        this.fetchVehicles();
+        this.fetchEmployees();
+        this.fetchOrder();
+        this.fetchExpense();
+
+    },
+    methods: { // Fixed syntax (was "methods{")
+
+
+
+        async fetchUsers() {
+            try {
+                const response = await userService.getAll();
+                this.users = response.data || [];
+            } catch (error) { }
+        },
+
+        async fetchVehicles() {
+            try {
+                const response = await vehicleService.getAll();
+                this.vehicles = response.data;
+            } catch (error) { }
+        },
+        async fetchEmployees() {
+            try {
+                const response = await EmployeeService.getAll();
+                this.Employees = response.data;
+            } catch (error) { }
+        },
+
+        async fetchOrder() {
+            try {
+                const response = await orderService.getAll();
+                this.orders = response.data;
+            } catch (error) { }
+        },
+        async fetchExpense() {
+            try {
+                const response = await ExpenseService.getAll();
+                this.Expense = response.totalExpense;
+
+                this.expenseData = response.chart.expenses;
+                this.incomes = response.chart.income;
+                this.months = response.chart.months;
+
+            } catch (error) { }
+        },
+
+        formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'ETB'
+            }).format(value);
+        }
+
+
+
+
+    },
+
+
+
+
+}
 </script>

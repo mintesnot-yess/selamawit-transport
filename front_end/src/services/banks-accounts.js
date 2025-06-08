@@ -14,7 +14,7 @@ const bankService = {
                 },
                 params: {
                     page: params.page || 1,
-                    per_page: params.perPage || 10,
+                    per_page: params.perPage || 15,
                     search: params.search || ''
                 }
             });
@@ -25,17 +25,24 @@ const bankService = {
     },
 
     // Fetch a single bank account by ID
-    async getBankAccounts(id) {
+    async getBankAccounts(id, params = {}) {
         try {
+
             const response = await axios.get(`${API_BASE_URL}/bank-accounts/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                },
+                params: {
+                    page: params.page || 1,
+                    per_page: params.perPage || 15, // Match your frontend default
+                    search: params.search || ''
                 }
             });
             return response.data;
         } catch (error) {
             throw this.handleError(error);
         }
+
     },
 
     async search(params = {}, id) {

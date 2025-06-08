@@ -101,6 +101,23 @@ const userService = {
         }
     },
 
+    // multiple Delete a user
+    async bulkDelete(ids) {
+        try {
+            const response = await axios.delete(`${API_BASE_URL}/users/bulk`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                },
+                data: ids,
+
+
+            });
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    },
+
     // Search users
     async search(params = {}) {
         try {

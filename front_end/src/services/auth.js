@@ -27,7 +27,6 @@ export default {
 
   async logout() {
     try {
-      // Call Laravel's logout endpoint to revoke the token
       await api.post("/logout");
     } catch (error) {
       console.error("Logout error:", error);

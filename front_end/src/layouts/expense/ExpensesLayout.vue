@@ -77,7 +77,7 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="md:overflow-x-clip overflow-x-auto">
 
                     <table class="min-w-full divide-y divide-surface-200 ">
                         <thead class="bg-surface-50">
@@ -519,7 +519,7 @@
 
                                             <input v-model="form.toAccount" id="owner_name" type="text"
                                                 class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                                placeholder="Enter Amount" />
+                                                placeholder="Enter Account" />
                                         </div>
                                     </div>
                                 </div>
@@ -540,7 +540,7 @@
                                     </label>
                                     <input v-model="form.paid_date" id="date" type="date"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter owner phone" />
+                                        placeholder="Date" />
                                 </div>
                                 <div>
                                     <label for="remark" class="block text-sm font-medium text-gray-800 mb-1">
@@ -548,7 +548,7 @@
                                     </label>
                                     <input v-model="form.remark" id="remark" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter owner phone" />
+                                        placeholder="Remark" />
                                 </div>
                                 <div>
                                     <label for="file" class="block text-sm font-medium text-gray-800 mb-1">
@@ -828,7 +828,7 @@
 
                                             <input v-model="form.toAccount" id="owner_name" type="text"
                                                 class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                                placeholder="Enter Amount" />
+                                                placeholder="Enter Account" />
                                         </div>
                                     </div>
                                 </div>
@@ -857,7 +857,8 @@
                                     </label>
                                     <input v-model="form.remark" id="remark" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter owner phone" />
+                                        placeholder="Remark
+" />
                                 </div>
                                 <div>
                                     <label for="file" class="block text-sm font-medium text-gray-800 mb-1">

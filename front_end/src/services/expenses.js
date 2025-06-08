@@ -19,6 +19,7 @@ const expenseService = {
                 }
             });
 
+
             // Transform response if needed
             const responseData = response.data;
 
