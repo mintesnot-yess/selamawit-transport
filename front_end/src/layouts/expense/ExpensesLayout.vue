@@ -565,9 +565,6 @@
                                             </span>
                                         </label>
                                     </div>
-
-
-
                                 </div>
                                 <div v-if="error" class="text-red-500 text-sm">
                                     {{ error }}
@@ -831,6 +828,7 @@
                                                 placeholder="Enter Account" />
                                         </div>
                                     </div>
+
                                 </div>
 
                                 <div>

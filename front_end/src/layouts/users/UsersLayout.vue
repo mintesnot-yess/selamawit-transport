@@ -452,6 +452,18 @@ export default {
                 this.loadingUsers = false;
             }
         },
+
+        async fetchUserRole() {
+
+            try {
+                const response = await authService.fetchUser();
+
+                // this.roles = response.roles || [];
+
+            } catch (e) {
+
+            }
+        },
         updatePagination(meta) {
             const currentPage = meta.current_page || 1;
             const perPage = meta.per_page || this.pagination.per_page;
@@ -630,6 +642,7 @@ export default {
     },
     mounted() {
         this.fetchUsers();
+
     }
 };
 </script>

@@ -48,11 +48,13 @@
                                 </template>
                             </p>
                         </div>
-                        <button @click="openAddOrderForm"
+
+                        <button v-if="hasPermission('create-order')" @click="openAddOrderForm"
                             class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
                             <i class="fas fa-plus"></i>
                             <span>Add Order</span>
                         </button>
+
                     </div>
                 </div>
 
@@ -155,29 +157,29 @@
                                             {{ (pagination.from - 1) + (idx + 1) }}
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
-                                            <span class="font-medium text-surface-800">
+                                            <router-link :to="`orders/${order.id}`"
+                                                class="font-medium text-surface-800">
                                                 {{ order.name || `Order #${order.id}` }}
-                                            </span>
-                                            <div class="text-xs text-surface-400 mt-1">#{{ order.id }}</div>
+                                            </router-link>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
                                             <span v-if="order.client" class="text-surface-800">{{ order.client.name
-                                            }}</span>
+                                                }}</span>
                                             <span v-else class="text-surface-300 italic">N/A</span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
                                             <div v-if="order.vehicle" class="flex flex-col">
                                                 <span class="font-medium text-surface-800">{{ order.vehicle.plate_number
-                                                }}</span>
+                                                    }}</span>
                                                 <span class="text-xs text-surface-400">{{ order.vehicle.vehicle_name
-                                                }}</span>
+                                                    }}</span>
                                             </div>
                                             <span v-else class="text-surface-300 italic">N/A</span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
                                             <div v-if="order.employee" class="flex flex-col">
                                                 <span class="font-medium text-surface-800">{{ order.employee.first_name
-                                                }} {{ order.employee.last_name }}</span>
+                                                    }} {{ order.employee.last_name }}</span>
                                                 <span class="text-xs text-surface-400">Driver</span>
                                             </div>
                                             <span v-else class="text-surface-300 italic">N/A</span>
@@ -218,8 +220,9 @@
                                                 Date(order.order_date).toLocaleDateString() : '-' }}</span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap text-xs">
-                                            <span class="text-surface-700">{{ order.arrival_at_loading_site ? new
-                                                Date(order.arrival_at_loading_site).toLocaleDateString() : '-' }}</span>
+                                            <span class="text-surface-700">
+                                                {{ order.arrival_at_loading_site ? new
+                                                    Date(order.arrival_at_loading_site).toLocaleDateString() : '-' }}</span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap text-xs">
                                             <span class="text-surface-700">{{ order.loading_date ? new
@@ -246,7 +249,7 @@
                                             </span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap text-right font-normal">
-                                            <ToggleMenu @show="() => $router.push(`/order-accounts/${order.id}`)"
+                                            <ToggleMenu @show="() => $router.push(`/orders/${order.id}`)"
                                                 @edit="editOrder(order)"
                                                 @delete="confirmDelete(order.id, order.name || `Order #${order.id}`)" />
                                         </td>
@@ -425,18 +428,28 @@
 </template>
 
 <script>
+
 import orderService from '@/services/orders';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
-// import Forms from "./components/Forms.vue";
 import ToggleMenu from "./components/ToggleMenu.vue";
 import { debounce } from 'lodash';
+import { usePermissions } from "@/stores/usePermissions";
+
 
 export default {
     components: {
         AppAside,
         UserDropdown,
         ToggleMenu
+    },
+    setup() {
+        const { hasPermission } = usePermissions(); // ✅ Safe: called inside setup()
+
+        return {
+            hasPermission,
+            // ... other reactive properties or methods
+        };
     },
     data() {
         return {
@@ -488,6 +501,7 @@ export default {
         await this.fetchOrders();
     },
     methods: {
+
         async fetchOrders(page = 1) {
             this.loadingOrders = true;
             try {

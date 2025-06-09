@@ -1,4 +1,5 @@
 import api from "@/api";
+import { useProfileStore } from "@/stores/profile";
 
 export default {
   async register(userData) {
@@ -55,10 +56,16 @@ export default {
   async fetchUser() {
     try {
       const response = await api.get("/user");
-      localStorage.setItem("user", JSON.stringify(response.data));
+
+      // localStorage.setItem("user", JSON.stringify(response.data));
+      // const profile = useProfileStore();
+      // profile.user = response.data.user;
+      // profile.permissions = response.data.permissions;
+
+
       return response.data;
     } catch (error) {
-      this.logout();
+      // this.logout();
       throw error;
     }
   },

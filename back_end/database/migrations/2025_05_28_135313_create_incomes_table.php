@@ -15,9 +15,13 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->decimal("amount", 12, 2);
-            $table->string("attachment", 255);
             $table->date("received_date");
-            $table->text("description")->nullable();
+            $table->foreignId('bank_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('account_number')->nullable();
+            $table->string('payment_type')->nullable();
+            $table->string("attachment");
+            $table->text(column: "remark")->nullable();
+
             $table
                 ->foreignId("created_by")
                 ->constrained("users")

@@ -53,12 +53,11 @@
 </template>
 
 <script>
+import { useProfileStore } from "@/stores/profile";
 import DarkModeToggle from "./DarkModeToggle.vue";
 import LogoutButton from "./LogoutButton.vue";
 
-import authService from "@/services/auth";
 import { ref, onMounted, onUnmounted } from "vue";
-
 
 export default {
     data() {
@@ -71,20 +70,14 @@ export default {
         };
     },
     mounted() {
-        const user = localStorage.getItem('user');
-        if (user) {
-            try {
-                this.user_name = JSON.parse(user).name || '';
-                this.user_email = JSON.parse(user).email || '';
-            } catch (e) {
-                this.user_name = '';
-                this.user_email = '';
-            }
-        } else {
-            this.user_name = '';
-            this.user_email = '';
 
-        }
+        const profile = useProfileStore();
+        this.user_name = profile.user.name;
+        this.user_email = profile.user.email;
+        // this.user_email = profile.user.permissions.length;
+        // this.user_email = profile.user.permissions;
+
+
     },
 
     setup() {

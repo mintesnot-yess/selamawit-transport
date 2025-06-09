@@ -87,6 +87,7 @@ class VehicleController extends Controller
     // Add other CRUD methods (index, show, update, destroy) as needed
     public function show($id)
     {
+
         $vehicle = Vehicle::find($id);
 
 

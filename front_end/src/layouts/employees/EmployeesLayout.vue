@@ -333,7 +333,7 @@
                                         Email</label>
                                     <input v-model="form.email" id="siteName" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Contact Person" />
+                                        placeholder="Enter Email" />
 
                                 </div>
                                 <div>

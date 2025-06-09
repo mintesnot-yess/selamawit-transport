@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import Dashboard from "../pages/Dashboard.vue";
 import Orders from "@/pages/Orders.vue";
-import OrdersService from "@/services/OrdersService.vue";
 import LogIn from "@/pages/Login.vue";
 import Register from "@/pages/Register.vue";
 import ForgotPassword from "@/pages/ForgotPassword.vue";
@@ -20,6 +19,8 @@ import Logs from "@/pages/Logs.vue";
 import RoleLayout from "@/layouts/roles/RoleLayout.vue";
 import PermissionLayout from "@/layouts/permissions/PermissionLayout.vue";
 import Users from "@/pages/Users.vue";
+import OrdersLayout from "@/layouts/orders/OrdersLayout.vue";
+import OrdersDetailsLayout from "@/layouts/orders/detail/OrdersDetailsLayout.vue";
 
 
 const routes = [
@@ -66,11 +67,12 @@ const routes = [
     meta: { requiresAuth: true } // Requires authentication
   },
   {
-    path: "/orders-service",
-    name: "OrdersService",
-    component: OrdersService,
+    path: "/orders/:id",
+    name: "OrdersDetail",
+    component: OrdersDetailsLayout,
     meta: { requiresAuth: true } // Requires authentication
   },
+
   {
     path: "/banks",
     name: "Banks",

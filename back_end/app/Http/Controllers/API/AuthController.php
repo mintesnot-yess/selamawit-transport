@@ -37,6 +37,8 @@ class AuthController extends Controller
                 'to' => $users->lastItem()
             ]
         ]);
+
+
     }
     public function register(Request $request)
     {

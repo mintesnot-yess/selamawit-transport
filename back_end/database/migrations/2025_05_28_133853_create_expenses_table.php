@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->foreignId('expense_type_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('vehicle_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('employee_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-
+            $table->foreignId('order_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->foreignId('from_account')->constrained('bank_accounts')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('to_account')->nullable();

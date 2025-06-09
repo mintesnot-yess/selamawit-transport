@@ -7,13 +7,15 @@ use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laratrust\Contracts\LaratrustUser;
+use Laratrust\Traits\HasRolesAndPermissions;
 use Laravel\Sanctum\HasApiTokens;
 
 
-class User extends Authenticatable
+class User extends Authenticatable implements LaratrustUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -42,20 +44,25 @@ class User extends Authenticatable
             "password" => "hashed",
         ];
     }
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class);
-    }
-    public function hasRole($role)
-    {
-        // Example implementation - adjust according to your database structure
-        return $this->roles()->where('name', $role)->exists();
-    }
-    public function hasPermission($role)
-    {
-        // Example implementation - adjust according to your database structure
-        return $this->permission()->where('name', $role)->exists();
-    }
+    // public function roles()
+    // {
+    //     return $this->belongsToMany(Role::class);
+    // }
+    // public function hasRole($role)
+    // {
+    //     // Example implementation - adjust according to your database structure
+    //     return $this->roles()->where('name', $role)->exists();
+    // }
+
+    // public function hasPermission($role)
+    // {
+    //     // Example implementation - adjust according to your database structure
+    //     return $this->permission()->where('name', $role)->exists();
+    // }
+    // public function allPermissions()
+    // {
+    //     return $this->permission();
+    // }
     public function sendPasswordResetNotification($token)
     {
         $url = url(config('app.frontend_url') . '/reset-password?token=' . $token . '&email=' . $this->email);

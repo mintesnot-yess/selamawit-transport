@@ -14,8 +14,10 @@ export default {
 
   async getOrderById(id) {
     try {
+
       const response = await api.get(`/orders/${id}`);
       return response.data;
+
     } catch (error) {
       console.error(`Error fetching order ${id}:`, error);
       throw error;

@@ -75,6 +75,7 @@ class ExpenseController extends Controller
             'CategoryEmployee' => $CategoryEmployee,
             'CategoryVehicle' => $CategoryVehicle,
             'CategoryGeneral' => $CategoryGeneral,
+
             'AllEmployees' => $employees,
             'AllVehicles' => $Vehicles,
             'AllBanks' => $Banks,

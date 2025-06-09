@@ -7,9 +7,12 @@ use App\Models\Bank;
 use App\Models\BankAccount;
 use App\Models\Client;
 use App\Models\Employee;
+use App\Models\Income;
 use App\Models\LoadType;
 use App\Models\Location;
 use App\Models\Order;
+use App\Models\Expense;
+
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -134,24 +137,35 @@ class OrderController extends Controller
     {
 
         $order = Order::with([
-            "customer",
-            "employee",
-            "vehicle",
-            "loadType",
-            "loadingLocation",
-            "destinationLocation",
+            'client',
+            'employee',
+            'vehicle',
+            'loadType',
+            'loadingLocation',
+            'destinationLocation',
+            'expense',
+            'income'
         ])->find($id);
 
+        $income = Income::with(['bank'])->find($id);
+
+        $bank = Bank::all();
+
         if (!$order) {
-            return response()->json(
-                [
-                    "message" => "Order not found",
-                ],
-                404
-            );
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found'
+            ], 404);
         }
 
-        return response()->json(["data" => $order]);
+        return response()->json([
+            'success' => true,
+            'order' => $order,
+            'bank' => $bank,
+            'income' => $income,
+        ]);
+
+
     }
 
     /**

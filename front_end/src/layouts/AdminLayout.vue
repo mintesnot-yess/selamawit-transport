@@ -32,16 +32,16 @@
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                         <h1 class="text-xl md:text-2xl font-bold">
-                            Welcome back, Musharof!
+                            HI, {{ userName }}!
                         </h1>
                         <p class="text-accent-100 mt-1 text-sm md:text-base">
                             Here's what's happening with your store today.
                         </p>
                     </div>
-                    <button
+                    <!-- <button
                         class="bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-colors backdrop-blur-sm self-start md:self-auto">
                         View Analytics
-                    </button>
+                    </button> -->
                 </div>
             </div>
 
@@ -98,8 +98,8 @@
                             </div>
                         </div>
                         <div
-                            class="text-xs font-medium text-green-600 bg-green-100 rounded-full px-2 py-1 flex items-center gap-1">
-                            <!-- <i class="fas fa-arrow-up text-[0.6rem]"></i> -->
+                            class="text-xs font-medium text-blue-600 bg-blue-100 rounded-full w-7 h-7    flex  items-center justify-center ">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -129,8 +129,8 @@
                             </div>
                         </div>
                         <div
-                            class="text-xs font-medium text-green-600 bg-green-100 rounded-full px-2 py-1 flex items-center gap-1">
-                            <!-- <i class="fas fa-arrow-up text-[0.6rem]"></i> -->
+                            class="text-xs font-medium text-blue-600 bg-blue-100 rounded-full w-7 h-7    flex  items-center justify-center ">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -162,11 +162,15 @@
 
                             </div>
                         </div>
+
                         <div
-                            class="text-xs font-medium text-green-600 bg-green-100 rounded-full px-2 py-1 flex items-center gap-1">
-                            <!-- <i class="fas fa-arrow-up text-[0.6rem]"></i> -->
-                            <!-- 8.2% -->
+                            class="text-xs font-medium text-blue-600 bg-blue-100 rounded-full w-7 h-7    flex  items-center justify-center ">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </div>
+
+
+
+
                     </div>
                     <div class="mt-4">
                         <div class="h-2 bg-surface-100 rounded-full overflow-hidden">
@@ -202,9 +206,8 @@
                             </div>
                         </div>
                         <div
-                            class="text-xs font-medium text-blue-600 bg-blue-100 rounded-full px-2 py-1 flex items-center gap-1">
-                            <!-- <i class="fas fa-arrow-down text-[0.6rem]"></i> -->
-                            <!-- 3.4% -->
+                            class="text-xs font-medium text-blue-600 bg-blue-100 rounded-full w-7 h-7    flex  items-center justify-center ">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -264,8 +267,9 @@
                                     This Month Income
                                 </p>
                                 <p class="text-xl font-bold text-surface-900">
-                                    $5,727
+                                    {{ formatCurrency(0) }}
                                 </p>
+
                             </div>
                         </div>
                         <div
@@ -293,7 +297,7 @@
                                     This Month Expense
                                 </p>
                                 <p class="text-xl font-bold text-surface-900">
-                                    $5,727
+                                    {{ formatCurrency(0) }}
                                 </p>
                             </div>
                         </div>
@@ -566,6 +570,7 @@ export default {
             months: [],
             incomes: [],
             expenseData: [],
+            userName: 'Mintesnot',
 
 
             loadingUsers: false,
@@ -590,6 +595,19 @@ export default {
             try {
                 const response = await userService.getAll();
                 this.users = response.data || [];
+
+                const user = localStorage.getItem('user');
+                if (user) {
+                    try {
+                        this.userName = JSON.parse(user).user.name || '';
+                    } catch (e) {
+                        this.userName = '';
+                    }
+                } else {
+                    this.userName = '';
+
+                }
+
             } catch (error) { }
         },
 

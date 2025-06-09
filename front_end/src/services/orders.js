@@ -57,6 +57,7 @@ const orderService = {
         }
     },
 
+
     // Create a new order
     async store(orderData) {
         try {
@@ -117,6 +118,18 @@ const orderService = {
             return response.data;
         } catch (error) {
             throw error.response?.data?.message || 'Search failed';
+        }
+    },
+    async getOrderById(id) {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/orders/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
         }
     },
 

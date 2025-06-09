@@ -22,9 +22,10 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post("/login", [AuthController::class, "login"]);
 Route::post("/register", [AuthController::class, "register"]);
-Route::get("/chart", [ExpenseController::class, "chart"]);
 
 Route::middleware("auth:sanctum")->group(function () {
+
+
 
     Route::get("/users", [AuthController::class, "index"]);
     Route::delete('/users/bulk', [AuthController::class, 'bulkDelete']);
@@ -34,8 +35,16 @@ Route::middleware("auth:sanctum")->group(function () {
     // delete
     Route::delete("/users/{id}", [AuthController::class, "destroy"]);
 
-    Route::get("/user", function (Request $request) {
-        return $request->user();
+
+    Route::get('/user', function (Request $request) {
+        $user = $request->user();
+        $user->load('roles');
+        $permissions = $user->allPermissions()->pluck('name')->toArray();
+        return response()->json([
+            'user' => $user,
+            'roles' => $user->roles->pluck('name'),
+            'permissions' => $permissions,
+        ]);
     });
 
     Route::post("/logout", [AuthController::class, "logout"]);

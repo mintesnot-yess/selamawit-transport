@@ -80,6 +80,16 @@ class Order extends Model
     {
         return $this->hasMany(Income::class);
     }
+    public function expense()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+
+    public function income()
+    {
+        return $this->hasMany(Income::class);
+    }
 
     // Relationship with creator
     public function creator()
