@@ -25,13 +25,13 @@
                         <span>Show</span>
                     </button>
 
-                    <button @click="handleAction('edit')"
+                    <button v-if="hasPermission('edit-expense')" @click="handleAction('edit')"
                         class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                         <i class="fas fa-edit mr-3  "></i>
                         <span>Edit</span>
                     </button>
 
-                    <button @click="handleAction('delete')"
+                    <button v-if="hasPermission('delete-expense')" @click="handleAction('delete')"
                         class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                         <i class="fas fa-trash mr-3  "></i>
                         <span>Delete</span>
@@ -45,10 +45,12 @@
 
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { usePermissions } from "@/stores/usePermissions";
 
 export default {
     setup(_, { emit }) {
         const isOpen = ref(false);
+        const { hasPermission } = usePermissions(); // ✅ Safe: called inside setup()
 
         const toggleDropdown = () => {
             isOpen.value = !isOpen.value;
@@ -76,7 +78,9 @@ export default {
         return {
             isOpen,
             toggleDropdown,
-            handleAction
+            handleAction,
+            hasPermission,
+
         };
     }
 };

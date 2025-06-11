@@ -21,16 +21,10 @@
 
             </div>
 
-            <div class="flex items-center gap-3 md:gap-4">
 
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
+
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
@@ -138,9 +132,10 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/users/${user.id}`)"
-                                            @edit="editUser(user)" @delete="confirmDelete(user.id, user.name)"
-                                            :disableEdit="isCurrentUser(user)" />
+
+
+                                        <ToggleMenu @show="() => $router.push(`/users/${user.id}`)" :item="user"
+                                            @edit="editUser" @delete="confirmDelete" />
                                     </td>
                                 </tr>
                                 <tr v-if="users.length === 0 && !loadingUsers">
@@ -233,7 +228,7 @@
                                 <label for="role" class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
                                     Role
                                 </label>
-                                <select v-model="form.role" id="role" required
+                                <select v-model="form.role" id="role"
                                     class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm">
                                     <option value="" disabled selected>Select Role</option>
                                     <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}
@@ -294,8 +289,9 @@ import userService from '@/services/users';
 import authService from '@/services/auth';
 import AppAside from '../components/AppAside.vue';
 import UserDropdown from '../components/UserDropdown.vue';
-import ToggleMenu from './components/ToggleMenu.vue';
 import { debounce } from 'lodash';
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
+import { useProfileStore } from "@/stores/profile";
 
 function exportToCSV(data, filename) {
     const csvRows = [];
@@ -618,26 +614,26 @@ export default {
 
         isCurrentUser(user) {
             try {
-                const storedUser = JSON.parse(localStorage.getItem('user'));
-                return storedUser?.email && user?.email && storedUser.email === user.email;
+
+                const profile = useProfileStore();
+
+                return profile.user?.email && user?.email && profile.user.email === user.email;
             } catch (e) {
                 return false;
             }
         },
 
         confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} user?`)) {
-                userService
-                    .delete(id)
-                    .then(() => {
-                        this.fetchUsers();
-                        this.$toast.success('User deleted successfully');
-                    })
-                    .catch((err) => {
-                        this.$toast.error('Failed to delete user');
-                        console.error(err);
-                    });
-            }
+            userService
+                .delete(id)
+                .then(() => {
+                    this.fetchUsers();
+                    this.$toast.success('User deleted successfully');
+                })
+                .catch((err) => {
+                    this.$toast.error('Failed to delete user');
+                    console.error(err);
+                });
         }
     },
     mounted() {

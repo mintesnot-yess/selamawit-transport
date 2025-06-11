@@ -70,13 +70,7 @@ class RoleController extends Controller
         );
     }
 
-    /**
-     * Assign permissions to a role.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function updatePermissions(Request $request, $id)
     {
         try {

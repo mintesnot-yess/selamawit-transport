@@ -107,7 +107,8 @@ class ExpenseController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $expense = $request->validate([
+            "expense_types" => "nullable:expense_types,id",
             "General_category" => "nullable:expense_types,id",
             "employees_category" => "nullable:expense_types,id",
             "vehicle_category" => "nullable:expense_types,id",
@@ -115,26 +116,35 @@ class ExpenseController extends Controller
             "employee_id" => "nullable|exists:employees,id",
             "selectedBank" => "nullable|exists:banks,id",
             "selectedAccount" => "nullable|exists:bank_accounts,id",
+            "order_id" => "nullable|exists:orders,id",
             "toBank" => "nullable|exists:banks,id",
             "toAccount" => "string|nullable",
             "amount" => "required|numeric",
             "paid_date" => "required|date",
             "remark" => "nullable|string",
+            "payment_type" => "nullable|string",
             "file" => "nullable|max:2048",
         ]);
 
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('payment', 'public');
+        }
+
         $expense = Expense::create([
-            "expense_type_id" => $request->General_category ?? $request->employees_category ?? $request->vehicle_category,
+            "expense_type_id" => $request->expense_type ?? $request->General_category ?? $request->employees_category ?? $request->vehicle_category,
             "vehicle_id" => $request->vehicle_id,
             "employee_id" => $request->employee_id,
+            "order_id" => $request->order_id,
             "from_account" => $request->selectedAccount,
             "to_account" => $request->toAccount,
             "to_bank" => $request->toBank,
             "from_bank" => $request->selectedBank,
             "amount" => $request->amount,
             "paid_date" => $request->paid_date,
+            "payment_type" => $request->payment_type,
             "remark" => $request->remark,
-            "file" => $request->file('file') ? $request->file('file')->store('expenses', 'public') : null,
+            "file" => $filePath || null,
             "created_by" => Auth::id(),
             "updated_by" => Auth::id(),
         ]);

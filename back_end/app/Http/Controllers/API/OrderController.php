@@ -7,6 +7,7 @@ use App\Models\Bank;
 use App\Models\BankAccount;
 use App\Models\Client;
 use App\Models\Employee;
+use App\Models\ExpenseType;
 use App\Models\Income;
 use App\Models\LoadType;
 use App\Models\Location;
@@ -146,10 +147,12 @@ class OrderController extends Controller
             'expense',
             'income'
         ])->find($id);
+        $expense_type = ExpenseType::all();
 
         $income = Income::with(['bank'])->find($id);
 
         $bank = Bank::all();
+        $bank_account = BankAccount::all();
 
         if (!$order) {
             return response()->json([
@@ -162,7 +165,9 @@ class OrderController extends Controller
             'success' => true,
             'order' => $order,
             'bank' => $bank,
+            'bank_account' => $bank_account,
             'income' => $income,
+            'expense_type' => $expense_type
         ]);
 
 

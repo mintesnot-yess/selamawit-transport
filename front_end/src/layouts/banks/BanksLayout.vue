@@ -19,15 +19,9 @@
                     </button>
                 </form>
             </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
+
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
@@ -36,13 +30,13 @@
                 <div class="px-6 py-4 border-b border-surface-200">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h2 class="text-lg font-semibold text-surface-900">Banks Accounts</h2>
+                            <h2 class="text-lg font-semibold text-surface-900">Banks</h2>
                             <p class="text-sm text-surface-500">
                                 <template v-if="isSearching">Searching...</template>
                                 <template v-else-if="searchError" class="text-red-500">{{ searchError }}</template>
                                 <template v-else>
                                     Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} bank
-                                    Accounts
+
                                 </template>
                             </p>
                         </div>
@@ -116,8 +110,13 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/bank-accounts/${bank.id}`)"
-                                            @edit="editBank(bank)" @delete="confirmDelete(bank.id, bank.name)" />
+
+                                        <!-- <ToggleMenu @show="() => $router.push(`/bank-accounts/${bank.id}`)"
+                                            @edit="editBank(bank)" @delete="confirmDelete(bank.id, bank.name)" /> -->
+
+                                        <ToggleMenu @show="() => $router.push(`/bank-accounts/${bank.id}`)" :item="bank"
+                                            @edit="editBank" @delete="confirmDelete" />
+
                                     </td>
                                 </tr>
 
@@ -242,8 +241,8 @@ import bankService from '@/services/banks';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
 // import Forms from "./components/Forms.vue";
-import ToggleMenu from "./components/ToggleMenu.vue";
 import { debounce } from 'lodash';
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
 
 export default {
     components: {
@@ -333,7 +332,7 @@ export default {
             try {
                 const response = await bankService.store(this.form);
                 await this.fetchBanks();
- 
+
 
                 this.form.name = "";
                 this.isSideFormVisible = false;
@@ -522,17 +521,15 @@ export default {
         },
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} bank?`)) {
-                try {
-                    await bankService.delete(id);
-                    await this.fetchBanks();
+            try {
+                await bankService.delete(id);
+                await this.fetchBanks();
 
-                    this.$toast.success("Bank deleted successfully");
+                this.$toast.success("Bank deleted successfully");
 
 
-                } catch (error) {
-                    this.$toast.error("Failed to delete bank");
-                }
+            } catch (error) {
+                this.$toast.error("Failed to delete bank");
             }
         },
 

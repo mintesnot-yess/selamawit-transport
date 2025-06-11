@@ -53,20 +53,28 @@ export default {
     return !!localStorage.getItem("auth_token");
   },
 
+
   async fetchUser() {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      throw new Error("Authentication required.");
+    }
+
     try {
       const response = await api.get("/user");
 
-      // localStorage.setItem("user", JSON.stringify(response.data));
-      // const profile = useProfileStore();
-      // profile.user = response.data.user;
-      // profile.permissions = response.data.permissions;
-
+      const profile = useProfileStore();
+      profile.$patch({
+        user: response.data.user,
+        permissions: response.data.permissions
+      });
 
       return response.data;
     } catch (error) {
-      // this.logout();
+      console.error("Fetch user error:", error);
+      // Optionally dispatch logout
+      // useAuthStore().logout();
       throw error;
     }
-  },
+  }
 };

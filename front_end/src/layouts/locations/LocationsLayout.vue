@@ -22,15 +22,9 @@
                     </button>
                 </form>
             </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
+
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
@@ -111,9 +105,12 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/location-accounts/${location.id}`)"
+                                        <!-- <ToggleMenu @show="() => $router.push(`/location-accounts/${location.id}`)"
                                             @edit="editLocation(location)"
                                             @delete="confirmDelete(location.id, location.name)" />
+                                             -->
+                                        <ToggleMenu @show="() => $router.push(`/expense_type/${expense_type.id}`)"
+                                            :item="location" @edit="editLocation" @delete="confirmDelete" />
                                     </td>
                                 </tr>
 
@@ -239,8 +236,8 @@ import locationService from '@/services/locations';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
 // import Forms from "./components/Forms.vue";
-import ToggleMenu from "./components/ToggleMenu.vue";
 import { debounce } from 'lodash';
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
 
 export default {
     components: {
@@ -519,17 +516,16 @@ export default {
         },
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} location?`)) {
-                try {
-                    await locationService.delete(id);
-                    await this.fetchLocations();
+            try {
+                await locationService.delete(id);
+                await this.fetchLocations();
 
-                    this.$toast.success("Location deleted successfully");
+                this.$toast.success("Location deleted successfully");
 
 
-                } catch (error) {
-                    this.$toast.error("Failed to delete location");
-                }
+            } catch (error) {
+                this.$toast.error("Failed to delete location");
+
             }
         },
 

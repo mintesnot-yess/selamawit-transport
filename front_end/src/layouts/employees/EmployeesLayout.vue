@@ -8,7 +8,7 @@
             <span></span>
             <div class="flex items-center gap-3">
 
-                <form @input.prevent="searchClients(searchQuery)"
+                <form @input.prevent="searchEmployees(searchQuery)"
                     class="flex items-center border border-surface-300 rounded-lg px-2 py-2 text-surface-500 max-w-md w-full focus-within:ring-2 focus-within:ring-accent-500 focus-within:border-accent-500 transition-all">
                     <i class="fas fa-search mr-2 text-sm"></i>
                     <input v-model="searchQuery" @input="handleSearchInput"
@@ -20,15 +20,8 @@
                     </button>
                 </form>
             </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
@@ -37,17 +30,17 @@
                 <div class="px-6 py-4 border-b border-surface-200">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h2 class="text-lg font-semibold text-surface-900">Clients</h2>
+                            <h2 class="text-lg font-semibold text-surface-900">Employees</h2>
                             <p class="text-sm text-surface-500">
                                 <template v-if="isSearching">Searching...</template>
                                 <template v-else-if="searchError" class="text-red-500">{{ searchError }}</template>
                                 <template v-else>
                                     Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }}
-                                    Clients
+                                    Employees
                                 </template>
                             </p>
                         </div>
-                        <button @click="openAddClientForm"
+                        <button @click="openAddEmployeeForm"
                             class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
                             <i class="fas fa-plus"></i>
                             <span>Add employee</span>
@@ -86,7 +79,7 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-surface-200">
 
-                            <template v-if="loadingClients">
+                            <template v-if="loadingEmployees">
                                 <tr v-for="i in 5" :key="`skeleton-${i}`">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="h-4 bg-surface-200 rounded w-1/2 animate-pulse"></div>
@@ -142,8 +135,8 @@
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <ToggleMenu @show="() => $router.push(`/employee-accounts/${employee.id}`)"
-                                            @edit="editClient(employee)"
-                                            @delete="confirmDelete(employee.id, employee.name)" />
+                                            @edit="editEmployee" :item="employee" @delete="confirmDelete" />
+
                                     </td>
                                 </tr>
 
@@ -191,17 +184,17 @@
             <div id="side_form_container" class="side-form" :class="{ hidden: !isSideFormVisible }">
                 <div
                     class="fixed z-50 top-0 left-0 bg-zinc-900 bg-opacity-50 h-full w-full shadow-2xl border border-gray-10 flex overflow-y-auto">
-                    <button aria-label="Close" @click="toggleAddClientForm"
+                    <button aria-label="Close" @click="toggleAddEmployeeForm"
                         class="toggle_side_form_btn absolute top-0 right-2 text-gey-500 m-5 hover:text-gray-700 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors duration-200">
                         <i class="fa fa-xmark"></i>
                     </button>
-                    <div @click="toggleAddClientForm" id="side_form"
+                    <div @click="toggleAddEmployeeForm" id="side_form"
                         class="w-0 md:w-full sticky top-0 bg-transparent cursor-pointer">
                     </div>
                     <div id="side_form" class="md:max-w-md p-6 w-full h-full bg-white rounded-xl">
                         <div class="flex justify-between items-center mb-3">
                             <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
-                                Clients
+                                Employees
                             </h2>
                         </div>
                         <template v-if="isUpdating">
@@ -315,7 +308,7 @@
                                         First Name</label>
                                     <input v-model="form.first_name" id="siteName" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter employee name" />
+                                        placeholder="First Name" />
 
                                 </div>
                                 <div>
@@ -324,7 +317,7 @@
                                         Last Name</label>
                                     <input v-model="form.last_name" id="siteName" type="text"
                                         class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter employee name" />
+                                        placeholder="Enter Last" />
 
                                 </div>
                                 <div>
@@ -410,7 +403,8 @@ import EmployeeService from '@/services/employees';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
 // import Forms from "./components/Forms.vue";
-import ToggleMenu from "./components/ToggleMenu.vue";
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
+
 import { debounce } from 'lodash';
 
 export default {
@@ -432,10 +426,10 @@ export default {
             },
             Employees: [],
             loading: false,
-            loadingClients: false,
+            loadingEmployees: false,
             error: null,
             success: null,
-            editingClient: null,
+            editingEmployee: null,
             searchQuery: '',
             isSearching: false,
             isUpdating: false,
@@ -456,11 +450,11 @@ export default {
         };
     },
     async created() {
-        await this.fetchClients();
+        await this.fetchEmployees();
     },
     methods: {
-        async fetchClients(page = 1) {
-            this.loadingClients = true;
+        async fetchEmployees(page = 1) {
+            this.loadingEmployees = true;
             try {
                 const response = await EmployeeService.getAll({
                     page: page,
@@ -491,7 +485,7 @@ export default {
                 console.error('Error fetching Employees:', error);
                 this.$toast.error("Failed to load Employees: " + error.message);
             } finally {
-                this.loadingClients = false;
+                this.loadingEmployees = false;
             }
         },
 
@@ -499,11 +493,11 @@ export default {
 
             this.loading = true;
             this.error = null;
-            // If editingClient is set, update the employee, else create new
+            // If editingEmployee is set, update the employee, else create new
 
             try {
                 const response = await EmployeeService.store(this.form);
-                await this.fetchClients();
+                await this.fetchEmployees();
                 this.$router.push('Employees');
 
 
@@ -522,11 +516,11 @@ export default {
             this.loading = true;
             this.error = null;
             this.success = null;
-            // If editingClient is set, update the employee, else create new
+            // If editingEmployee is set, update the employee, else create new
 
             try {
                 const response = await EmployeeService.update(this.form.id, this.form);
-                await this.fetchClients();
+                await this.fetchEmployees();
                 this.success = "employee updated successfully"
 
 
@@ -558,7 +552,7 @@ export default {
             };
 
         },
-        async searchClients() {
+        async searchEmployees() {
             if (!this.searchQuery.trim()) {
                 this.clearSearch();
                 return;
@@ -593,7 +587,7 @@ export default {
         // Debounced search input handler
         handleSearchInput: debounce(function () {
             if (this.searchQuery.trim().length >= 3) {
-                this.searchClients();
+                this.searchEmployees();
             } else if (!this.searchQuery.trim()) {
                 this.clearSearch();
             }
@@ -602,24 +596,24 @@ export default {
         clearSearch() {
             this.searchQuery = '';
             this.searchError = null;
-            this.fetchClients();
+            this.fetchEmployees();
         },
         nextPage() {
             if (this.pagination.current_page < this.pagination.last_page) {
                 this.pagination.current_page++;
-                this.loadClients();
+                this.loadEmployees();
             }
         },
 
         prevPage() {
             if (this.pagination.current_page > 1) {
                 this.pagination.current_page--;
-                this.loadClients();
+                this.loadEmployees();
             }
         },
 
-        async loadClients() {
-            this.loadingClients = true;
+        async loadEmployees() {
+            this.loadingEmployees = true;
             try {
                 const params = {
                     page: this.pagination.current_page,
@@ -640,20 +634,20 @@ export default {
                 console.error('Error loading Employees:', error);
                 this.$toast.error('Failed to load Employees');
             } finally {
-                this.loadingClients = false;
+                this.loadingEmployees = false;
             }
         },
 
 
 
-        openAddClientForm() {
+        openAddEmployeeForm() {
             this.isUpdating = false;
 
             this.resetForm();
             this.isSideFormVisible = true;
         },
 
-        toggleAddClientForm() {
+        toggleAddEmployeeForm() {
             this.isSideFormVisible = !this.isSideFormVisible;
             if (!this.isSideFormVisible) {
                 this.resetForm();
@@ -665,8 +659,8 @@ export default {
             this.error = null;
 
             try {
-                if (this.editingClient) {
-                    await EmployeeService.update(this.editingClient.id, this.form);
+                if (this.editingEmployee) {
+                    await EmployeeService.update(this.editingEmployee.id, this.form);
                     this.$toast.success("employee updated successfully");
                 } else {
                     await EmployeeService.store(this.form);
@@ -674,7 +668,7 @@ export default {
                 }
 
                 this.closeSideForm();
-                await this.fetchClients();
+                await this.fetchEmployees();
             } catch (error) {
                 this.error = error.message;
                 this.$toast.error("Operation failed");
@@ -683,7 +677,7 @@ export default {
             }
         },
         // employee edit function
-        editClient(employee) {
+        editEmployee(employee) {
             this.isUpdating = true;
 
             this.form = {
@@ -699,18 +693,17 @@ export default {
         },
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} employee?`)) {
-                try {
-                    await EmployeeService.delete(id);
-                    await this.fetchClients();
+            try {
+                await EmployeeService.delete(id);
+                await this.fetchEmployees();
 
-                    this.$toast.success("employee deleted successfully");
+                this.$toast.success("employee deleted successfully");
 
 
-                } catch (error) {
-                    this.$toast.error("Failed to delete employee");
-                }
+            } catch (error) {
+                this.$toast.error("Failed to delete employee");
             }
+
         },
 
         resetForm() {
@@ -718,7 +711,7 @@ export default {
                 name: "",
                 active: true
             };
-            this.editingClient = null;
+            this.editingEmployee = null;
             this.error = null;
         },
 

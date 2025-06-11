@@ -3,27 +3,10 @@
         <header
             class="sticky top-0 flex items-center justify-between px-4 md:px-6 py-4 border-b border-surface-200 bg-white/80 backdrop-blur-sm z-30">
             <span></span>
-            <!-- <div class="flex items-center gap-3">
-                <form
-                    class="flex items-center border border-surface-300 rounded-lg px-2 py-2 text-surface-500 max-w-md w-full focus-within:ring-2 focus-within:ring-accent-500 focus-within:border-accent-500 transition-all">
-                    <i class="fas fa-search mr-2 text-sm"></i>
-                    <input
-                        class="flex-1 outline-none text-sm text-surface-700 placeholder:text-surface-400 bg-transparent"
-                        placeholder="Search or type command..." type="search" />
-                    <kbd
-                        class="ml-3 px-2 py-1 rounded-md border border-surface-300 text-surface-500 text-xs font-mono font-medium select-none hidden sm:inline-flex">⌘K</kbd>
-                </form>
-            </div> -->
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
 
-                <UserDropdown />
-            </div>
+
+
+            <UserDropdown />
         </header>
 
         <main class="p-4 md:p-6 space-y-6 overflow-scroll">
@@ -236,6 +219,7 @@
                                     {{ formatCurrency(0) }}
                                 </p>
 
+
                             </div>
                         </div>
 
@@ -264,11 +248,15 @@
                             </div>
                             <div>
                                 <p class="text-xs text-surface-500">
-                                    This Month Income
+                                    This Year Income
                                 </p>
-                                <p class="text-xl font-bold text-surface-900">
+                                <p v-if="incomes && orders.length" class="text-xl font-bold text-surface-900">
+                                    {{ formatCurrency(calculateTotal(incomes)) }}
+                                </p>
+                                <p v-else class="text-xl font-bold text-surface-900">
                                     {{ formatCurrency(0) }}
                                 </p>
+
 
                             </div>
                         </div>
@@ -285,6 +273,7 @@
                         <!-- <p class="text-xs text-surface-500 mt-2">vs last month</p> -->
                     </div>
                 </div>
+
                 <!-- This Month Expense -->
                 <div class="bg-white rounded-xl p-5 shadow-sm border border-surface-200">
                     <div class="flex items-center justify-between">
@@ -411,7 +400,7 @@
                                 Recent Orders
                             </h2>
                             <p class="text-sm text-surface-500">
-                                Latest transactions from your store
+                                <!-- Latest transactions from your store -->
                             </p>
                         </div>
                         <router-link to="/orders"
@@ -540,6 +529,7 @@ import AppHeader from "./components/AppHeader.vue";
 import AppAside from "./components/AppAside.vue";
 import AppFooter from "./components/AppFooter.vue";
 import IncomeExpenseChart from "./components/IncomeExpenseChart.vue";
+import { useProfileStore } from "@/stores/profile";
 
 const sidebarOpen = ref(false);
 
@@ -570,7 +560,7 @@ export default {
             months: [],
             incomes: [],
             expenseData: [],
-            userName: 'Mintesnot',
+            userName: '',
 
 
             loadingUsers: false,
@@ -586,27 +576,22 @@ export default {
         this.fetchOrder();
         this.fetchExpense();
 
+
+
     },
     methods: { // Fixed syntax (was "methods{")
 
 
 
         async fetchUsers() {
+
             try {
                 const response = await userService.getAll();
                 this.users = response.data || [];
+                const profile = useProfileStore();
+                const user = profile.user.name;
+                this.userName = user || '';
 
-                const user = localStorage.getItem('user');
-                if (user) {
-                    try {
-                        this.userName = JSON.parse(user).user.name || '';
-                    } catch (e) {
-                        this.userName = '';
-                    }
-                } else {
-                    this.userName = '';
-
-                }
 
             } catch (error) { }
         },
@@ -647,15 +632,25 @@ export default {
                 style: 'currency',
                 currency: 'ETB'
             }).format(value);
+        },
+        calculateTotal(data) {
+            // Flatten the array and reduce to a single sum
+            const total = data.flat().reduce((sum, value) => {
+                return sum + parseFloat(value || 0);
+            }, 0);
+
+            return total;
         }
 
 
-
-
-    },
+    }
 
 
 
 
 }
+
+
+
+
 </script>

@@ -20,15 +20,9 @@
                     </button>
                 </form>
             </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
+
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
@@ -193,9 +187,12 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/vehicle/${vehicle.id}`)"
+                                        <!-- <ToggleMenu @show="() => $router.push(`/vehicle/${vehicle.id}`)"
                                             @edit="editVehicle(vehicle)"
-                                            @delete="confirmDelete(vehicle.id, vehicle.name)" />
+                                            @delete="confirmDelete(vehicle.id, vehicle.name)" /> -->
+
+                                        <ToggleMenu @show="() => $router.push(`/vehicle/${vehicle.id}`)" :item="vehicle"
+                                            @edit="editVehicle" @delete="confirmDelete" />
                                     </td>
                                 </tr>
 
@@ -428,11 +425,6 @@
                                         </label>
 
                                     </div>
-
-
-
-
-
                                 </div>
                                 <div v-if="error" class="text-red-500 text-sm">
                                     {{ error }}
@@ -457,7 +449,7 @@ import vehicleService from '@/services/vehicle';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
 // import Forms from "./components/Forms.vue";
-import ToggleMenu from "./components/ToggleMenu.vue";
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
 import { debounce } from 'lodash';
 
 export default {
@@ -761,18 +753,17 @@ export default {
 
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} vehicle?`)) {
-                try {
-                    await vehicleService.delete(id);
-                    await this.fetchVehicles();
+            try {
+                await vehicleService.delete(id);
+                await this.fetchVehicles();
 
-                    this.$toast.success("vehicle deleted successfully");
+                this.$toast.success("vehicle deleted successfully");
 
 
-                } catch (error) {
-                    this.$toast.error("Failed to delete vehicle");
-                }
+            } catch (error) {
+                this.$toast.error("Failed to delete vehicle");
             }
+
         },
 
         resetForm() {

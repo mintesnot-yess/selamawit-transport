@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->decimal('amount', 12, 2);
             $table->date('paid_date');
             $table->text('remark')->nullable();
+            $table->text('payment_type')->nullable();
             $table->string('file', 255)->nullable();
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();

@@ -21,15 +21,8 @@
                     </button>
                 </form>
             </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
         </header>
 
         <main class="p-4 md:p-6 space-y-6 h-screen   overflow-x-auto">
@@ -38,13 +31,13 @@
                 <div class="px-6 py-4 border-b border-surface-200">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h2 class="text-lg font-semibold text-surface-900">Brders Accounts</h2>
+                            <h2 class="text-lg font-semibold text-surface-900">Orders</h2>
                             <p class="text-sm text-surface-500">
                                 <template v-if="isSearching">Searching...</template>
                                 <template v-else-if="searchError" class="text-red-500">{{ searchError }}</template>
                                 <template v-else>
                                     Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} order
-                                    Accounts
+
                                 </template>
                             </p>
                         </div>
@@ -137,11 +130,15 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-surface-100 text-surface-700">
                                 <template v-if="loadingOrders">
+
                                     <tr v-for="i in 5" :key="`skeleton-${i}`">
                                         <td v-for="j in 18" :key="j" class="px-2 py-3 whitespace-nowrap">
                                             <div class="h-3 bg-surface-100 rounded w-3/4 animate-pulse"></div>
                                         </td>
                                     </tr>
+
+
+
                                 </template>
                                 <template v-else>
                                     <tr v-if="orders.length === 0 && !loadingOrders">
@@ -164,22 +161,22 @@
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
                                             <span v-if="order.client" class="text-surface-800">{{ order.client.name
-                                                }}</span>
+                                            }}</span>
                                             <span v-else class="text-surface-300 italic">N/A</span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
                                             <div v-if="order.vehicle" class="flex flex-col">
                                                 <span class="font-medium text-surface-800">{{ order.vehicle.plate_number
-                                                    }}</span>
+                                                }}</span>
                                                 <span class="text-xs text-surface-400">{{ order.vehicle.vehicle_name
-                                                    }}</span>
+                                                }}</span>
                                             </div>
                                             <span v-else class="text-surface-300 italic">N/A</span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap">
                                             <div v-if="order.employee" class="flex flex-col">
                                                 <span class="font-medium text-surface-800">{{ order.employee.first_name
-                                                    }} {{ order.employee.last_name }}</span>
+                                                }} {{ order.employee.last_name }}</span>
                                                 <span class="text-xs text-surface-400">Driver</span>
                                             </div>
                                             <span v-else class="text-surface-300 italic">N/A</span>
@@ -249,9 +246,14 @@
                                             </span>
                                         </td>
                                         <td class="px-2 py-3 whitespace-nowrap text-right font-normal">
-                                            <ToggleMenu @show="() => $router.push(`/orders/${order.id}`)"
-                                                @edit="editOrder(order)"
-                                                @delete="confirmDelete(order.id, order.name || `Order #${order.id}`)" />
+
+
+                                            <!-- <ToggleMenu :item="order" @show="() => $router.push(`/orders/${order.id}`)"
+                                                @edit="editOrder" @delete="confirmDelete" /> -->
+                                            <ToggleMenu :can-edit="hasPermission('edit-order')"
+                                                :can-delete="hasPermission('delete-order')" :item="order"
+                                                @show="() => $router.push(`/orders/${order.id}`)" @edit="editOrder"
+                                                @delete="confirmDelete" />
                                         </td>
                                     </tr>
                                 </template>
@@ -432,7 +434,8 @@
 import orderService from '@/services/orders';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
-import ToggleMenu from "./components/ToggleMenu.vue";
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
+
 import { debounce } from 'lodash';
 import { usePermissions } from "@/stores/usePermissions";
 
@@ -520,7 +523,6 @@ export default {
                 if (response.vehicles) this.vehicles = response.vehicles;
                 if (response.locations) this.locations = response.locations;
                 if (response.loadTypes) this.loadTypes = response.loadTypes;
-                console.log("Response from fetchOrders:", response);
 
                 // Ensure meta exists
                 if (!response.meta) {
@@ -767,20 +769,20 @@ export default {
 
         },
 
+
+
+
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} order?`)) {
-                try {
-                    await orderService.delete(id);
-                    await this.fetchOrders();
-
-                    this.$toast.success("Order deleted successfully");
-
-
-                } catch (error) {
-                    this.$toast.error("Failed to delete order");
-                }
+            try {
+                await orderService.delete(id);
+                await this.fetchOrders();
+                this.$toast.success(`Order ${name} deleted successfully`);
+            } catch (error) {
+                this.$toast.error(`Failed to delete ${name}`);
+                console.error('Delete error:', error);
             }
         },
+
 
         resetForm() {
             this.form = {

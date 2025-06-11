@@ -11,7 +11,7 @@
 
     <!-- Sidebar -->
     <aside :class="[
-        'fixed md:sticky top-0 left-0 bg-white border-r h-screen flex flex-col z-50 transition-transform duration-300',
+        'fixed md:sticky top-0 left-0 bg-white border-r h-screen w-fit flex flex-col z-50 transition-transform duration-300',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
         isSidebarCollapsed ? 'w-16' : 'w-64'
     ]">
@@ -19,12 +19,8 @@
         <div class="flex items-center justify-between px-4 py-4 border-b bg-gray-50">
             <!-- Logo/Icon -->
             <div class="flex items-center gap-2">
-                <div class="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 13l4-4 4 4m0 0l4-4 4 4M4 17h16" />
-                    </svg>
+                <div class="bg-blue-50 rounded-full w-10 h-10 flex items-center justify-center">
+                    <img src="/src/assets/logo_icon.png" class="h-6 w-6 text-white" />
                 </div>
                 <transition name="fade">
                     <span v-if="!isSidebarCollapsed"
@@ -50,13 +46,13 @@
 
         <!-- Sidebar Navigation -->
         <nav :class="[
-            'flex-1 px-4 py-6 text-sm text-gray-600',
+            '  flex-1 px-4 py-6 text-sm text-gray-600',
             !isSidebarCollapsed ? 'overflow-y-auto' : ''
         ]">
             <div>
                 <p v-if="!isSidebarCollapsed" class="text-xs font-medium uppercase mb-3 text-gray-500 tracking-wider">
                     Menu</p>
-                <ul class="space-y-2">
+                <ul class="space-y-2  ">
                     <li>
                         <router-link to="/" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
@@ -71,8 +67,9 @@
                             <span v-if="!isSidebarCollapsed">Dashboard</span>
                         </router-link>
                     </li>
+
                     <li>
-                        <router-link to="/orders" class="sidebar-link">
+                        <router-link v-if="hasPermission('view-order')" to="/orders" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -83,8 +80,9 @@
                             <span v-if="!isSidebarCollapsed">Orders</span>
                         </router-link>
                     </li>
+
                     <li>
-                        <router-link to="/expense" class="sidebar-link">
+                        <router-link v-if="hasPermission('view-expense')" to="/expense" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -95,8 +93,7 @@
                             <span v-if="!isSidebarCollapsed">Expenses</span>
                         </router-link>
                     </li>
-                    <!-- Reports Dropdown -->
-                    <li class="relative">
+                    <li v-if="hasPermission('view-report')" class="relative">
                         <button @click="toggleReportDropdown" class="sidebar-link w-full"
                             :aria-expanded="reportDropdownOpen">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
@@ -153,7 +150,7 @@
                         </ul>
                     </li>
                     <li>
-                        <router-link to="/expense_type" class="sidebar-link">
+                        <router-link v-if="hasPermission('view-load-type')" to="/expense_type" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -165,7 +162,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/vehicles" class="sidebar-link">
+                        <router-link v-if="hasPermission('view-vehicles')" to="/vehicles" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -177,7 +174,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/employees" class="sidebar-link">
+                        <router-link v-if="hasPermission('view-employee')" to="/employees" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -189,7 +186,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/location" class="sidebar-link">
+                        <router-link v-if="hasPermission('view-location')" to="/location" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -203,7 +200,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/load_types" class="sidebar-link">
+                        <router-link v-if="hasPermission('view-load-type')" to="/load_types" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -215,7 +212,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/banks" class="sidebar-link">
+                        <router-link v-if="hasPermission('view-bank')" to="/banks" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -233,7 +230,7 @@
                     User Management</p>
                 <ul class="space-y-2">
                     <li>
-                        <router-link to="/clients" class="sidebar-link">
+                        <router-link v-if="hasPermission('view-client')" to="/clients" class="sidebar-link">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -245,7 +242,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/users" class="sidebar-link w-full">
+                        <router-link v-if="hasPermission('view-system-user')" to="/users" class="sidebar-link w-full">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"
@@ -260,7 +257,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/roles" class="sidebar-link ">
+                        <router-link v-if="hasPermission('view-role')" to="/roles" class="sidebar-link ">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
@@ -282,7 +279,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/logs" class="sidebar-link ">
+                        <router-link v-if="hasPermission('view-log')" to="/logs" class="sidebar-link ">
                             <div :class="{ 'transform scale-90': isSidebarCollapsed }">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"
@@ -309,6 +306,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { usePermissions } from "@/stores/usePermissions";
 
 const isSidebarCollapsed = ref(false);
 const reportDropdownOpen = ref(false);
@@ -328,6 +326,8 @@ function sidebarCollapse() {
 function toggleReportDropdown() {
     reportDropdownOpen.value = !reportDropdownOpen.value;
 }
+const { hasPermission } = usePermissions(); // ✅ Safe: called inside setup()
+
 </script>
 
 <style scoped>
@@ -340,7 +340,7 @@ nav::-webkit-scrollbar {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.625rem 1rem;
+    padding: 0.6rem 1.5rem 0.6rem 1rem;
     border-radius: 0.5rem;
     font-weight: 500;
     color: #374151;
@@ -380,7 +380,7 @@ nav::-webkit-scrollbar {
 }
 
 .sidebar-sublink {
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 1rem;
     border-radius: 0.375rem;
     color: #374151;
     font-weight: 500;

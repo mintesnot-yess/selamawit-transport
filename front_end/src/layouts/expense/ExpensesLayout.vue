@@ -21,15 +21,9 @@
                     </button>
                 </form>
             </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
+
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
@@ -69,7 +63,7 @@
                                 </button>
                             </div> -->
                         </div>
-                        <button @click="openAddVehicleForm"
+                        <button v-if="hasPermission('create-expense')" @click="openAddVehicleForm"
                             class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
                             <i class="fas fa-plus"></i>
                             <span>Add expense</span>
@@ -209,9 +203,13 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/expense/${expense.id}`)"
+
+                                        <!-- <ToggleMenu @show="() => $router.push(`/expense/${expense.id}`)"
                                             @edit="editVehicle(expense)"
-                                            @delete="confirmDelete(expense.id, expense.name)" />
+                                            @delete="confirmDelete(expense.id, expense.name)" /> -->
+
+                                        <ToggleMenu :item="expense" @edit="editVehicle" @delete="confirmDelete" />
+
                                     </td>
                                 </tr>
 
@@ -906,10 +904,19 @@ import expenseService from '@/services/expenses';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
 // import Forms from "./components/Forms.vue";
-import ToggleMenu from "./components/ToggleMenu.vue";
 import { debounce } from 'lodash';
+import { usePermissions } from "@/stores/usePermissions";
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
 
 export default {
+    setup() {
+        const { hasPermission } = usePermissions(); // ✅ Safe: called inside setup()
+
+        return {
+            hasPermission,
+            // ... other reactive properties or methods
+        };
+    },
     components: {
         AppAside,
         UserDropdown,
@@ -1255,17 +1262,14 @@ export default {
 
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} expense?`)) {
-                try {
-                    await expenseService.delete(id);
-                    await this.fetchVehicles();
-
-                    this.$toast.success("expense deleted successfully");
+            try {
+                await expenseService.delete(id);
+                await this.fetchVehicles();
+                this.$toast.success("expense  deleted successfully");
 
 
-                } catch (error) {
-                    this.$toast.error("Failed to delete expense");
-                }
+            } catch (error) {
+                this.$toast.error("Failed to delete expense");
             }
         },
 

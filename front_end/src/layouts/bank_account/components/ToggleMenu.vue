@@ -19,28 +19,50 @@
             <div v-show="isOpen"
                 class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div class="py-1">
+                    <button @click="handleAction('show')"
+                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                        <i class="fas fa-eye mr-3"></i>
+                        <span>View</span>
+                    </button>
                     <button @click="handleAction('edit')"
                         class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-                        <i class="fas fa-edit mr-3  "></i>
+                        <i class="fas fa-edit mr-3"></i>
                         <span>Edit</span>
                     </button>
                     <button @click="handleAction('delete')"
-                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-                        <i class="fas fa-trash mr-3  "></i>
+                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-900">
+                        <i class="fas fa-trash mr-3"></i>
                         <span>Delete</span>
                     </button>
                 </div>
             </div>
         </transition>
+
+        <!-- Delete Confirmation Popup -->
+        <DeleteConfirmationPopup v-if="showDeletePopup" :item-name="itemNameToDelete" @confirm="handleDeleteConfirm"
+            @cancel="showDeletePopup = false" />
     </div>
 </template>
 
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import DeleteConfirmationPopup from '@/layouts/components/DeleteConfirmationPopup.vue';
 
 export default {
-    setup(_, { emit }) {
+    components: {
+        DeleteConfirmationPopup
+    },
+    props: {
+        item: {
+            type: Object,
+            required: true
+        }
+    },
+    setup(props, { emit }) {
         const isOpen = ref(false);
+        const showDeletePopup = ref(false);
+        const itemNameToDelete = ref('');
+        const itemIdToDelete = ref(null);
 
         const toggleDropdown = () => {
             isOpen.value = !isOpen.value;
@@ -53,8 +75,19 @@ export default {
         };
 
         const handleAction = (action) => {
-            emit(action);
+            if (action === 'delete') {
+                itemIdToDelete.value = props.item.id;
+                itemNameToDelete.value = props.item.name || `Order #${props.item.id}`;
+                showDeletePopup.value = true;
+            } else {
+                emit(action, props.item);
+            }
             isOpen.value = false;
+        };
+
+        const handleDeleteConfirm = () => {
+            emit('delete', itemIdToDelete.value, itemNameToDelete.value);
+            showDeletePopup.value = false;
         };
 
         onMounted(() => {
@@ -62,27 +95,17 @@ export default {
         });
 
         onBeforeUnmount(() => {
-            document.addEventListener('click', closeDropdown);
+            document.removeEventListener('click', closeDropdown);
         });
 
         return {
             isOpen,
+            showDeletePopup,
+            itemNameToDelete,
             toggleDropdown,
-            handleAction
+            handleAction,
+            handleDeleteConfirm
         };
     }
 };
 </script>
-
-<style scoped>
-/* Smooth transitions */
-button {
-    transition: all 0.2s ease;
-}
-
-/* Focus styles */
-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
-</style>

@@ -147,6 +147,15 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::get("/{id}", [OrderController::class, "show"]);
         Route::put("/{id}", [OrderController::class, "update"]);
         Route::delete("/{id}", [OrderController::class, "destroy"]);
+    });  // Income routes
+
+    Route::prefix("incomes")->group(function () {
+        Route::get("/", [IncomeController::class, "index"]);
+        Route::post("/", [IncomeController::class, "store"]);
+        Route::get("/search", [IncomeController::class, "search"]);
+        Route::get("/{id}", [IncomeController::class, "show"]);
+        Route::put("/{id}", [IncomeController::class, "update"]);
+        Route::delete("/{id}", [IncomeController::class, "destroy"]);
     });
 
     // Income routes

@@ -13,8 +13,11 @@ class Income extends Model
         "order_id",
         "amount",
         "attachment",
+        "bank_id",
+        "account_number",
         "received_date",
-        "description",
+        "payment_type",
+        "remark",
         "created_by",
         "updated_by",
     ];

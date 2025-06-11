@@ -61,7 +61,7 @@ const vehicleService = {
             for (const key in vehicleData) {
                 formData.append(key, vehicleData[key]);
             }
-            const response = await axios.post(`${API_BASE_URL}/vehicles`, formData, {
+            const response = await axios.post(`${API_BASE_URL}/vehicles`, vehicleData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
                     'Content-Type': 'multipart/form-data'

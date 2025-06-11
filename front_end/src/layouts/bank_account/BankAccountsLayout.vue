@@ -21,15 +21,9 @@
                     </button>
                 </form>
             </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
+
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
@@ -38,12 +32,13 @@
                 <div class="px-6 py-4 border-b border-surface-200">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h2 class="text-lg font-semibold text-surface-900">Banks</h2>
+                            <h2 class="text-lg font-semibold text-surface-900">Bank Accounts</h2>
                             <p class="text-sm text-surface-500">
                                 <template v-if="isSearching">Searching...</template>
                                 <template v-else-if="searchError" class="text-red-500">{{ searchError }}</template>
                                 <template v-else>
-                                    Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} banks
+                                    Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} bank
+                                    accounts
                                 </template>
                             </p>
                         </div>
@@ -128,8 +123,7 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @edit="editBank(bank)"
-                                            @delete="confirmDelete(bank.id, `${bank.bank.name + '_' + bank.account_number}`)" />
+                                        <ToggleMenu :item="bank" @edit="editBank" @delete="confirmDelete" />
                                     </td>
                                 </tr>
 
@@ -552,17 +546,12 @@ export default {
         },
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name}`)) {
-                try {
-                    await bankService.delete(id);
-                    await this.fetchBanks();
-
-                    this.$toast.success("Bank deleted successfully");
-
-
-                } catch (error) {
-                    this.$toast.error("Failed to delete bank");
-                }
+            try {
+                await bankService.delete(id);
+                await this.fetchBanks();
+                this.$toast.success(`Bank ${name} deleted successfully`);
+            } catch (error) {
+                this.$toast.error(`Failed to delete ${name}`);
             }
         },
 

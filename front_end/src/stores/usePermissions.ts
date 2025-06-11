@@ -7,6 +7,7 @@ export function usePermissions() {
 
   const permissions = computed(() => userStore.permissions)
 
+
   function hasPermission(permission: string): boolean {
     return permissions.value.includes(permission)
   }

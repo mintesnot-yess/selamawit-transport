@@ -286,9 +286,7 @@ export default {
                 this.selectedPermissions = permissionsData.map(p => String(p.id)).filter(Boolean);
 
             } catch (error) {
-                console.error('Error loading role permissions:', error);
-                this.errorMessage = error.response?.data?.message ||
-                    error.message ||
+                error.message ||
                     'Failed to load role permissions';
                 this.selectedPermissions = [];
             } finally {
@@ -331,8 +329,6 @@ export default {
                     errorMessage = `${error.response.status}: ${error.response.statusText}`;
                 }
 
-                this.errorMessage = errorMessage;
-                this.$toast.error(errorMessage);
             } finally {
                 this.isSaving = false;
             }

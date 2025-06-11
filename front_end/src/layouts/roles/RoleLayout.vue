@@ -1,177 +1,121 @@
 <template>
-
     <div class="flex-1 flex flex-col">
         <!-- Header with search -->
         <header
             class="sticky top-0 flex items-center justify-between px-4 md:px-6 py-4 border-b border-surface-200 bg-white/80 backdrop-blur-sm z-30">
             <span></span>
-            <div class="flex items-center gap-3">
 
-                <form @input.prevent="searchRoles(searchQuery)"
-                    class="flex items-center border border-surface-300 rounded-lg px-2 py-2 text-surface-500 max-w-md w-full focus-within:ring-2 focus-within:ring-accent-500 focus-within:border-accent-500 transition-all">
-                    <i class="fas fa-search mr-2 text-sm"></i>
-                    <input v-model="searchQuery" @input="handleSearchInput"
-                        class="flex-1 outline-none text-sm text-surface-700 placeholder:text-surface-400 bg-transparent"
-                        placeholder="Search roles..." type="search" />
-                    <button v-if="searchQuery" @click="clearSearch" type="button"
-                        class="ml-2 text-surface-400 hover:text-surface-600">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </form>
-            </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+            <UserDropdown />
         </header>
 
-
-
-
         <main class="p-4 md:p-6 space-y-6">
-            <!-- Roles Table -->
-            <div class="bg-white rounded-xl shadow-sm border border-surface-200">
-                <div class="px-6 py-4 border-b border-surface-200">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
-                            <h2 class="text-lg font-semibold text-surface-900">Roles</h2>
-                            <p class="text-sm text-surface-500">
-                                <template v-if="isSearching">Searching...</template>
-                                <template v-else-if="searchError" class="text-red-500">{{ searchError }}</template>
-                                <template v-else>
-                                    Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} role
+            <!-- Combined Role & Permission Management -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Roles Section -->
+                <div
+                    class="lg:col-span-1 h-fit md:sticky top-20 bg-white rounded-xl shadow-sm border border-surface-200">
+                    <div class="px-6 py-4 border-b border-surface-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                <h2 class="text-lg font-semibold text-surface-900">Roles</h2>
+                                <p class="text-sm text-surface-500">
+                                    <template v-if="isSearching">Searching...</template>
+                                    <template v-else-if="searchError" class="text-red-500">{{ searchError
+                                    }}</template>
+                                    <template v-else>
+                                        Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total
+                                        }}
+                                        roles
+                                    </template>
+                                </p>
+                            </div>
+                            <button @click="openAddRoleForm"
+                                class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
+                                <i class="fas fa-plus"></i>
+                                <span>Add Role</span>
+                            </button>
 
-                                </template>
-                            </p>
                         </div>
-                        <button @click="openAddRoleForm"
-                            class="text-sm font-semibold text-white hover:text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center text-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
-                            <i class="fas fa-plus"></i>
-                            <span>Add Role</span>
-                        </button>
+                        <div class="" style="max-height: 600px;">
+                            <table class="min-w-full divide-y divide-surface-200">
+                                <thead class="bg-surface-50 sticky top-0">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
+                                            Role Name
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
+                                            Perms
+                                        </th>
+                                        <th scope="col" class="relative px-6 py-3"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-surface-200">
+                                    <template v-if="loadingRoles">
+                                        <tr v-for="i in 5" :key="`skeleton-${i}`">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="h-4 bg-surface-200 rounded w-3/4 animate-pulse"></div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="h-4 bg-surface-200 rounded w-8 animate-pulse"></div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="h-4 bg-surface-200 rounded w-8 animate-pulse"></div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template v-else>
+                                        <tr v-for="role in roles" :key="role.id"
+                                            class="hover:bg-surface-50 cursor-pointer"
+                                            :class="{ 'bg-blue-50': selectedRole && selectedRole.id === role.id }"
+                                            @click="selectRole(role)">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-8 w-8">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="1.5" stroke-linecap="round"
+                                                            stroke-linejoin="round" class="lucide lucide-user-cog">
+                                                            <path d="M10 15H6a4 4 0 0 0-4 4v2" />
+                                                            <circle cx="18" cy="15" r="3" />
+                                                            <circle cx="9" cy="7" r="4" />
+                                                            <path d="M19 15v3.5" />
+                                                            <path d="M16 18h6" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-surface-900">{{ role.name
+                                                            }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700">
+                                                {{ role.permissions_count !== null ? role.permissions_count : 0 }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <ToggleMenu :item="role" @edit="editRole" @delete="confirmDelete" />
+                                            </td>
+                                        </tr>
+                                        <tr v-if="roles.length === 0 && !loadingRoles">
+                                            <td colspan="3"
+                                                class="px-4 py-8 text-center text-surface-400 text-base font-medium">
+                                                <i class="fas fa-building-columns text-2xl mb-2 block"></i>
+                                                No roles found
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-
-                <div class=" ">
-                    <table class="min-w-full divide-y divide-surface-200">
-                        <thead class="bg-surface-50">
-                            <tr>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    #
-                                </th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Role Name
-                                </th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                                    Permissions
-                                </th>
-                                <th scope="col" class="relative px-6 py-3">
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-surface-200">
-
-                            <template v-if="loadingRoles">
-                                <tr v-for="i in 5" :key="`skeleton-${i}`">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="h-4 bg-surface-200 rounded w-1/2 animate-pulse"></div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div
-                                                class="flex-shrink-0 h-8 w-8 bg-surface-200 rounded-full animate-pulse">
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="h-4 bg-surface-200 rounded w-32 animate-pulse"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="h-4 bg-surface-200 rounded w-12 animate-pulse"></div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="h-4 bg-surface-200 rounded w-8 animate-pulse"></div>
-                                    </td>
-                                </tr>
-                            </template>
-
-                            <template v-else>
-                                <tr v-for="role in roles" :key="role.id" class="hover:bg-surface-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-surface-900">
-                                        {{ (pagination.from - 1) + (roles.indexOf(role) + 1) }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-8 w-8">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                                                    class="lucide lucide-user-cog-icon lucide-user-cog">
-                                                    <path d="M10 15H6a4 4 0 0 0-4 4v2" />
-                                                    <path d="m14.305 16.53.923-.382" />
-                                                    <path d="m15.228 13.852-.923-.383" />
-                                                    <path d="m16.852 12.228-.383-.923" />
-                                                    <path d="m16.852 17.772-.383.924" />
-                                                    <path d="m19.148 12.228.383-.923" />
-                                                    <path d="m19.53 18.696-.382-.924" />
-                                                    <path d="m20.772 13.852.924-.383" />
-                                                    <path d="m20.772 16.148.924.383" />
-                                                    <circle cx="18" cy="15" r="3" />
-                                                    <circle cx="9" cy="7" r="4" />
-                                                </svg>
-                                            </div>
-                                            <div class="ml-4">
-
-                                                <!-- make it link  permissions?role_id=1 -->
-
-
-                                                <router-link :to="`permissions?role_id=${role.id}`"
-                                                    class="text-sm font-medium text-surface-900 hover:underline">{{
-                                                        role.name
-                                                    }}</router-link>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-surface-700">
-                                        <!-- Show permission count, fallback to 0 if not present -->
-                                        <span v-if="role.permissions && Array.isArray(role.permissions)">
-                                            {{ role.permissions.length }}
-                                        </span>
-                                        <span v-else>0</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-
-                                        <ToggleMenu @show="() => $router.push(`/permissions?role_id=${role.id}`)"
-                                            @edit="editRole(role)" @delete="confirmDelete(role.id, role.name)" />
-                                    </td>
-                                </tr>
-
-                                <tr v-if="roles.length === 0 && !loadingRoles">
-                                    <td colspan="10"
-                                        class="px-4 py-8 text-center text-surface-400 text-base font-medium">
-                                        <i class="fas fa-building-columns text-2xl mb-2 block"></i>
-                                        No roles found
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
 
                     <!-- Pagination -->
-                    <!-- <div v-if="pagination.last_page > 1" -->
-
                     <div v-if="pagination.last_page > 1"
                         class="px-6 py-4 border-t border-surface-200 flex items-center justify-between">
                         <div class="text-sm text-surface-500">
-                            Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} results
+                            Page {{ pagination.current_page }} of {{ pagination.last_page }}
                         </div>
                         <div class="flex space-x-2">
                             <button @click="prevPage" :disabled="pagination.current_page === 1"
@@ -182,6 +126,90 @@
                                 class="px-3 py-1 border rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                                 Next
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permissions Section -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-surface-200">
+                    <div class="px-6 py-4 border-b border-surface-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                <h2 class="text-lg font-semibold text-surface-900">
+                                    Permissions
+                                    <span v-if="selectedRole" class="text-blue-600">for {{ selectedRole.name }}</span>
+                                    <span v-else class="text-gray-500">(Select a role)</span>
+                                </h2>
+                                <p class="text-sm text-surface-500 mt-1" v-if="selectedRole">
+                                    {{ selectedPermissions.length }} permission{{ selectedPermissions.length !== 1 ? 's'
+                                        : '' }}
+                                    selected
+                                </p>
+                            </div>
+                            <button @click="saveRolePermissions" :disabled="!selectedRole || isSaving"
+                                class="text-sm font-semibold text-white p-2 bg-blue-500 hover:bg-blue-400 rounded-lg flex items-center justify-center gap-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md disabled:opacity-70 disabled:cursor-not-allowed">
+                                <i class="fas fa-save" :class="{ 'fa-spin': isSaving }"></i>
+                                <span>{{ isSaving ? 'Saving...' : 'Save Permissions' }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <div v-if="!selectedRole" class="text-center py-12 text-surface-400">
+                            <i class="fas fa-user-shield text-4xl mb-4"></i>
+                            <p class="text-lg">Please select a role to manage permissions</p>
+                        </div>
+
+                        <div v-else>
+                            <div class="mb-4 flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <input type="checkbox" :checked="allPermissionsSelected"
+                                        @change="toggleSelectAllPermissions"
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2">
+                                    <span class="text-sm text-surface-700">
+                                        {{ allPermissionsSelected ? 'Deselect All' : 'Select All' }}
+                                    </span>
+                                </div>
+                                <div class="relative">
+                                    <input v-model="permissionSearch" @input="filterPermissions"
+                                        placeholder="Filter permissions..."
+                                        class="pl-8 pr-4 py-2 border border-surface-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <i class="fas fa-search absolute left-3 top-3 text-surface-400 text-sm"></i>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                <template v-if="loadingPermissions">
+                                    <div v-for="i in 6" :key="`perm-skeleton-${i}`"
+                                        class="p-3 border rounded-lg bg-surface-50 animate-pulse">
+                                        <div class="h-4 w-3/4 bg-surface-200 rounded mb-2"></div>
+                                        <div class="h-3 w-1/2 bg-surface-200 rounded"></div>
+                                    </div>
+                                </template>
+
+                                <template v-else>
+                                    <label v-for="permission in filteredPermissions" :key="permission.id"
+                                        class="flex items-start p-3 border rounded-lg hover:bg-surface-50 cursor-pointer transition-colors"
+                                        :class="{ 'border-blue-300 bg-blue-50': selectedPermissions.includes(String(permission.id)) }">
+                                        <div class="flex items-center h-5">
+                                            <input type="checkbox" v-model="selectedPermissions"
+                                                :value="String(permission.id)"
+                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <span class="font-medium text-surface-700">{{ permission.name }}</span>
+                                            <p class="text-surface-500 mt-1 text-xs">
+                                                {{ permission.description || 'No description' }}</p>
+                                        </div>
+                                    </label>
+                                </template>
+
+                                <div v-if="filteredPermissions.length === 0 && !loadingPermissions"
+                                    class="col-span-full text-center py-8 text-surface-400">
+                                    <i class="fas fa-ban text-2xl mb-2"></i>
+                                    <p>No permissions found</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -201,61 +229,39 @@
                     <div id="side_form" class="md:max-w-md p-6 w-full h-full bg-white rounded-xl">
                         <div class="flex justify-between items-center mb-3">
                             <h2 class="font-bold text-gray-800 text-xl md:text-2xl leading-tight">
-                                Roles
+                                {{ isUpdating ? 'Update' : 'Add' }} Role
                             </h2>
                         </div>
                         <p class="text-sm text-indigo-600 mb-6 leading-relaxed font-medium">
-                            Update Role Information
+                            {{ isUpdating ? 'Update role information' : 'Create a new role' }}
                         </p>
 
-                        <template v-if="isUpdating">
-                            <form @submit.prevent="handleSubmitUpdate"
-                                class="flex flex-col  space-y-6 js font-['Inter']">
-                                <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Role Name</label>
-                                    <input v-model="form.name" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Role name" :required="form.isMenuOpen" />
-                                    <input type="number" v-model="form.id" hidden>
-                                </div>
-                                <div v-if="success" class="text-blue-600 text-sm ">
-                                    {{ success }}
-                                </div>
-                                <div v-else class="text-red-500 text-sm ">
-                                    {{ error }}
-                                </div>
-                                <!-- Submit Button -->
-                                <button :disabled="loading" type="submit"
-                                    class="mt-6 w-full place-self-end-end bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg">
-                                    <span v-if="!loading">Update </span>
-                                    <span v-else>Processing...</span> </button>
-                            </form>
-                        </template>
-                        <template v-else>
+                        <form @submit.prevent="isUpdating ? handleSubmitUpdate() : handleSubmitAdd()"
+                            class="flex flex-col space-y-6">
+                            <div>
+                                <label for="roleName"
+                                    class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
+                                    Role Name
+                                </label>
+                                <input v-model="form.name" id="roleName" type="text"
+                                    class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
+                                    placeholder="Enter role name" required>
+                                <input type="hidden" v-model="form.id">
+                            </div>
 
-                            <form @submit.prevent="handleSubmitAdd" class="flex flex-col  space-y-6 js font-['Inter']">
-                                <div>
-                                    <label for="siteName"
-                                        class="block text-sm font-medium text-gray-800 mb-2.5 tracking-wide">
-                                        Role Name</label>
-                                    <input v-model="form.name" id="siteName" type="text"
-                                        class="w-full rounded-xl border border-gray-300/80 px-4 py-3 text-gray-900 placeholder-gray-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/90 focus:border-blue-500/50 transition-all duration-200 bg-white/95 shadow-sm"
-                                        placeholder="Enter Role name" />
-                                </div>
-                                <!-- Error Message -->
-                                <div v-if="error" class="text-red-500 text-sm ">
-                                    {{ error }}
-                                </div>
-                                <!-- Submit Button -->
-                                <button :disabled="loading" type="submit"
-                                    class="mt-6 w-full place-self-end-end bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg">
-                                    <span v-if="!loading">SAVE</span>
-                                    <span v-else>Processing...</span> </button>
-                            </form>
-                        </template>
+                            <div v-if="error" class="text-red-500 text-sm">
+                                {{ error }}
+                            </div>
+                            <div v-if="success" class="text-green-500 text-sm">
+                                {{ success }}
+                            </div>
 
+                            <button :disabled="loading" type="submit"
+                                class="mt-6 w-full place-self-end-end bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg">
+                                <span v-if="!loading">{{ isUpdating ? 'Update' : 'Save' }}</span>
+                                <span v-else>Processing...</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -265,41 +271,47 @@
 
 <script>
 import roleService from '@/services/roles';
-import AppAside from "../components/AppAside.vue";
+import permissionService from '@/services/permissions';
 import UserDropdown from "../components/UserDropdown.vue";
-// import Forms from "./components/Forms.vue";
-import ToggleMenu from "./components/ToggleMenu.vue";
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
 import { debounce } from 'lodash';
 
 export default {
     components: {
-        AppAside,
         UserDropdown,
         ToggleMenu
     },
     data() {
         return {
-            form: {
-                name: "",
-                active: true,
-                isMenuOpen: false,
-
-            },
+            // Roles data
             roles: [],
-            loading: false,
+            selectedRole: null,
             loadingRoles: false,
-            error: null,
-            success: null,
-            editingRole: null,
-            searchQuery: '',
-            isSearching: false,
+            isSideFormVisible: false,
             isUpdating: false,
 
-            searchTimeout: null,
+            // Permissions data
+            permissions: [],
+            filteredPermissions: [],
+            selectedPermissions: [],
+            loadingPermissions: false,
+            isSaving: false,
+            permissionSearch: '',
 
+            // Forms
+            form: {
+                id: null,
+                name: '',
+            },
+
+            // Search & pagination
+            searchQuery: '',
+            isSearching: false,
             searchError: null,
-            sidebarOpen: false,
-            isSideFormVisible: false,
+            error: null,
+            success: null,
+            loading: false,
+
             pagination: {
                 current_page: 1,
                 per_page: 15,
@@ -307,202 +319,97 @@ export default {
                 last_page: 1,
                 from: 0,
                 to: 0
-            },
+            }
         };
+    },
+    computed: {
+        allPermissionsSelected() {
+            if (this.filteredPermissions.length === 0) return false;
+            return this.filteredPermissions.every(perm => this.selectedPermissions.includes(String(perm.id)))
+        }
     },
     async created() {
         await this.fetchRoles();
+        await this.fetchAllPermissions();
     },
     methods: {
-        async fetchRoles(page = 1) {
+        // Role methods
+        async fetchRoles() {
             this.loadingRoles = true;
             try {
                 const response = await roleService.getAll({
-                    page: page,
+                    page: this.pagination.current_page,
                     perPage: this.pagination.per_page,
                     search: this.searchQuery
                 });
 
-
-                // Standardized response handling
                 this.roles = response.data;
-
-                // Ensure meta exists
-                if (!response.meta) {
-                    console.warn('API response missing meta, generating fallback');
-                    response.meta = {
-                        current_page: 1,
-                        per_page: this.pagination.per_page,
-                        total: response.data.length,
-                        last_page: 1,
-                        from: 1,
-                        to: response.data.length
-                    };
-                }
-
                 this.updatePagination(response.meta);
 
-            } catch (error) {
-                console.error('Error fetching roles:', error);
-                this.$toast.error("Failed to load roles: " + error.message);
-            } finally {
-                this.loadingRoles = false;
-            }
-        },
-
-        async handleSubmitAdd() {
-
-            this.loading = true;
-            this.error = null;
-            // If editingRole is set, update the role, else create new
-
-            try {
-                const response = await roleService.store(this.form);
-                await this.fetchRoles();
-
-
-                this.form.name = "";
-                this.isSideFormVisible = false;
-
-
-            } catch (error) {
-                this.error = error.response?.data?.message || error.message || "Failed to save role information";
-                console.error("Role save error:", error);
-            } finally {
-                this.loading = false;
-            }
-        }, async handleSubmitUpdate() {
-
-            this.loading = true;
-            this.error = null;
-            this.success = null;
-            // If editingRole is set, update the role, else create new
-
-            try {
-                const response = await roleService.update(this.form.id, this.form);
-                await this.fetchRoles();
-                this.success = "Role updated successfully"
-
-
-
-
-            } catch (error) {
-                this.error = error.response?.data?.message || error.message || "Failed to save role information";
-                console.error("Role save error:", error);
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        updatePagination(meta) {
-            // Debugging: Log the incoming meta data
-
-            const currentPage = meta.current_page || 1;
-            const perPage = meta.per_page || this.pagination.per_page;
-            const totalItems = meta.total || 0;
-            const lastPage = meta.last_page || Math.ceil(totalItems / perPage) || 1;
-
-            this.pagination = {
-                current_page: currentPage,
-                per_page: perPage,
-                total: totalItems,
-                last_page: lastPage,
-                from: meta.from || ((currentPage - 1) * perPage) + 1,
-                to: meta.to || Math.min(currentPage * perPage, totalItems)
-            };
-
-        },
-        async searchRoles() {
-            if (!this.searchQuery.trim()) {
-                this.clearSearch();
-                return;
-            }
-
-            this.isSearching = true;
-            this.searchError = null;
-
-            try {
-                const response = await roleService.search({
-                    query: this.searchQuery,
-                    page: this.pagination.current_page,
-                    perPage: this.pagination.per_page
-                });
-
-                if (response.success) {
-                    this.roles = response.data;
-                    this.updatePagination(response.meta);
-                } else {
-                    throw new Error(response.message || 'Invalid response');
+                // If we have a selected role, refresh its data
+                if (this.selectedRole) {
+                    const updatedRole = this.roles.find(r => r.id === this.selectedRole.id);
+                    if (updatedRole) {
+                        this.selectedRole = updatedRole;
+                    }
                 }
             } catch (error) {
-                console.error('Search error:', error);
-                this.searchError = typeof error === 'string' ? error : error.message;
-                this.roles = [];
-                this.$toast.error(`Search failed: ${this.searchError}`);
+                console.error('Error fetching roles:', error);
+                this.searchError = "Failed to load roles. Please try again.";
             } finally {
+                this.loadingRoles = false;
                 this.isSearching = false;
             }
         },
 
-        // Debounced search input handler
-        handleSearchInput: debounce(function () {
-            if (this.searchQuery.trim().length >= 3) {
-                this.searchRoles();
-            } else if (!this.searchQuery.trim()) {
-                this.clearSearch();
-            }
-        }, 500),
-
-        clearSearch() {
-            this.searchQuery = '';
-            this.searchError = null;
-            this.fetchRoles();
-        },
-        nextPage() {
-            if (this.pagination.current_page < this.pagination.last_page) {
-                this.pagination.current_page++;
-                this.loadRoles();
-            }
+        selectRole(role) {
+            this.selectedRole = role;
+            this.loadRolePermissions();
         },
 
-        prevPage() {
-            if (this.pagination.current_page > 1) {
-                this.pagination.current_page--;
-                this.loadRoles();
-            }
-        },
+        async loadRolePermissions() {
+            if (!this.selectedRole) return;
 
-        async loadRoles() {
-            this.loadingRoles = true;
+            this.loadingPermissions = true;
+            this.selectedPermissions = []; // Reset before loading
+
             try {
-                const params = {
-                    page: this.pagination.current_page,
-                    per_page: this.pagination.per_page
-                };
+                const response = await roleService.getPermissions(this.selectedRole.id);
 
-                // Include search query if it exists
-                if (this.searchQuery.trim()) {
-                    params.q = this.searchQuery.trim();
+                // Handle null/undefined permissions
+                if (!response || !response.permissions) {
+                    console.warn('No permissions data received for role', this.selectedRole.id);
+                    this.selectedPermissions = [];
+                    return;
                 }
 
-                const response = await roleService.getAll(params);
+                // Handle different response formats
+                let permissionsData = [];
 
-                this.roles = response.data || [];
-                this.updatePagination(response.meta || {});
+
+                if (Array.isArray(response.permissions)) {
+                    permissionsData = response.permissions;
+                } else if (response.permission.id) {
+                    // If we just get an array of IDs
+                    permissionsData = response.permission.id.map(id => ({ id }));
+                }
+
+                // Safely map permissions
+                this.selectedPermissions = permissionsData
+                    .filter(p => p !== null && p !== undefined) // Filter out null values
+                    .map(p => String(p.id || p)); // Handle both objects and direct IDs
 
             } catch (error) {
-                console.error('Error loading roles:', error);
-                this.$toast.error('Failed to load roles');
+                console.error('Error loading permissions:', error);
+                this.$toast.error("Failed to load permissions");
+                this.selectedPermissions = [];
             } finally {
-                this.loadingRoles = false;
+                this.loadingPermissions = false;
             }
         },
-
-
 
         openAddRoleForm() {
             this.isUpdating = false;
-
             this.resetForm();
             this.isSideFormVisible = true;
         },
@@ -514,88 +421,190 @@ export default {
             }
         },
 
-        async handleSubmit() {
+        editRole(role) {
+            this.form = {
+                id: role.id,
+                name: role.name
+            };
+            this.isUpdating = true;
+            this.isSideFormVisible = true;
+        },
+
+        async handleSubmitAdd() {
             this.loading = true;
             this.error = null;
+            this.success = null;
 
             try {
-                if (this.editingRole) {
-                    await roleService.update(this.editingRole.id, this.form);
-                    this.$toast.success("Role updated successfully");
-                } else {
-                    await roleService.store(this.form);
-                    this.$toast.success("Role created successfully");
-                }
-
-                this.closeSideForm();
+                const response = await roleService.store(this.form);
                 await this.fetchRoles();
+                this.toggleAddRoleForm();
             } catch (error) {
-                this.error = error.message;
-                this.$toast.error("Operation failed");
+                this.error = error.response?.data?.message || error.message || "Failed to create role";
+                console.error("Role creation error:", error);
             } finally {
                 this.loading = false;
             }
         },
-        // role edit function
-        editRole(role) {
-            this.isUpdating = true;
-            this.form = {
-                name: role.name,
-                id: role.id,
-            };
-            this.isSideFormVisible = true;
 
+        async handleSubmitUpdate() {
+            this.loading = true;
+            this.error = null;
+            this.success = null;
+
+            try {
+                const response = await roleService.update(this.form.id, this.form);
+                this.success = "Role updated successfully";
+                await this.fetchRoles();
+
+                // If we're updating the currently selected role, update it
+                if (this.selectedRole && this.selectedRole.id === this.form.id) {
+                    this.selectedRole.name = this.form.name;
+                }
+            } catch (error) {
+                this.error = error.response?.data?.message || error.message || "Failed to update role";
+                console.error("Role update error:", error);
+            } finally {
+                this.loading = false;
+            }
         },
 
-        async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} role?`)) {
-                try {
-                    await roleService.delete(id);
-                    await this.fetchRoles();
-
-                    this.$toast.success("Role deleted successfully");
+        async confirmDelete(role) {
 
 
-                } catch (error) {
-                    this.$toast.error("Failed to delete role");
+
+
+
+            try {
+                await roleService.delete(role);
+
+                // If we're deleting the currently selected role, clear selection
+                if (this.selectedRole && this.selectedRole.id === role.id) {
+                    this.selectedRole = null;
+                    this.selectedPermissions = [];
                 }
+
+                await this.fetchRoles();
+            } catch (error) {
+                this.$toast.error("Failed to delete role");
+                console.error("Role deletion error:", error);
             }
+        },
+
+        // Permission methods
+        async fetchAllPermissions() {
+            this.loadingPermissions = true;
+            try {
+                const response = await permissionService.getAll();
+                this.permissions = response.data;
+                this.filteredPermissions = [...this.permissions];
+            } catch (error) {
+                console.error('Error fetching permissions:', error);
+                this.$toast.error("Failed to load permissions");
+            } finally {
+                this.loadingPermissions = false;
+            }
+        },
+
+        filterPermissions: debounce(function () {
+            if (!this.permissionSearch.trim()) {
+                this.filteredPermissions = [...this.permissions];
+                return;
+            }
+
+            const searchTerm = this.permissionSearch.toLowerCase();
+            this.filteredPermissions = this.permissions.filter(perm =>
+                perm.name.toLowerCase().includes(searchTerm) ||
+                (perm.description && perm.description.toLowerCase().includes(searchTerm))
+            );
+        }, 300),
+
+        toggleSelectAllPermissions() {
+            const allFilteredPermIds = this.filteredPermissions.map(p => String(p.id));
+
+            if (this.allPermissionsSelected) {
+                // Remove all filtered permissions from selection
+                this.selectedPermissions = this.selectedPermissions.filter(
+                    id => !allFilteredPermIds.includes(id));
+            } else {
+                // Add all filtered permissions to selection (without duplicates)
+                const newSelection = [...new Set([...this.selectedPermissions, ...allFilteredPermIds])];
+                this.selectedPermissions = newSelection;
+            }
+        },
+
+        async saveRolePermissions() {
+            if (!this.selectedRole) return;
+
+            this.isSaving = true;
+            try {
+                await roleService.assignPermissions(this.selectedRole.id, {
+                    permissions: this.selectedPermissions
+                });
+
+                // Update the permissions count for the selected role
+                const updatedRole = await roleService.get(this.selectedRole.id);
+
+                this.selectedRole.permissions_count = updatedRole.permissions_count;
+            } catch (error) {
+                console.error('Error saving permissions:', error);
+                this.$toast.error("Failed to save permissions");
+            } finally {
+                this.isSaving = false;
+            }
+        },
+
+        // Search & pagination
+        handleSearchInput: debounce(function () {
+            this.isSearching = true;
+            this.searchError = null;
+            if (this.searchQuery.trim().length >= 3 || !this.searchQuery.trim()) {
+                this.pagination.current_page = 1; // Reset to first page when searching
+                this.fetchRoles();
+            }
+        }, 500),
+
+        clearSearch() {
+            this.searchQuery = '';
+            this.isSearching = false;
+            this.searchError = null;
+            this.pagination.current_page = 1;
+            this.fetchRoles();
+        },
+
+        nextPage() {
+            if (this.pagination.current_page < this.pagination.last_page) {
+                this.pagination.current_page++;
+                this.fetchRoles();
+            }
+        },
+
+        prevPage() {
+            if (this.pagination.current_page > 1) {
+                this.pagination.current_page--;
+                this.fetchRoles();
+            }
+        },
+
+        updatePagination(meta) {
+            this.pagination = {
+                current_page: meta.current_page || 1,
+                per_page: meta.per_page || this.pagination.per_page,
+                total: meta.total || 0,
+                last_page: meta.last_page || 1,
+                from: meta.from || 1,
+                to: meta.to || meta.per_page || this.pagination.per_page
+            };
         },
 
         resetForm() {
             this.form = {
-                name: "",
-                active: true
+                id: null,
+                name: ''
             };
-            this.editingRole = null;
             this.error = null;
-        },
-
-        closeSideForm() {
-            this.isSideFormVisible = false;
-            this.resetForm();
-        },
-
-        toggleSidebar() {
-            this.sidebarOpen = !this.sidebarOpen;
-        },
-
-        toggleMenu() {
-            this.isOpen = !this.isOpen;
-        },
-
-        closeMenu(e) {
-            if (!this.$el.contains(e.target)) {
-                this.isOpen = false;
-            }
+            this.success = null;
         }
-    },
-    mounted() {
-        document.addEventListener('click', this.closeMenu);
-    },
-    beforeUnmount() {
-        document.removeEventListener('click', this.closeMenu);
-        clearTimeout(this.searchTimeout);
     }
 };
 </script>
@@ -610,35 +619,23 @@ export default {
     visibility: hidden;
 }
 
-.pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1.5rem;
-    padding: 1rem 0;
+/* Custom scrollbar for the roles table */
+.overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
 }
 
-.pagination-button {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: white;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
 }
 
-.pagination-button:hover:not(:disabled) {
-    background: #f5f5f5;
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
 }
 
-.pagination-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.pagination-info {
-    font-size: 0.9rem;
-    color: #666;
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 </style>

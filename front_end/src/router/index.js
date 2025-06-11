@@ -21,6 +21,11 @@ import PermissionLayout from "@/layouts/permissions/PermissionLayout.vue";
 import Users from "@/pages/Users.vue";
 import OrdersLayout from "@/layouts/orders/OrdersLayout.vue";
 import OrdersDetailsLayout from "@/layouts/orders/detail/OrdersDetailsLayout.vue";
+import Forbidden from "@/layouts/auth/Forbidden.vue";
+import { useUserStore } from "@/stores/userStore";
+import { useProfileStore } from "@/stores/profile";
+import userService from "@/services/users";
+import auth from "@/services/auth";
 
 
 const routes = [
@@ -28,18 +33,28 @@ const routes = [
     path: "/",
     name: "Dashboard",
     component: Dashboard,
-    meta: { requiresAuth: true } // Requires authentication
-  }, {
+    meta: {
+      requiresAuth: true,
+
+      title: 'Dashboard'
+    } // Requires authentication
+  },
+  {
     path: "/users",
     name: "Users",
     component: Users,
-    meta: { requiresAuth: true } // Requires authentication
+    meta: {
+      requiresAuth: true,
+      title: 'Users',
+
+
+    } // Requires authentication
   },
   {
     path: "/login",
     name: "Login",
     component: LogIn,
-    meta: { requiresAuth: false, preventIfAuth: true } // Prevent if authenticated
+    meta: { requiresAuth: false, isGuest: true } // Prevent if authenticated
   },
   {
     path: "/register",
@@ -64,7 +79,14 @@ const routes = [
     path: "/orders",
     name: "Orders",
     component: Orders,
-    meta: { requiresAuth: true } // Requires authentication
+    meta: {
+      requiresAuth: true,
+      title: 'Orders',
+      requiredPermissions: ['view-order']
+
+
+
+    } // Requires authentication
   },
   {
     path: "/orders/:id",
@@ -77,7 +99,7 @@ const routes = [
     path: "/banks",
     name: "Banks",
     component: Banks,
-    meta: { requiresAuth: true } // Requires authentication
+    meta: { requiresAuth: true, title: 'Banks' } // Requires authentication
   },
 
   {
@@ -158,7 +180,13 @@ const routes = [
     component: PermissionLayout,
     meta: { requiresAuth: true } // Requires authentication
   },
-
+  {
+    path: "/forbidden",
+    name: "Forbidden",
+    component: Forbidden,
+    meta: { requiresAuth: false } // Requires authentication
+  },
+  { path: "/:catchAll(.*)", redirect: "/forbidden" }
 
 
 ];
@@ -167,24 +195,51 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
 });
+router.beforeEach(async (to, from, next) => {
+  const profileStore = useProfileStore();
+  const token = localStorage.getItem('auth_token');
 
-// Navigation guard to check authentication
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('auth_token'); // Your auth check
-
-  // Check if route is only for non-authenticated users
-  if (to.meta.preventIfAuth && isAuthenticated) {
-    next({ name: 'Dashboard' }); // Redirect to dashboard if logged in
-    return;
+  if (to.meta.isGuest && token) {
+    // If guest-only page and user is already logged in
+    return next({ name: "Dashboard" });
   }
 
-  // Check if route requires authentication
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: 'Login' }); // Redirect to login if not authenticated
-    return;
+  if (to.meta.requiresAuth) {
+    if (!token) {
+      // Redirect to login if not authenticated
+      return next({ name: "Login" });
+    }
+
+    try {
+      // Fetch user data if not already loaded
+      if (!profileStore.user || !profileStore.permissions) {
+        await auth.fetchUser();
+      }
+
+      const userPermissions = profileStore.permissions || [];
+
+      // Check required permissions
+      const requiredPermissions = to.meta.requiredPermissions;
+
+      if (requiredPermissions) {
+        // Check if the user has at least one of the required permissions
+        const hasPermission = requiredPermissions.some(perm => userPermissions.includes(perm));
+
+        if (!hasPermission) {
+          return next({ name: "Forbidden" });
+        }
+      }
+
+      // Proceed to the route
+      return next();
+
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      return next({ name: "Login" });
+    }
   }
 
-  // Otherwise proceed
+  // For public routes, proceed
   next();
 });
 

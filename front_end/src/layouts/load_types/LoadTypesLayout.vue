@@ -19,15 +19,9 @@
                     </button>
                 </form>
             </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
+
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
@@ -107,9 +101,12 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/load_type-accounts/${load_type.id}`)"
+                                        <!-- <ToggleMenu @show="() => $router.push(`/load_type-accounts/${load_type.id}`)"
                                             @edit="editLoadTypes(load_type)"
-                                            @delete="confirmDelete(load_type.id, load_type.name)" />
+                                            @delete="confirmDelete(load_type.id, load_type.name)" /> -->
+
+                                        <ToggleMenu @show="() => $router.push(`/load_type/${load_type.id}`)"
+                                            :item="load_type" @edit="editLoadTypes" @delete="confirmDelete" />
                                     </td>
                                 </tr>
 
@@ -237,8 +234,8 @@ import loadTypeService from '@/services/load-types';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
 // import Forms from "./components/Forms.vue";
-import ToggleMenu from "./components/ToggleMenu.vue";
 import { debounce } from 'lodash';
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
 
 export default {
     components: {
@@ -517,17 +514,15 @@ export default {
         },
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} load_type?`)) {
-                try {
-                    await loadTypeService.delete(id);
-                    await this.fetchLoadTypes();
+            try {
+                await loadTypeService.delete(id);
+                await this.fetchLoadTypes();
 
-                    this.$toast.success("Load Type deleted successfully");
+                this.$toast.success("Load Type deleted successfully");
 
 
-                } catch (error) {
-                    this.$toast.error("Failed to delete load_type");
-                }
+            } catch (error) {
+                this.$toast.error("Failed to delete load_type");
             }
         },
 

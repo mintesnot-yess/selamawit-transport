@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Income;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class IncomeController extends Controller
 {
@@ -16,7 +16,12 @@ class IncomeController extends Controller
     public function index()
     {
         $incomes = Income::with(["order", "creator", "updater"])->get();
-        return response()->json(["data" => $incomes]);
+
+        return response()->json([
+            "success" => true,
+            "data" => $incomes,
+            "message" => "Incomes fetched successfully."
+        ]);
     }
 
     /**
@@ -24,41 +29,41 @@ class IncomeController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $data = $request->validate([
             "order_id" => "required|exists:orders,id",
             "amount" => "required|numeric|min:0",
             "received_date" => "required|date",
-            "description" => "nullable|string",
-            "attachment" => "nullable|string",
+            "bank_id" => "required|exists:banks,id",
+            "account_number" => "required|string",
+            "attachment" => "nullable|file|mimes:jpg,jpeg,pdf,png|max:2048",
+            "payment_type" => "nullable|string",
+            "remark" => "nullable|string",
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(
-                [
-                    "message" => "Validation error",
-                    "errors" => $validator->errors(),
-                ],
-                422
-            );
+        // Handle file upload
+        $filePath = null;
+        if ($request->hasFile('attachment')) {
+            $filePath = $request->file('attachment')->store('attachments/incomes', 'public');
         }
 
         $income = Income::create([
-            "order_id" => $request->order_id,
-            "amount" => $request->amount,
-            "received_date" => $request->received_date,
-            "description" => $request->description ?? "no desc",
-            "attachment" => $request->attachment ?? "no atach",
+            "order_id" => $data['order_id'],
+            "amount" => $data['amount'],
+            "received_date" => $data['received_date'],
+            "bank_id" => $data['bank_id'],
+            "account_number" => $data['account_number'],
+            "payment_type" => $data['payment_type'] ?? null,
+            "remark" => $data['remark'] ?? null,
+            "attachment" => $filePath,
             "created_by" => Auth::id(),
             "updated_by" => Auth::id(),
         ]);
 
-        return response()->json(
-            [
-                "message" => "Income created successfully",
-                "data" => $income,
-            ],
-            201
-        );
+        return response()->json([
+            "success" => true,
+            "data" => $income,
+            "message" => "Income created successfully."
+        ], 201);
     }
 
     /**
@@ -69,15 +74,17 @@ class IncomeController extends Controller
         $income = Income::with(["order", "creator", "updater"])->find($id);
 
         if (!$income) {
-            return response()->json(
-                [
-                    "message" => "Income not found",
-                ],
-                404
-            );
+            return response()->json([
+                "success" => false,
+                "message" => "Income not found."
+            ], 404);
         }
 
-        return response()->json(["data" => $income]);
+        return response()->json([
+            "success" => true,
+            "data" => $income,
+            "message" => "Income fetched successfully."
+        ]);
     }
 
     /**
@@ -88,41 +95,37 @@ class IncomeController extends Controller
         $income = Income::find($id);
 
         if (!$income) {
-            return response()->json(
-                [
-                    "message" => "Income not found",
-                ],
-                404
-            );
+            return response()->json([
+                "success" => false,
+                "message" => "Income not found."
+            ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
+        $data = $request->validate([
             "order_id" => "sometimes|exists:orders,id",
             "amount" => "sometimes|numeric|min:0",
             "received_date" => "sometimes|date",
             "description" => "nullable|string",
-            "attachment" => "nullable|string",
+            "attachment" => "nullable|file|mimes:jpg,jpeg,pdf,png|max:2048",
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(
-                [
-                    "message" => "Validation error",
-                    "errors" => $validator->errors(),
-                ],
-                422
-            );
+        // Handle file upload
+        if ($request->hasFile('attachment')) {
+            // Optional: delete old file
+            if ($income->attachment) {
+                Storage::disk('public')->delete($income->attachment);
+            }
+            $data['attachment'] = $request->file('attachment')->store('attachments/incomes', 'public');
         }
 
-        $income->update(
-            $request->all() + [
-                "updated_by" => Auth::id(),
-            ]
-        );
+        $income->update(array_merge($data, [
+            "updated_by" => Auth::id()
+        ]));
 
         return response()->json([
-            "message" => "Income updated successfully",
+            "success" => true,
             "data" => $income,
+            "message" => "Income updated successfully."
         ]);
     }
 
@@ -134,21 +137,22 @@ class IncomeController extends Controller
         $income = Income::find($id);
 
         if (!$income) {
-            return response()->json(
-                [
-                    "message" => "Income not found",
-                ],
-                404
-            );
+            return response()->json([
+                "success" => false,
+                "message" => "Income not found."
+            ], 404);
+        }
+
+        // Optional: delete attachment
+        if ($income->attachment) {
+            Storage::disk('public')->delete($income->attachment);
         }
 
         $income->delete();
 
-        return response()->json(
-            [
-                "message" => "Income deleted successfully",
-            ],
-            204
-        );
+        return response()->json([
+            "success" => true,
+            "message" => "Income deleted successfully."
+        ], 204);
     }
 }

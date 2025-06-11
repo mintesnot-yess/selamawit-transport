@@ -19,15 +19,9 @@
                     </button>
                 </form>
             </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <button
-                    class="p-2 sm:flex hidden rounded-lg text-surface-500 hover:text-surface-700 hover:bg-surface-100 transition-colors relative">
-                    <i class="fas fa-bell"></i>
-                    <span
-                        class="absolute top-1.5 right-1.5 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                </button>
-                <UserDropdown />
-            </div>
+
+            <UserDropdown />
+
         </header>
 
         <main class="p-4 md:p-6 space-y-6">
@@ -134,9 +128,10 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <ToggleMenu @show="() => $router.push(`/client-accounts/${client.id}`)"
-                                            @edit="editClient(client)"
-                                            @delete="confirmDelete(client.id, client.name)" />
+
+
+                                        <ToggleMenu @show="() => $router.push(`/client/${client.id}`)" :item="client"
+                                            @edit="editClient" @delete="confirmDelete" />
                                     </td>
                                 </tr>
 
@@ -319,8 +314,8 @@ import clientService from '@/services/clients';
 import AppAside from "../components/AppAside.vue";
 import UserDropdown from "../components/UserDropdown.vue";
 // import Forms from "./components/Forms.vue";
-import ToggleMenu from "./components/ToggleMenu.vue";
 import { debounce } from 'lodash';
+import ToggleMenu from "@/layouts/components/ToggleMenu.vue";
 
 export default {
     components: {
@@ -607,17 +602,15 @@ export default {
         },
 
         async confirmDelete(id, name) {
-            if (confirm(`Are you sure you want to delete ${name} client?`)) {
-                try {
-                    await clientService.delete(id);
-                    await this.fetchClients();
+            try {
+                await clientService.delete(id);
+                await this.fetchClients();
 
-                    this.$toast.success("client deleted successfully");
+                this.$toast.success("client deleted successfully");
 
 
-                } catch (error) {
-                    this.$toast.error("Failed to delete client");
-                }
+            } catch (error) {
+                this.$toast.error("Failed to delete client");
             }
         },
 

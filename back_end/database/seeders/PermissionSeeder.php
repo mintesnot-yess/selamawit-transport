@@ -13,19 +13,20 @@ class PermissionSeeder extends Seeder
         $modules = [
             "Order",
             "Payment Collection",
-            "Commission",
+            "Client",
             "Expense",
+            "Expense Type",
             "Vehicles",
-            "Drivers",
+            "Employee",
             "Location",
             "Load Type",
             "Bank",
-            "Staff User",
+            "Bank Account",
+            "System User",
             "Role",
-            "Give Permission",
+            "Permission",
             "Report",
-            "Expense Type",
-            "Client"
+            "Log"
         ];
 
         $actions = ['view', 'create', 'edit', 'delete']; // common CRUD actions
